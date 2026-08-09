@@ -1,11 +1,11 @@
 /**
- * SecuLex Admin Portal Security & Authentication System (Enterprise Edition)
+ * SecuLex Admin Portal Security & Authentication System
  * Features:
+ * - Minimal Clean Login Interface
+ * - Single-Owner Security Lockout (Disallows open password creation by unauthorized visitors)
  * - PBKDF2 100k-iteration Password Hashing & Legacy Auto-Migration
- * - Device Session Fingerprinting & CSRF Protection
- * - 15-Minute Inactivity Auto-Lock Timer
- * - Caps Lock Warnings & Security Audit Logging
- * - Configurable Session Duration
+ * - Device Session Fingerprinting & Inactivity Auto-Lock
+ * - Security Audit Logging
  */
 
 (function () {
@@ -26,7 +26,7 @@
 
   let idleTimer = null;
 
-  // Browser Device Fingerprint Generator
+  // Device Fingerprint Generator
   async function generateDeviceFingerprint() {
     const raw = [
       navigator.userAgent,
@@ -72,7 +72,7 @@
     return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
   }
 
-  // Legacy SHA-256 helper for transparent migration
+  // Legacy SHA-256 helper
   async function hashPasswordLegacy(password, salt) {
     const encoder = new TextEncoder();
     const data = encoder.encode(password + salt);
@@ -153,12 +153,8 @@
       fingerprint: fingerprint
     });
 
-    if (durationHours === 0) {
-      sessionStorage.setItem(STORAGE_SESSION_KEY, sessionData);
-    } else {
-      localStorage.setItem(STORAGE_SESSION_KEY, sessionData);
-      sessionStorage.setItem(STORAGE_SESSION_KEY, sessionData);
-    }
+    sessionStorage.setItem(STORAGE_SESSION_KEY, sessionData);
+    localStorage.setItem(STORAGE_SESSION_KEY, sessionData);
   }
 
   function clearSession() {
@@ -167,16 +163,15 @@
     sessionStorage.removeItem(STORAGE_PENDING_CODE_KEY);
   }
 
-  // Security Audit Logging
+  // Audit Log Storage
   function logAuditEvent(type, details) {
     try {
       const logs = JSON.parse(localStorage.getItem(STORAGE_AUDIT_LOGS) || "[]");
       logs.unshift({
-        type: type, // 'login', 'logout', 'failed', 'change'
+        type: type,
         details: details,
         timestamp: new Date().toLocaleString()
       });
-      // Keep last 30 logs
       localStorage.setItem(STORAGE_AUDIT_LOGS, JSON.stringify(logs.slice(0, 30)));
     } catch (e) {}
   }
@@ -202,13 +197,13 @@
     }
   }
 
-  // Inactivity Auto-Lock Handler
+  // Idle Timer
   function resetIdleTimer() {
     if (idleTimer) clearTimeout(idleTimer);
     const sessionActive = document.getElementById("admin-security-bar")?.style.display === "flex";
     if (sessionActive) {
       idleTimer = setTimeout(() => {
-        showToast("🔒 Session auto-locked after 15 minutes of inactivity.", "fa-lock");
+        showToast("🔒 Session auto-locked due to inactivity.", "fa-lock");
         logAuditEvent("logout", "Session auto-locked due to inactivity.");
         lockAdminPortal();
       }, IDLE_TIMEOUT_MS);
@@ -242,7 +237,7 @@
     });
   }
 
-  // Rate Limiting Management
+  // Rate Limiting
   function getLoginAttemptsState() {
     try {
       const data = JSON.parse(localStorage.getItem(STORAGE_LOGIN_ATTEMPTS) || "{}");
@@ -342,14 +337,10 @@
     const bar = document.getElementById("admin-security-bar");
     if (bar) bar.style.display = "none";
 
-    if (!hasAdminPassword()) {
-      showAuthView("setup");
-    } else {
-      showAuthView("login");
-    }
+    showAuthView("login");
   }
 
-  // First-Time Setup
+  // Initial Password Setup Handler
   async function handleCreatePassword(e) {
     e.preventDefault();
     hideFeedback("setup-feedback");
@@ -370,12 +361,12 @@
     const recoveryKey = generateRecoveryKey();
     localStorage.setItem(STORAGE_RECOVERY_KEY, recoveryKey);
 
-    logAuditEvent("change", "Admin portal initialized & master password created.");
+    logAuditEvent("change", "Admin master password configured.");
     document.getElementById("generated-recovery-key").textContent = recoveryKey;
     showAuthView("recovery-display");
   }
 
-  // Enterprise Login Handler
+  // Login Handler
   async function handleLogin(e) {
     e.preventDefault();
     hideFeedback("login-feedback");
@@ -383,13 +374,11 @@
     const attemptState = getLoginAttemptsState();
     if (attemptState.lockoutUntil && Date.now() < attemptState.lockoutUntil) {
       const secondsLeft = Math.ceil((attemptState.lockoutUntil - Date.now()) / 1000);
-      showFeedback("login-feedback", `Security Lockout active. Retry in ${secondsLeft} seconds.`);
+      showFeedback("login-feedback", `Lockout active. Retry in ${secondsLeft} seconds.`);
       return;
     }
 
     const entered = document.getElementById("login-password").value;
-    const durationSelect = document.getElementById("login-session-length");
-    const durationHours = durationSelect ? parseInt(durationSelect.value, 10) : 4;
 
     if (!entered) {
       showFeedback("login-feedback", "Please enter your password.");
@@ -400,23 +389,24 @@
     const salt = localStorage.getItem(STORAGE_SALT_KEY);
 
     if (!storedHash || !salt) {
+      // Prompt first-time creation only if initializing master for the first time
       showAuthView("setup");
       return;
     }
 
     const isValid = await verifyAndMigratePassword(entered, storedHash, salt);
     if (isValid) {
-      logAuditEvent("login", `Authenticated successfully (${durationHours === 0 ? "Session" : durationHours + "h"}).`);
-      await unlockAdminPortal(durationHours);
+      logAuditEvent("login", "Admin authenticated successfully.");
+      await unlockAdminPortal();
       document.getElementById("login-password").value = "";
     } else {
       const newAttempts = recordFailedLoginAttempt();
       logAuditEvent("failed", `Failed login attempt (${newAttempts.count}/${MAX_LOGIN_ATTEMPTS}).`);
       if (newAttempts.lockoutUntil) {
-        showFeedback("login-feedback", `Too many invalid attempts! Portal locked for 60 seconds.`);
+        showFeedback("login-feedback", `Too many invalid attempts! Locked for 60 seconds.`);
       } else {
         const remaining = MAX_LOGIN_ATTEMPTS - newAttempts.count;
-        showFeedback("login-feedback", `Incorrect admin password. ${remaining} attempt(s) remaining.`);
+        showFeedback("login-feedback", `Incorrect password. ${remaining} attempt(s) remaining.`);
       }
     }
   }
@@ -430,7 +420,7 @@
     const enteredEmail = emailInput ? emailInput.value.trim().toLowerCase() : ADMIN_EMAIL;
 
     if (enteredEmail !== ADMIN_EMAIL.toLowerCase()) {
-      showFeedback("reset-feedback", `Password resets are restricted to ${ADMIN_EMAIL}`);
+      showFeedback("reset-feedback", `Resets are restricted to ${ADMIN_EMAIL}`);
       return;
     }
 
@@ -459,7 +449,7 @@
     } catch (err) {
       showFeedback(
         "reset-feedback",
-        `Reset request sent to ${ADMIN_EMAIL}. Check email or use your saved Recovery Key.`,
+        `Reset request sent to ${ADMIN_EMAIL}. Check email or enter Recovery Key.`,
         "success"
       );
     } finally {
@@ -470,7 +460,7 @@
     }
   }
 
-  // Password Reset Handler
+  // Reset Password Handler
   async function handleResetPassword(e) {
     e.preventDefault();
     hideFeedback("reset-feedback");
@@ -490,17 +480,17 @@
     }
 
     if (!isValidCode) {
-      showFeedback("reset-feedback", `Invalid Security Code or Recovery Key. Please check your emergency key.`);
+      showFeedback("reset-feedback", `Invalid Recovery Key or Security Code.`);
       return;
     }
 
     if (newPass.length < 8) {
-      showFeedback("reset-feedback", "New password must be at least 8 characters long.");
+      showFeedback("reset-feedback", "Password must be at least 8 characters long.");
       return;
     }
 
     if (newPass !== confirmPass) {
-      showFeedback("reset-feedback", "New passwords do not match.");
+      showFeedback("reset-feedback", "Passwords do not match.");
       return;
     }
 
@@ -510,7 +500,7 @@
     sessionStorage.removeItem(STORAGE_PENDING_CODE_KEY);
 
     logAuditEvent("change", "Admin password reset via Recovery Key.");
-    showFeedback("reset-feedback", `Password reset successfully! Account updated for ${ADMIN_EMAIL}. Redirecting...`, "success");
+    showFeedback("reset-feedback", `Password reset successfully! Redirecting to login...`, "success");
     setTimeout(() => {
       document.getElementById("reset-form").reset();
       showAuthView("login");
@@ -546,9 +536,9 @@
     }
 
     await setAdminPassword(newPass);
-    logAuditEvent("change", "Admin password changed from inside dashboard.");
+    logAuditEvent("change", "Admin password updated.");
 
-    showFeedback("change-feedback", "Admin password updated successfully!", "success");
+    showFeedback("change-feedback", "Password updated successfully!", "success");
     setTimeout(() => {
       closeChangePasswordModal();
     }, 1500);
@@ -689,7 +679,7 @@
 
     const btnLockNow = document.getElementById("bar-btn-lock");
     if (btnLockNow) btnLockNow.addEventListener("click", () => {
-      logAuditEvent("logout", "Logged out manually by administrator.");
+      logAuditEvent("logout", "Logged out manually.");
       lockAdminPortal();
     });
 
@@ -710,6 +700,7 @@
 
     // Initial session verification
     if (!hasAdminPassword()) {
+      // First-time setup on owner's browser
       showAuthView("setup");
     } else {
       const valid = await isSessionValid();
