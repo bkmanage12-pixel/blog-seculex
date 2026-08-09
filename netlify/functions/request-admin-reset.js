@@ -42,7 +42,6 @@ exports.handler = async (event) => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           success: true,
-          code, // Returned for dev fallback / client verification
           message: `Security reset code sent to ${ADMIN_EMAIL}. Check your email inbox.`
         })
       };

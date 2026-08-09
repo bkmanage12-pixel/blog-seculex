@@ -12,10 +12,11 @@
 
     <!-- Floating Security Controls (Shown inside CMS when unlocked) -->
     <div id="admin-security-bar" style="display: none;">
-      <span style="font-weight: 600; color: var(--admin-accent-gold);"><i class="fas fa-shield-halved"></i> SecuLex Admin</span>
+      <span style="font-weight: 600; color: var(--admin-accent-gold);"><i class="fas fa-shield-halved"></i> SecuLex Enterprise</span>
       <button id="bar-btn-sync" class="admin-bar-btn admin-bar-btn-sync" title="Sync site changes and prune deleted articles"><i class="fas fa-rotate"></i> Sync & Refresh Site</button>
+      <button id="bar-btn-audit" class="admin-bar-btn" title="View Security Audit Logs"><i class="fas fa-list-check"></i> Security Log</button>
       <button id="bar-btn-change" class="admin-bar-btn" title="Change Admin Password"><i class="fas fa-key"></i> Change Password</button>
-      <button id="bar-btn-lock" class="admin-bar-btn" title="Lock Admin Portal"><i class="fas fa-lock"></i> Lock</button>
+      <button id="bar-btn-lock" class="admin-bar-btn" title="Log Out / Lock Admin Portal"><i class="fas fa-sign-out-alt"></i> Log Out</button>
     </div>
 
     <!-- Toast Notification Container -->
@@ -39,9 +40,10 @@
           <div class="admin-form-group">
             <label class="admin-form-label" for="setup-password">Create Admin Password</label>
             <div class="admin-input-wrapper">
-              <input type="password" id="setup-password" class="admin-form-input" placeholder="At least 6 characters..." required autocomplete="new-password">
+              <input type="password" id="setup-password" class="admin-form-input" placeholder="At least 8 characters..." required autocomplete="new-password">
               <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
             </div>
+            <div id="setup-caps-warning" class="admin-caps-warning"><i class="fas fa-exclamation-triangle"></i> Caps Lock is ON</div>
           </div>
 
           <div class="admin-form-group">
@@ -71,12 +73,29 @@
         <button id="btn-finish-setup" class="admin-btn-primary"><i class="fas fa-arrow-right"></i> Continue to CMS Dashboard</button>
       </div>
 
-      <!-- 3. LOGIN VIEW (UNLOCK ADMIN PORTAL) -->
+      <!-- 3. PROFESSIONAL ENTERPRISE LOGIN VIEW -->
       <div id="admin-view-login" class="admin-auth-card admin-auth-view" style="display: none;">
+        <!-- Status Bar -->
+        <div class="admin-status-bar">
+          <div class="admin-status-indicator">
+            <div class="admin-status-dot"></div>
+            <span>TLS Encrypted • PBKDF2 100k</span>
+          </div>
+          <span style="color: var(--admin-text-secondary); font-family: monospace;">v2.4-SEC</span>
+        </div>
+
         <div class="admin-auth-header">
           <div class="admin-auth-icon"><i class="fas fa-user-shield"></i></div>
-          <h1 class="admin-auth-title">Admin Portal Locked</h1>
-          <p class="admin-auth-subtitle">Enter admin password for <strong>seculexpublications@gmail.com</strong></p>
+          <h1 class="admin-auth-title">SecuLex Admin Gate</h1>
+          <p class="admin-auth-subtitle">Enterprise Content Management Security Portal</p>
+        </div>
+
+        <div class="admin-user-pill">
+          <div class="admin-user-avatar"><i class="fas fa-user-tie"></i></div>
+          <div class="admin-user-details">
+            <p class="admin-user-email">seculexpublications@gmail.com</p>
+            <p class="admin-user-role"><i class="fas fa-shield"></i> Master Administrator</p>
+          </div>
         </div>
 
         <div id="login-feedback" class="admin-feedback"></div>
@@ -85,16 +104,27 @@
           <div class="admin-form-group">
             <label class="admin-form-label" for="login-password">Admin Password</label>
             <div class="admin-input-wrapper">
-              <input type="password" id="login-password" class="admin-form-input" placeholder="Enter password..." required autocomplete="current-password" autofocus>
+              <input type="password" id="login-password" class="admin-form-input" placeholder="Enter admin password..." required autocomplete="current-password" autofocus>
               <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
             </div>
+            <div id="login-caps-warning" class="admin-caps-warning"><i class="fas fa-exclamation-triangle"></i> Caps Lock is ON</div>
           </div>
 
-          <button type="submit" class="admin-btn-primary"><i class="fas fa-unlock"></i> Unlock Dashboard</button>
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="login-session-length">Session Duration</label>
+            <select id="login-session-length" class="admin-form-select">
+              <option value="4" selected>4 Hours (Standard Session)</option>
+              <option value="1">1 Hour (High Security Mode)</option>
+              <option value="8">8 Hours (Full Shift Work)</option>
+              <option value="0">Browser Session Only (Temporary)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="admin-btn-primary"><i class="fas fa-unlock"></i> Authenticate & Unlock Dashboard</button>
         </form>
 
         <div class="admin-auth-footer">
-          <span id="btn-goto-reset" class="admin-link"><i class="fas fa-envelope"></i> Send Password Reset to Email</span>
+          <span id="btn-goto-reset" class="admin-link"><i class="fas fa-envelope"></i> Send Password Reset Code</span>
         </div>
       </div>
 
@@ -103,7 +133,7 @@
         <div class="admin-auth-header">
           <div class="admin-auth-icon"><i class="fas fa-paper-plane"></i></div>
           <h1 class="admin-auth-title">Reset Admin Password</h1>
-          <p class="admin-auth-subtitle">Send a password reset code to your registered email.</p>
+          <p class="admin-auth-subtitle">Dispatches a security code or use your emergency recovery key.</p>
         </div>
 
         <div id="reset-feedback" class="admin-feedback"></div>
@@ -119,7 +149,7 @@
 
           <div class="admin-form-group">
             <label class="admin-form-label" for="reset-key">Security Code / Recovery Key</label>
-            <input type="text" id="reset-key" class="admin-form-input" placeholder="Enter code received in email or Recovery Key..." required style="font-family: monospace; letter-spacing: 1px;">
+            <input type="text" id="reset-key" class="admin-form-input" placeholder="Enter Recovery Key..." required style="font-family: monospace; letter-spacing: 1px;">
           </div>
 
           <div class="admin-form-group">
@@ -192,17 +222,47 @@
       </div>
     </div>
 
-    <!-- Include the script that builds the page and powers the CMS -->
+    <!-- Security Audit Log Modal -->
+    <div id="admin-audit-modal" class="admin-modal-backdrop">
+      <div class="admin-auth-card" style="max-width: 580px;">
+        <div class="admin-auth-header">
+          <div class="admin-auth-icon"><i class="fas fa-shield-halved"></i></div>
+          <h2 class="admin-auth-title">Security Audit Log</h2>
+          <p class="admin-auth-subtitle">Access & authentication event history</p>
+        </div>
+
+        <div class="admin-audit-table-wrapper">
+          <table class="admin-audit-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Timestamp</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="audit-log-rows">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem;">
+          <button type="button" id="btn-clear-audit-logs" class="admin-btn-secondary" style="font-size: 0.76rem; padding: 0.4rem 0.8rem; color: var(--admin-text-secondary);"><i class="fas fa-trash-can"></i> Clear Logs</button>
+          <button type="button" id="modal-btn-close-audit" class="admin-btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Netlify CMS Engine -->
     <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
 
-    <!-- Admin Authentication Script -->
+    <!-- Enterprise Admin Authentication Script -->
     <script src="/admin/admin-auth.js"></script>
 
     <script>
       if (typeof CMS !== "undefined") {
         CMS.registerPreviewStyle("/css/styles.css");
 
-        // Auto-sync & prune site output whenever an entry is published, updated, or deleted
         if (CMS.registerEventListener) {
           CMS.registerEventListener({
             name: "postPublish",
@@ -221,7 +281,6 @@
         }
       }
     </script>
-    <!-- Include Netlify Identity for authentication -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </body>
 </html>

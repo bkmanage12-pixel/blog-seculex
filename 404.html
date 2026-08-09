@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    
+    
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | SecuLex</title>
+    <meta name="description" content="A scholarly platform dedicated to critical legal analysis and principled commentary on contemporary issues in law, governance, strategy, and security.">
+    <link rel="canonical" href="https://seculex.netlify.app/404.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Page Not Found | SecuLex">
+    <meta property="og:description" content="A scholarly platform dedicated to critical legal analysis and principled commentary on contemporary issues in law, governance, strategy, and security.">
+    <meta property="og:url" content="https://seculex.netlify.app/404.html">
+    <meta property="og:image" content="https://seculex.netlify.app/assets/images/hero-custom-bg.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Page Not Found | SecuLex">
+    <meta name="twitter:description" content="A scholarly platform dedicated to critical legal analysis and principled commentary on contemporary issues in law, governance, strategy, and security.">
+    <meta name="twitter:image" content="https://seculex.netlify.app/assets/images/hero-custom-bg.png">
+    <!-- Admin CMS Identity Widget -->
+    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+      :root {
+        --bg-primary: #030736;
+        --bg-secondary: #040d28;
+        --bg-tertiary: #033f4c;
+        --text-primary: #deeaf8;
+        --text-secondary: #eeeef7;
+        --heading-text-color: #b5cde9;
+        --body-text-color: #e5ebf3;
+        --logo-main-text-color: #f0f2f6;
+        --logo-accent-text-color: #eeaa12;
+        --logo-tagline-text-color: #cfcff3;
+        --logo-badge-text-color: #080d51;
+        --header-brand-title-color: #e7a312;
+        --header-brand-subtitle-color: #deeaf8;
+        --header-tagline-text-color: #deeaf8;
+        --nav-link-text-color: #deeaf8;
+        --nav-active-text-color: #080d51;
+        --hero-title-text-color: #deeaf8;
+        --hero-accent-text-color: #e2a727;
+        --hero-description-text-color: #deeaf8;
+        --button-text-color: #080d51;
+        --section-tag-text-color: #e2a727;
+        --section-title-text-color: #deeaf8;
+        --section-description-text-color: #eeeef7;
+        --card-title-text-color: #deeaf8;
+        --card-body-text-color: #eeeef7;
+        --card-meta-text-color: #eeeef7;
+        --card-link-text-color: #e2a727;
+        --post-title-text-color: #deeaf8;
+        --post-body-text-color: #cad4e0;
+        --post-heading-text-color: #deeaf8;
+        --post-meta-text-color: #eeeef7;
+        --footer-title-text-color: #deeaf8;
+        --footer-body-text-color: #eeeef7;
+        --footer-link-text-color: #eeeef7;
+        --footer-link-hover-text-color: #e2a727;
+        --paywall-title-text-color: #deeaf8;
+        --paywall-body-text-color: #eeeef7;
+        --accent-gold: #e2a727;
+        --accent-blue: #3b82f6;
+        --border-color: #24345c;
+        --glass-bg: #d9dff4;
+        --glass-border: #33446f;
+        --hero-image-opacity: 0.75;
+        --hero-overlay-rgb: 2, 4, 43;
+        --hero-overlay-top-opacity: 0.15;
+        --hero-overlay-bottom-opacity: 0.18;
+        --hero-overlay-left-opacity: 0.4;
+        --hero-overlay-right-opacity: 0.2;
+        --accent-gradient: linear-gradient(135deg, #e2a727 0%, #db930b 100%);
+      }
+    </style>
+    <!-- Inline Screen Sizing Boot Script (Avoids layout shifts/flashes) -->
+    <script>
+      (function() {
+        try {
+          const autoAdjust = localStorage.getItem('display-auto-adjust') !== 'false';
+          const storedCat = localStorage.getItem('display-screen-cat');
+          const storedInches = localStorage.getItem('display-screen-inches');
+          const storedScale = localStorage.getItem('display-text-scale') || '1.0';
+
+          document.documentElement.style.setProperty('--text-scale', storedScale);
+
+          if (autoAdjust) {
+            const dpr = window.devicePixelRatio || 1;
+            const cssW = window.screen.width;
+            const cssH = window.screen.height;
+            const maxCss = Math.max(cssW, cssH);
+            const minCss = Math.min(cssW, cssH);
+
+            let estPPI = 96;
+            if (maxCss < 960 && minCss < 500) {
+              estPPI = dpr >= 3 ? 400 : 326;
+            } else if (maxCss <= 1366 && minCss <= 1024 && (navigator.maxTouchPoints > 1 || dpr > 1.5)) {
+              estPPI = 264;
+            } else if (dpr > 1.5) {
+              estPPI = maxCss < 2000 ? 220 : 160;
+            } else {
+              estPPI = 100;
+            }
+
+            const diagPx = Math.sqrt((cssW * dpr) * (cssW * dpr) + (cssH * dpr) * (cssH * dpr));
+            const inches = parseFloat((diagPx / estPPI).toFixed(1));
+            
+            let cat = 'laptop';
+            if (inches < 7.0) cat = 'phone';
+            else if (inches < 13.0) cat = 'tablet';
+            else if (inches < 18.0) cat = 'laptop';
+            else cat = 'desktop';
+
+            document.documentElement.setAttribute('data-screen-inches', inches);
+            document.documentElement.setAttribute('data-screen-inches-cat', cat);
+          } else if (storedCat && storedInches) {
+            document.documentElement.setAttribute('data-screen-inches', storedInches);
+            document.documentElement.setAttribute('data-screen-inches-cat', storedCat);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+    </script>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-top">
+            <a href="/" class="logo">
+                <!-- Shield Image -->
+                
+                <img src="/assets/images/chatgpt-image-jun-5-2026-08_21_51-pm.png" alt="SecuLex Shield" class="logo-shield-img" width="65" height="65">
+                
+                <!-- Logo Text -->
+                <div class="logo-text-block">
+                    <span class="logo-name">Secu<span class="logo-name-accent">Lex</span></span>
+                    <span class="logo-tagline">LAW. STRATEGY &amp; SECURITY</span>
+                    
+                </div>
+            </a>
+            
+            
+            <div class="header-divider"></div>
+            
+            <div class="header-brand-text">
+                
+                <span class="brand-subtitle">Where Law, Security and Innovation Meet</span>
+            </div>
+            
+            
+            
+        </div>
+
+        <nav class="pill-nav">
+            <ul>
+                <li><a href="/"  id="nav-home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="/#about" id="nav-about"><i class="far fa-user"></i> About</a></li>
+                <li><a href="/articles/"  id="nav-articles"><i class="far fa-file-alt"></i> Articles</a></li>
+                <li class="has-dropdown">
+                    <a href="/categories/"  id="nav-categories"><i class="fas fa-th-large"></i> Categories <i class="fas fa-chevron-down nav-chevron"></i></a>
+                    <ul class="nav-dropdown">
+                        
+                        <li>
+                            <a href="/categories/cyber-law/">
+                                <span class="drop-icon drop-icon--cyber"><i class="fas fa-lock"></i></span>
+                                Cyber Law
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/forensic-law/">
+                                <span class="drop-icon drop-icon--forensiclaw"><i class="fas fa-fingerprint"></i></span>
+                                Forensic Law
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/human-rights/">
+                                <span class="drop-icon drop-icon--humanrights"><i class="fas fa-hands-helping"></i></span>
+                                Human Rights
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/international-law/">
+                                <span class="drop-icon drop-icon--internationallaw"><i class="fas fa-globe"></i></span>
+                                International Law
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/medical-law/">
+                                <span class="drop-icon drop-icon--medicallaw"><i class="fas fa-stethoscope"></i></span>
+                                Medical Law
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/phd-thesis/">
+                                <span class="drop-icon drop-icon--phdthesis"><i class="fas fa-graduation-cap"></i></span>
+                                PhD Thesis
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </li>
+                <li><a href="/#contact" id="nav-contact"><i class="far fa-envelope"></i> Contact</a></li>
+            </ul>
+            <button class="mobile-toggle" type="button" aria-label="Open navigation" aria-expanded="false"><i class="fas fa-bars"></i></button>
+        </nav>
+    </header>
+
+    
+<div class="page-header placeholder-bg fade-in" style="padding: 80px 5% 60px; text-align: center; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color); min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <h1 style="color: var(--accent-gold); font-size: 4rem; margin-bottom: 0.5rem; line-height: 1;">404</h1>
+    <h2 style="color: var(--text-primary); font-size: 1.8rem; margin-bottom: 1rem;">Page Not Found</h2>
+    <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 2rem; font-size: 1.05rem;">
+        The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+    </p>
+    <a href="/" class="btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.8rem; border-radius: 50px; background: var(--accent-gradient); color: #000; font-weight: 600; text-decoration: none;">
+        <i class="fas fa-home"></i> Return to Homepage
+    </a>
+</div>
+
+
+    <footer id="contact">
+        <!-- Gold accent top bar -->
+        <div class="footer-accent-bar"></div>
+
+        <div class="footer-inner">
+            <!-- Top section: brand + columns -->
+            <div class="footer-content">
+
+                <!-- Brand Column -->
+                <div class="footer-col footer-col--brand">
+                    <div class="footer-brand-logo">
+                        
+                        <img src="/assets/images/chatgpt-image-jun-5-2026-08_21_51-pm.png" alt="SecuLex Shield" class="footer-logo-img">
+                        
+                        <div class="footer-brand-text">
+                            <span class="footer-logo-name">Secu<span class="footer-logo-accent">Lex</span></span>
+                            <span class="footer-logo-tagline">LAW. STRATEGY &amp; SECURITY</span>
+                        </div>
+                    </div>
+                    <p class="footer-desc">A scholarly platform dedicated to critical legal analysis and principled commentary on contemporary issues in law, governance, strategy, and security.</p>
+                </div>
+
+                <!-- Themes Column -->
+                <div class="footer-col">
+                    <h4 class="footer-col-heading"><i class="fas fa-layer-group footer-col-icon"></i>Themes</h4>
+                    <ul class="footer-nav-list">
+                        
+                        <li><a href="/categories/cyber-law/"><i class="fas fa-chevron-right footer-nav-arrow"></i>Cyber Law</a></li>
+                        
+                        <li><a href="/categories/international-law/"><i class="fas fa-chevron-right footer-nav-arrow"></i>International Law</a></li>
+                        
+                        <li><a href="/categories/medical-law/"><i class="fas fa-chevron-right footer-nav-arrow"></i>Medical Law</a></li>
+                        
+                        <li><a href="/categories/human-rights/"><i class="fas fa-chevron-right footer-nav-arrow"></i>Human Rights</a></li>
+                        
+                        <li><a href="/categories/forensic-law/"><i class="fas fa-chevron-right footer-nav-arrow"></i>Forensic Law</a></li>
+                        
+                        <li><a href="/categories/phd-thesis/"><i class="fas fa-chevron-right footer-nav-arrow"></i>PhD Thesis</a></li>
+                        
+                    </ul>
+                </div>
+
+                <!-- Legal Column -->
+                <div class="footer-col">
+                    <h4 class="footer-col-heading"><i class="fas fa-balance-scale footer-col-icon"></i>Legal</h4>
+                    <ul class="footer-nav-list">
+                        <li><a href="/legal/academic-integrity/"><i class="fas fa-chevron-right footer-nav-arrow"></i>Academic Integrity</a></li>
+                        <li><a href="/legal/terms/"><i class="fas fa-chevron-right footer-nav-arrow"></i>Terms of Use</a></li>
+                        <li><a href="/legal/privacy/"><i class="fas fa-chevron-right footer-nav-arrow"></i>Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="footer-col">
+                    <h4 class="footer-col-heading"><i class="fas fa-paper-plane footer-col-icon"></i>Contact</h4>
+                    <ul class="footer-contact-list">
+                        
+                        <li><a href="mailto:contact@example.com"><i class="fas fa-envelope"></i>contact@example.com</a></li>
+                        
+                        
+                        <li><a href="https://wa.me/250788888888" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i>WhatsApp</a></li>
+                        
+                        
+                        <li><a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i>LinkedIn</a></li>
+                        
+                        
+                        <li><a href="https://twitter.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i>X (Tweeter)</a></li>
+                        
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Glowing Divider -->
+            <div class="footer-glow-divider"></div>
+
+            <!-- Bottom bar -->
+            <div class="footer-bottom">
+                <p class="footer-copyright"><i class="fas fa-shield-alt footer-bottom-icon"></i>&copy; 2026 SecuLex. All scholarly rights reserved.</p>
+                <div class="footer-bottom-right">
+                    <span class="footer-powered">Scholarly Publishing Platform</span>
+                    <a href="#" class="footer-back-top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Display Control Widget -->
+    <div id="display-widget-container">
+        <button id="display-widget-trigger" class="display-widget-trigger" aria-label="Toggle Display Controls" title="Display Sizing Controls">
+            <i class="fas fa-sliders-h"></i>
+        </button>
+        
+        <div id="display-widget-panel" class="display-widget-panel">
+            <div class="display-widget-header">
+                <span class="display-widget-title"><i class="fas fa-desktop"></i> Display Settings</span>
+                <button id="display-widget-close" class="display-widget-close" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="display-widget-section">
+                <div class="display-widget-switch-row">
+                    <span style="font-size: 0.85rem; font-weight: 500;">Auto-Adjust Display</span>
+                    <label class="switch-container">
+                        <input type="checkbox" id="display-widget-auto-toggle" checked>
+                        <span class="slider-toggle"></span>
+                    </label>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.4rem; line-height: 1.3;">
+                    Optimizes layouts based on estimated physical screen size.
+                </div>
+            </div>
+            
+            <div class="display-widget-section">
+                <div class="display-widget-label">
+                    <span>Display Category</span>
+                    <span id="display-widget-inches-val" class="display-widget-value">15.6"</span>
+                </div>
+                <div id="display-widget-tabs" class="widget-tabs disabled">
+                    <button class="widget-tab" data-cat="phone" data-val="5.5" title="Simulate 5.5 inch Phone">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Phone</span>
+                    </button>
+                    <button class="widget-tab" data-cat="tablet" data-val="10.2" title="Simulate 10.2 inch Tablet">
+                        <i class="fas fa-tablet-alt"></i>
+                        <span>Tablet</span>
+                    </button>
+                    <button class="widget-tab" data-cat="laptop" data-val="14.0" title="Simulate 14 inch Laptop">
+                        <i class="fas fa-laptop"></i>
+                        <span>Laptop</span>
+                    </button>
+                    <button class="widget-tab" data-cat="desktop" data-val="24.0" title="Simulate 24 inch Desktop">
+                        <i class="fas fa-tv"></i>
+                        <span>Desktop</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="display-widget-section">
+                <div class="display-widget-label">
+                    <span>Text Sizing Scale</span>
+                    <span id="display-widget-zoom-val" class="display-widget-value">100%</span>
+                </div>
+                <div class="widget-slider-row">
+                    <input type="range" id="display-widget-zoom-slider" class="widget-slider" min="80" max="120" step="5" value="100">
+                </div>
+            </div>
+            
+            <div class="widget-stats">
+                <div class="widget-stat-item">
+                    <span>Resolution:</span>
+                    <span id="stat-resolution">-</span>
+                </div>
+                <div class="widget-stat-item">
+                    <span>Device Pixel Ratio:</span>
+                    <span id="stat-dpr">-</span>
+                </div>
+                <div class="widget-stat-item">
+                    <span>Estimated PPI:</span>
+                    <span id="stat-ppi">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="/js/script.js"></script>
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+    </script>
+</body>
+</html>
