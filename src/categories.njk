@@ -1,0 +1,49 @@
+---
+layout: base.njk
+title: Categories | SecuLex Insights
+permalink: /categories/index.html
+---
+
+<div class="page-header-section fade-in">
+    <div class="page-header-inner">
+        <div class="page-header-icon"><i class="fas fa-th-large"></i></div>
+        <h1>{{ categories_page.page_title }}</h1>
+        <p>{{ categories_page.page_description }}</p>
+    </div>
+</div>
+
+<main class="categories-main fade-in">
+    {% for key, cat in categories %}
+    {% set catPosts = collections.posts | filterByCategory(cat.title) %}
+    {% if catPosts.length > 0 %}
+    <section class="category-section">
+        <div class="category-heading">
+            <div class="cat-icon cat-icon--{{ cat.color_class }}"><i class="fas {{ cat.icon }}"></i></div>
+            <div>
+                <h2>{{ cat.title }}</h2>
+                <span class="cat-count">{{ catPosts.length }} {% if catPosts.length == 1 %}{{ categories_page.article_singular | default("article") }}{% else %}{{ categories_page.article_plural | default("articles") }}{% endif %}</span>
+            </div>
+        </div>
+        <div class="cat-grid">
+            {% for post in catPosts | reverse %}
+            <article class="cat-card">
+                <a href="{{ post.url }}" class="cat-card-img-link">
+                    <img src="{{ post.data.thumbnail }}" alt="{{ post.data.title }}" loading="lazy">
+                    <div class="cat-card-overlay"><span>{{ categories_page.read_label | default("Read") }}</span></div>
+                </a>
+                <div class="cat-card-body">
+                    <span class="cat-badge cat-badge--{{ cat.color_class }}">{{ cat.title }}</span>
+                    <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+                    <p>{{ post.data.description | truncate(100) }}</p>
+                    <div class="cat-card-meta">
+                        <span><i class="far fa-clock"></i> {{ post.data.read_time }} {{ articles_page.min_read_label | default("min read") }}</span>
+                        <a href="{{ post.url }}" class="cat-read-link">{{ categories_page.read_label | default("Read") }} <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    {% endfor %}
+</main>

@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "_site"
+  functions = "netlify/functions"
+
+[functions]
+  included_files = ["protected_documents/**"]
+
+[build.environment]
+  NODE_VERSION = "20"

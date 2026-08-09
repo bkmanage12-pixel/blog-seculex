@@ -1,0 +1,332 @@
+local_backend: true
+# publish_mode: editorial_workflow
+backend:
+  name: git-gateway
+  branch: main # Branch to update (optional; defaults to master)
+
+media_folder: "src/assets/images" # Media files will be stored in the repo under src/assets/images
+public_folder: "/assets/images" # The src attribute for uploaded media will begin with /assets/images
+
+collections:
+  - name: "legal"
+    label: "Legal Policies"
+    folder: "src/legal"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Layout", name: "layout", widget: "hidden", default: "page.njk"}
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Permalink (Do Not Edit)", name: "permalink", widget: "string", default: "/legal/new-policy/index.html"}
+      - {label: "Body", name: "body", widget: "markdown"}
+
+  - name: "categories"
+    label: "Category Manager"
+    folder: "src/_data/categories"
+    extension: "json"
+    format: "json"
+    create: true
+    slug: "{{title}}"
+    fields:
+      - {label: "Category Name", name: "title", widget: "string"}
+      - label: "Icon"
+        name: "icon"
+        widget: "select"
+        hint: "Select a visual icon that represents this category theme."
+        options:
+          - {label: "🔒 Lock (Cyber)", value: "fa-lock"}
+          - {label: "🌐 Globe (International)", value: "fa-globe"}
+          - {label: "🩺 Stethoscope (Medical)", value: "fa-stethoscope"}
+          - {label: "🤝 Hands Helping (Human Rights)", value: "fa-hands-helping"}
+          - {label: "👤 Fingerprint (Forensic)", value: "fa-fingerprint"}
+          - {label: "🎓 Graduation Cap (PhD)", value: "fa-graduation-cap"}
+          - {label: "⚖️ Scale (Law/Justice)", value: "fa-balance-scale"}
+          - {label: "⚖️ Gavel (Courts/Arbitration)", value: "fa-gavel"}
+          - {label: "📖 Book (Publications/Academic)", value: "fa-book-open"}
+      - label: "Color Theme"
+        name: "color_class"
+        widget: "select"
+        hint: "Select a color theme for the badge and layout decorations."
+        options:
+          - {label: "Green (Cyber)", value: "cyber"}
+          - {label: "Blue (International)", value: "internationallaw"}
+          - {label: "Teal (Medical)", value: "medicallaw"}
+          - {label: "Red (Human Rights)", value: "humanrights"}
+          - {label: "Purple (Forensic)", value: "forensiclaw"}
+          - {label: "Gold (PhD)", value: "phdthesis"}
+
+  - name: "posts" # Used in routes, e.g., /admin/collections/posts
+    label: "Articles" # Used in the UI
+    label_singular: "Article"
+    folder: "src/posts" # The path to the folder where the documents are stored
+    create: true # Allow users to create new documents in this collection
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}" # Filename template
+    summary: "{{title}} - {{category}}"
+    fields: # The fields for each document, usually in front matter
+      - {label: "Layout", name: "layout", widget: "hidden", default: "post.njk"}
+      - {label: "Tags", name: "tags", widget: "hidden", default: ["posts"]}
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Category", name: "category", widget: "relation", collection: "categories", search_fields: ["title"], value_field: "title", display_fields: ["title"]}
+      - {label: "Abstract / Description", name: "description", widget: "text", hint: "Provide a summary (Abstract) of the article. For paid articles, this is the main text visible to non-paying visitors."}
+      - {label: "Author", name: "author", widget: "string", default: "Prof.Dr. Thierry B. MURANGIRA"}
+      - {label: "Author Image", name: "author_image", widget: "image", required: false, hint: "Optional. Upload a circular portrait profile photo for this article."}
+      - {label: "Publish Date", name: "date", widget: "datetime"}
+      - {label: "Read Time (Minutes)", name: "read_time", widget: "number", value_type: "int", default: 5}
+      - {label: "Featured Image", name: "thumbnail", widget: "image"}
+      - label: "Table of Contents"
+        name: "toc"
+        widget: "list"
+        hint: "Outline the chapters or sections of this document."
+        fields:
+          - {label: "Section Title", name: "title", widget: "string"}
+          - label: "Subsections"
+            name: "subsections"
+            widget: "list"
+            required: false
+            fields:
+              - {label: "Title", name: "title", widget: "string"}
+      - {label: "Peer Reviewed", name: "peer_reviewed", widget: "boolean", default: true, required: false}
+      - {label: "Restrict Abstract Copying", name: "restrict_abstract_copy", widget: "boolean", default: true, required: false, hint: "When enabled, visitors will be blocked from selecting or copying the Abstract text."}
+      - {label: "Publication Type", name: "publication_type", widget: "string", default: "Academic journal", required: false}
+      - label: "Protected PDF Upload"
+        name: "protected_attachment"
+        widget: "file"
+        required: false
+        media_folder: "/protected_documents"
+        public_folder: "/protected_documents"
+        hint: "Use this for paid documents. The file is stored outside public assets and delivered only after verified payment."
+      - label: "Attachment"
+        name: "attachment"
+        widget: "string"
+        required: false
+        pattern: ["^(|[A-Za-z0-9._-]+\\.pdf|/assets/.+|https?://.+)$", "Use a protected PDF filename such as report.pdf, a public /assets/... URL, or a full https:// URL."]
+        hint: "Paid article: enter only the protected PDF filename from protected_documents, e.g. report.pdf. Free article: enter a public URL such as /assets/images/report.pdf."
+      - label: "Enable Real Paywall"
+        name: "paywall_enabled"
+        widget: "boolean"
+        default: false
+        required: false
+        hint: "When enabled, the page will only show the Abstract and a dynamic Table of Contents to non-paying visitors. The full text is locked, and the visitor must pay to download the protected PDF."
+      - label: "Custom Price (optional)"
+        name: "price_override"
+        widget: "number"
+        value_type: "float"
+        min: 0.5
+        step: 0.01
+        required: false
+        hint: "Leave empty to use the global default price. Set a number here to charge a different amount for this specific article."
+
+  - name: "pages"
+    label: "Pages"
+    files:
+      - label: "Home Page"
+        name: "home"
+        file: "src/_data/home.json"
+        fields:
+          - {label: "Hero Tagline", name: "hero_tagline", widget: "string"}
+          - {label: "Hero Title", name: "hero_title", widget: "string"}
+          - {label: "Hero Title Accent", name: "hero_title_accent", widget: "string"}
+          - {label: "Hero Description", name: "hero_description", widget: "text"}
+          - {label: "Hero Button Text", name: "hero_button_text", widget: "string"}
+          - {label: "View All Button Label", name: "view_all_label", widget: "string"}
+          - {label: "Hero Image", name: "hero_image", widget: "image"}
+          - {label: "Publications Tag", name: "publications_tag", widget: "string"}
+          - {label: "Publications Title", name: "publications_title", widget: "string"}
+          - {label: "Publications Description", name: "publications_description", widget: "string"}
+      - label: "About Section"
+        name: "about"
+        file: "src/_data/about.json"
+        fields:
+          - {label: "Section Tag", name: "section_tag", widget: "string"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Lead Paragraph", name: "lead_text", widget: "text"}
+          - {label: "Body Text", name: "body_text", widget: "text"}
+          - {label: "Background Photo", name: "background_image", widget: "image", required: false, hint: "Optional. Background image displayed behind the About section."}
+          - {label: "Profile Photo", name: "profile_photo", widget: "image", required: false, hint: "Optional. Author portrait to display next to the About description."}
+          - label: "Pillars"
+            name: "pillars"
+            widget: "list"
+            fields:
+              - {label: "Icon / Emoji", name: "emoji", widget: "string", hint: "Paste a small icon or emoji here."}
+              - {label: "Text", name: "text", widget: "string"}
+      - label: "Site Settings & Contact"
+        name: "site"
+        file: "src/_data/site.json"
+        fields:
+          - {label: "Site Title", name: "site_title", widget: "string"}
+          - {label: "Production Site URL", name: "site_url", widget: "string", hint: "Full public URL, e.g. https://seculex.netlify.app"}
+          - {label: "Disqus Shortname", name: "disqus_shortname", widget: "string", required: false, hint: "Leave blank to disable article comments."}
+          - {label: "Nav Home Label", name: "nav_home", widget: "string"}
+          - {label: "Nav Articles Label", name: "nav_articles", widget: "string"}
+          - {label: "Nav Categories Label", name: "nav_categories", widget: "string"}
+          - {label: "Nav About Label", name: "nav_about", widget: "string"}
+          - {label: "Nav Contact Label", name: "nav_contact", widget: "string"}
+          - {label: "Logo Image", name: "logo_image", widget: "image", required: false, hint: "Optional. Upload a physical image logo to replace the text logo."}
+          - {label: "Logo Image Alt Text", name: "logo_alt", widget: "string", hint: "Short accessible description of the header logo image."}
+          - {label: "Logo Text (Main)", name: "logo_text_main", widget: "string", default: "Secu", hint: "The main white text of your logo (used if no Image is uploaded)."}
+          - {label: "Logo Text (Accent)", name: "logo_text_accent", widget: "string", default: "Lex", hint: "The golden accent text of your logo."}
+          - {label: "Logo Tagline", name: "logo_tagline", widget: "string", hint: "Tagline below the logo"}
+          - {label: "Logo Badge", name: "logo_badge", widget: "string", hint: "Badge text in the logo"}
+          - {label: "Header Brand Title", name: "header_brand_title", widget: "string", hint: "Title text in the middle of the header"}
+          - {label: "Header Brand Subtitle", name: "header_brand_subtitle", widget: "string", hint: "Subtitle text in the middle of the header"}
+          - {label: "Header Tagline", name: "header_tagline", widget: "string", hint: "Tagline text on the right side of the header"}
+          - {label: "Mobile Menu Button Label", name: "mobile_menu_label", widget: "string"}
+          - {label: "Site Description", name: "site_description", widget: "text"}
+          - {label: "Comments No-JavaScript Message", name: "comments_noscript_text", widget: "string"}
+          - {label: "Footer Copyright", name: "footer_copyright", widget: "string"}
+          - {label: "Footer Themes Title", name: "footer_themes_title", widget: "string"}
+          - {label: "Footer Legal Title", name: "footer_legal_title", widget: "string"}
+          - {label: "Academic Integrity Link Label", name: "legal_academic_integrity_label", widget: "string"}
+          - {label: "Terms Link Label", name: "legal_terms_label", widget: "string"}
+          - {label: "Privacy Link Label", name: "legal_privacy_label", widget: "string"}
+          - {label: "Contact Email", name: "email", widget: "string"}
+          - {label: "Twitter / X URL", name: "twitter_url", widget: "string", required: false}
+          - {label: "Twitter / X Accessibility Label", name: "social_x_label", widget: "string"}
+          - {label: "LinkedIn URL", name: "linkedin_url", widget: "string", required: false}
+          - {label: "LinkedIn Accessibility Label", name: "social_linkedin_label", widget: "string"}
+          - {label: "WhatsApp URL", name: "whatsapp_url", widget: "string", required: false, hint: "Use https://wa.me/YOURNUMBER"}
+          - {label: "WhatsApp Accessibility Label", name: "social_whatsapp_label", widget: "string"}
+          - {label: "Email Accessibility Label", name: "social_email_label", widget: "string"}
+          - label: "Footer Themes"
+            name: "footer_themes"
+            widget: "list"
+            fields:
+              - {label: "Theme Name", name: "text", widget: "string"}
+              - {label: "Link URL", name: "url", widget: "string", hint: "e.g., # or /some-link/"}
+          - {label: "Footer Contact Column Title", name: "footer_contact_title", widget: "string", default: "Contact", hint: "Heading of the Contact column in the footer."}
+          - {label: "Footer Contact — WhatsApp Label", name: "footer_contact_whatsapp_label", widget: "string", default: "WhatsApp", hint: "Display label for the WhatsApp link in the Contact column."}
+          - {label: "Footer Contact — LinkedIn Label", name: "footer_contact_linkedin_label", widget: "string", default: "LinkedIn", hint: "Display label for the LinkedIn link in the Contact column."}
+          - {label: "Footer Contact — X (Twitter) Label", name: "footer_contact_x_label", widget: "string", default: "X (Twitter)", hint: "Display label for the X / Twitter link in the Contact column."}
+          - {label: "Footer Bottom Tagline", name: "footer_powered_label", widget: "string", default: "Scholarly Publishing Platform", hint: "Small tagline shown in the bottom-right of the footer bar."}
+      - label: "Articles Page"
+        name: "articles_page"
+        file: "src/_data/articles_page.json"
+        fields:
+          - {label: "Page Title", name: "page_title", widget: "string"}
+          - {label: "Page Description", name: "page_description", widget: "text"}
+          - {label: "Read Link Label", name: "read_label", widget: "string"}
+          - {label: "Paid Article Label", name: "paid_article_label", widget: "string"}
+          - {label: "Free Article Label", name: "free_article_label", widget: "string"}
+          - {label: "Article Price Label", name: "price_label", widget: "string"}
+          - {label: "Previous Button Label", name: "previous_label", widget: "string"}
+          - {label: "Next Button Label", name: "next_label", widget: "string"}
+          - {label: "Page Status Label", name: "page_status_label", widget: "string"}
+          - {label: "Page Status Connector", name: "page_status_connector", widget: "string"}
+          - {label: "Back to Articles Label", name: "back_to_articles_label", widget: "string"}
+          - {label: "Search Input Placeholder", name: "search_placeholder", widget: "string", default: "Search by title, topic or author..."}
+          - {label: "Search No Results Message", name: "no_results_label", widget: "string", default: "No articles match your search criteria."}
+          - {label: "Recommended Reading Prefix", name: "recommended_reading_label", widget: "string", default: "Recommended reading:"}
+          - {label: "Min Read Suffix Label", name: "min_read_label", widget: "string", default: "min read"}
+          - {label: "By Author Prefix", name: "by_label", widget: "string", default: "by"}
+      - label: "Categories Page"
+        name: "categories_page"
+        file: "src/_data/categories_page.json"
+        fields:
+          - {label: "Page Title", name: "page_title", widget: "string"}
+          - {label: "Page Description", name: "page_description", widget: "text"}
+          - {label: "Single Category Suffix", name: "single_category_suffix", widget: "string", hint: "Text between the article count and category name, e.g. on"}
+          - {label: "Article Count Singular Label", name: "article_singular", widget: "string", default: "article"}
+          - {label: "Article Count Plural Label", name: "article_plural", widget: "string", default: "articles"}
+          - {label: "Read Link Label", name: "read_label", widget: "string"}
+          - {label: "No Posts Message", name: "no_posts_label", widget: "string"}
+      - label: "Article Details Page Labels"
+        name: "post_settings"
+        file: "src/_data/post_settings.json"
+        fields:
+          - {label: "Peer Reviewed Badge Label", name: "peer_reviewed_label", widget: "string", default: "Peer reviewed"}
+          - {label: "By Author Prefix", name: "by_label", widget: "string", default: "By:"}
+          - {label: "Authors Section Title", name: "authors_section_title", widget: "string", default: "Authors"}
+          - {label: "Abstract Section Title", name: "abstract_section_title", widget: "string", default: "Abstract"}
+          - {label: "Table of Contents Title", name: "toc_section_title", widget: "string", default: "Table of Contents"}
+          - {label: "No Table of Contents Message", name: "no_toc_label", widget: "string", default: "No table of contents outlined."}
+          - {label: "Sidebar Title", name: "sidebar_title", widget: "string", default: "Looking for full text?"}
+          - {label: "Paid Article Description", name: "sidebar_paid_description", widget: "text", default: "Access to this peer-reviewed publication requires purchase. Unlock to download the full PDF format document."}
+          - {label: "Free Article Description", name: "sidebar_free_description", widget: "text", default: "This is an open-access publication. You can download the full text PDF below."}
+          - {label: "No Attachment Description", name: "sidebar_no_attachment_description", widget: "text", default: "This article does not have an attached PDF document."}
+          - {label: "PDF Format Label", name: "format_pdf_label", widget: "string", default: "Format: PDF (Full Text)"}
+          - {label: "Secure Download Label", name: "secure_download_label", widget: "string", default: "Secure Download"}
+          - {label: "Open Access Label", name: "open_access_label", widget: "string", default: "Open Access"}
+          - {label: "Unlock Button Text", name: "unlock_button_label", widget: "string", default: "Unlock Full PDF"}
+          - {label: "Download Button Text", name: "download_button_label", widget: "string", default: "Download PDF"}
+          - {label: "Repository Footer Text", name: "repository_footer_text", widget: "string", default: "SecuLex Scholarly Repository"}
+      - label: "Theme Editor (Colors)"
+        name: "theme"
+        file: "src/_data/theme.json"
+        fields:
+          - {label: "Background Primary", name: "bg_primary", widget: "color", default: "#080a11", hint: "Main background color"}
+          - {label: "Background Secondary", name: "bg_secondary", widget: "color", default: "#121520", hint: "Cards and alternating sections"}
+          - {label: "Background Tertiary / Section Panels", name: "bg_tertiary", widget: "color", default: "#191e2b", hint: "Page headers, content blocks, and raised panels"}
+          - {label: "Text Primary", name: "text_primary", widget: "color", default: "#f8fafc", hint: "Main article text"}
+          - {label: "Text Secondary", name: "text_secondary", widget: "color", default: "#94a3b8", hint: "Muted text"}
+          - {label: "All Headings Text Color", name: "heading_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "General Body Text Color", name: "body_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Logo Main Text Color", name: "logo_main_text_color", widget: "color", default: "#ffffff"}
+          - {label: "Logo Accent Text Color", name: "logo_accent_text_color", widget: "color", default: "#d4af37"}
+          - {label: "Logo Tagline Text Color", name: "logo_tagline_text_color", widget: "color", default: "#94a3b8"}
+          - {label: "Logo Badge Text Color", name: "logo_badge_text_color", widget: "color", default: "#080a11"}
+          - {label: "Header Brand Title Text Color", name: "header_brand_title_color", widget: "color", default: "#d4af37"}
+          - {label: "Header Brand Subtitle Text Color", name: "header_brand_subtitle_color", widget: "color", default: "#f8fafc"}
+          - {label: "Header Tagline Text Color", name: "header_tagline_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Navigation Link Text Color", name: "nav_link_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Navigation Active Text Color", name: "nav_active_text_color", widget: "color", default: "#080a11"}
+          - {label: "Home Hero Title Text Color", name: "hero_title_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Home Hero Accent Text Color", name: "hero_accent_text_color", widget: "color", default: "#d4af37"}
+          - {label: "Home Hero Description Text Color", name: "hero_description_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Button Text Color", name: "button_text_color", widget: "color", default: "#080a11"}
+          - {label: "Section Tag Text Color", name: "section_tag_text_color", widget: "color", default: "#d4af37"}
+          - {label: "Section Title Text Color", name: "section_title_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Section Description Text Color", name: "section_description_text_color", widget: "color", default: "#94a3b8"}
+          - {label: "Article Card Title Text Color", name: "card_title_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Article Card Body Text Color", name: "card_body_text_color", widget: "color", default: "#94a3b8"}
+          - {label: "Article Card Meta Text Color", name: "card_meta_text_color", widget: "color", default: "#94a3b8"}
+          - {label: "Article Card Link Text Color", name: "card_link_text_color", widget: "color", default: "#d4af37"}
+          - {label: "Post Title Text Color", name: "post_title_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Post Body Text Color", name: "post_body_text_color", widget: "color", default: "#cad4e0"}
+          - {label: "Post Heading Text Color", name: "post_heading_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Post Meta Text Color", name: "post_meta_text_color", widget: "color", default: "#94a3b8"}
+          - {label: "Footer Title Text Color", name: "footer_title_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Footer Body Text Color", name: "footer_body_text_color", widget: "color", default: "#94a3b8"}
+          - {label: "Footer Link Text Color", name: "footer_link_text_color", widget: "color", default: "#94a3b8"}
+          - {label: "Footer Link Hover Text Color", name: "footer_link_hover_text_color", widget: "color", default: "#d4af37"}
+          - {label: "Paywall Title Text Color", name: "paywall_title_text_color", widget: "color", default: "#f8fafc"}
+          - {label: "Paywall Body Text Color", name: "paywall_body_text_color", widget: "color", default: "#94a3b8"}
+          - {label: "Accent Color", name: "accent_color", widget: "color", default: "#d4af37", hint: "Primary brand accent"}
+          - {label: "Accent Gradient End", name: "accent_gradient_end", widget: "color", default: "#a28328", hint: "Creates a shine effect on buttons"}
+          - {label: "Accent Blue", name: "accent_blue", widget: "color", default: "#3b82f6", hint: "Secondary accent used for informational details"}
+          - {label: "Border Color", name: "border_color", widget: "color", default: "#24345c", hint: "Lines around cards, sections, navigation, and dividers"}
+          - {label: "Glass Panel Background", name: "glass_bg", widget: "color", default: "#121520", hint: "Transparent-style panel background color"}
+          - {label: "Glass Panel Border", name: "glass_border", widget: "color", default: "#33446f", hint: "Transparent-style panel border color"}
+          - {label: "Home Background Picture Opacity", name: "hero_image_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.85, hint: "0 makes the home background image fully transparent. 1 makes it fully visible."}
+          - {label: "Home Overlay Color", name: "hero_overlay_color", widget: "color", default: "#080d51", hint: "Tint color placed over the home background image."}
+          - {label: "Home Overlay Top Strength", name: "hero_overlay_top_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.22, hint: "0 is clear. 1 is fully covered at the top."}
+          - {label: "Home Overlay Bottom Strength", name: "hero_overlay_bottom_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.62, hint: "0 is clear. 1 is fully covered at the bottom."}
+          - {label: "Home Overlay Left Strength", name: "hero_overlay_left_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.58, hint: "Controls overlay strength behind the main home title."}
+          - {label: "Home Overlay Right Strength", name: "hero_overlay_right_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.12, hint: "Controls overlay strength on the open image side."}
+      - label: "Paywall Settings"
+        name: "paywall"
+        file: "src/_data/paywall.json"
+        fields:
+          - {label: "Enable Paywall", name: "enabled", widget: "boolean", default: true, hint: "Turn the download paywall on or off globally"}
+          - {label: "Default Download Price", name: "price", widget: "number", value_type: "float", min: 0.5, step: 0.01, default: 5, hint: "Default amount visitors must pay to download protected documents."}
+          - {label: "Currency", name: "currency", widget: "string", default: "USD", hint: "Currency code e.g. USD, EUR, XAF"}
+          - {label: "Legacy Payment Link URL", name: "paypal_me_url", widget: "string", required: false, hint: "Kept only for older content. Real paywall payments use PayPal API environment variables in Netlify."}
+          - {label: "Payment Modal Message", name: "payment_note", widget: "text", hint: "Message shown to visitors in the payment popup"}
+          - {label: "Buy Button Label", name: "button_label", widget: "string", default: "Buy Now"}
+          - {label: "Attachment Label", name: "attachment_label", widget: "string"}
+          - {label: "Attachment Hint", name: "attachment_hint", widget: "text"}
+          - {label: "Modal Badge", name: "modal_badge", widget: "string"}
+          - {label: "Modal Title", name: "modal_title", widget: "string"}
+          - {label: "Per Document Label", name: "per_document_label", widget: "string"}
+          - {label: "Pay Button Prefix", name: "pay_now_prefix", widget: "string", default: "Pay"}
+          - {label: "Pay Button Suffix", name: "pay_now_suffix", widget: "string", default: "Now"}
+          - {label: "Paywall Close Button Label", name: "close_label", widget: "string", default: "Close"}
+          - {label: "Verified Required Label", name: "verified_required_label", widget: "string"}
+          - {label: "Redirect Hint", name: "redirect_hint", widget: "text"}
+          - {label: "Secure Notice", name: "secure_notice", widget: "string"}
+          - {label: "Checkout Loading Message", name: "checkout_loading_message", widget: "string"}
+          - {label: "Checkout Error Message", name: "checkout_error_message", widget: "string"}
+          - {label: "Verification Loading Message", name: "verification_loading_message", widget: "string"}
+          - {label: "Verification Error Message", name: "verification_error_message", widget: "string"}
+          - {label: "Verification Success Message", name: "verification_success_message", widget: "string"}
+          - {label: "Download Again Label", name: "download_again_label", widget: "string"}
+          - {label: "PayPal Button Label", name: "pay_now_paypal_label", widget: "string", default: "Pay with PayPal / Cards", hint: "Text shown on the PayPal payment button inside the paywall modal."}
+          - {label: "Mobile Money Button Label", name: "pay_now_flutterwave_label", widget: "string", default: "Pay with Mobile Money / Cards", hint: "Text shown on the Flutterwave / Mobile Money payment button inside the paywall modal."}

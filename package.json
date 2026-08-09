@@ -1,0 +1,16 @@
+{
+  "name": "seculex-blog",
+  "version": "1.0.0",
+  "description": "SecuLex Blog built with Eleventy",
+  "scripts": {
+    "clean": "node scripts/clean-site.js",
+    "start": "npm run clean && concurrently \"eleventy --serve\" \"netlify-cms-proxy-server\"",
+    "build": "npm run clean && eleventy",
+    "delete-article": "node scripts/delete-article.js"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^2.0.1",
+    "concurrently": "^9.2.1",
+    "netlify-cms-proxy-server": "^1.3.24"
+  }
+}

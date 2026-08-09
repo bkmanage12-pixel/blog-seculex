@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Content Manager | SecuLex</title>
+    <!-- Icons & Admin Portal Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/admin/admin.css">
+  </head>
+  <body>
+
+    <!-- Floating Security Controls (Shown inside CMS when unlocked) -->
+    <div id="admin-security-bar" style="display: none;">
+      <span style="font-weight: 600; color: var(--admin-accent-gold);"><i class="fas fa-shield-halved"></i> SecuLex Admin</span>
+      <button id="bar-btn-sync" class="admin-bar-btn admin-bar-btn-sync" title="Sync site changes and prune deleted articles"><i class="fas fa-rotate"></i> Sync & Refresh Site</button>
+      <button id="bar-btn-change" class="admin-bar-btn" title="Change Admin Password"><i class="fas fa-key"></i> Change Password</button>
+      <button id="bar-btn-lock" class="admin-bar-btn" title="Lock Admin Portal"><i class="fas fa-lock"></i> Lock</button>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="admin-toast-container"></div>
+
+
+    <!-- Admin Security Lock Overlay -->
+    <div id="admin-security-overlay">
+      
+      <!-- 1. FIRST TIME SETUP VIEW (CREATE PASSWORD) -->
+      <div id="admin-view-setup" class="admin-auth-card admin-auth-view" style="display: none;">
+        <div class="admin-auth-header">
+          <div class="admin-auth-icon"><i class="fas fa-shield-heart"></i></div>
+          <h1 class="admin-auth-title">Initialize Admin Portal</h1>
+          <p class="admin-auth-subtitle">Create a master password for <strong>seculexpublications@gmail.com</strong></p>
+        </div>
+
+        <div id="setup-feedback" class="admin-feedback"></div>
+
+        <form id="setup-form">
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="setup-password">Create Admin Password</label>
+            <div class="admin-input-wrapper">
+              <input type="password" id="setup-password" class="admin-form-input" placeholder="At least 6 characters..." required autocomplete="new-password">
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="setup-confirm">Confirm Password</label>
+            <div class="admin-input-wrapper">
+              <input type="password" id="setup-confirm" class="admin-form-input" placeholder="Repeat your new password..." required autocomplete="new-password">
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+
+          <button type="submit" class="admin-btn-primary"><i class="fas fa-check-circle"></i> Save & Lock Admin Portal</button>
+        </form>
+      </div>
+
+      <!-- 2. RECOVERY KEY DISPLAY (SHOWN ONCE AFTER SETUP) -->
+      <div id="admin-view-recovery-display" class="admin-auth-card admin-auth-view" style="display: none;">
+        <div class="admin-auth-header">
+          <div class="admin-auth-icon" style="color: var(--admin-success); border-color: rgba(34, 197, 94, 0.4); background: rgba(34, 197, 94, 0.1);"><i class="fas fa-key"></i></div>
+          <h1 class="admin-auth-title">Save Recovery Key</h1>
+          <p class="admin-auth-subtitle">Save this emergency key in a safe place. You can also reset password via email sent to <strong>seculexpublications@gmail.com</strong>.</p>
+        </div>
+
+        <div class="admin-recovery-box">
+          <div id="generated-recovery-key" class="admin-recovery-key">XXXX-XXXX-XXXX-XXXX</div>
+        </div>
+
+        <button id="btn-finish-setup" class="admin-btn-primary"><i class="fas fa-arrow-right"></i> Continue to CMS Dashboard</button>
+      </div>
+
+      <!-- 3. LOGIN VIEW (UNLOCK ADMIN PORTAL) -->
+      <div id="admin-view-login" class="admin-auth-card admin-auth-view" style="display: none;">
+        <div class="admin-auth-header">
+          <div class="admin-auth-icon"><i class="fas fa-user-shield"></i></div>
+          <h1 class="admin-auth-title">Admin Portal Locked</h1>
+          <p class="admin-auth-subtitle">Enter admin password for <strong>seculexpublications@gmail.com</strong></p>
+        </div>
+
+        <div id="login-feedback" class="admin-feedback"></div>
+
+        <form id="login-form">
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="login-password">Admin Password</label>
+            <div class="admin-input-wrapper">
+              <input type="password" id="login-password" class="admin-form-input" placeholder="Enter password..." required autocomplete="current-password" autofocus>
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+
+          <button type="submit" class="admin-btn-primary"><i class="fas fa-unlock"></i> Unlock Dashboard</button>
+        </form>
+
+        <div class="admin-auth-footer">
+          <span id="btn-goto-reset" class="admin-link"><i class="fas fa-envelope"></i> Send Password Reset to Email</span>
+        </div>
+      </div>
+
+      <!-- 4. EMAIL RESET PASSWORD VIEW -->
+      <div id="admin-view-reset" class="admin-auth-card admin-auth-view" style="display: none;">
+        <div class="admin-auth-header">
+          <div class="admin-auth-icon"><i class="fas fa-paper-plane"></i></div>
+          <h1 class="admin-auth-title">Reset Admin Password</h1>
+          <p class="admin-auth-subtitle">Send a password reset code to your registered email.</p>
+        </div>
+
+        <div id="reset-feedback" class="admin-feedback"></div>
+
+        <form id="reset-form">
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="reset-email">Admin Email Address</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="email" id="reset-email" class="admin-form-input" value="seculexpublications@gmail.com" readonly style="background: rgba(255,255,255,0.05); color: var(--admin-accent-gold); font-weight: 600;">
+              <button type="button" id="btn-send-reset-code" class="admin-btn-secondary" style="white-space: nowrap; font-size: 0.8rem; padding: 0.75rem 0.9rem;"><i class="fas fa-paper-plane"></i> Send Email</button>
+            </div>
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="reset-key">Security Code / Recovery Key</label>
+            <input type="text" id="reset-key" class="admin-form-input" placeholder="Enter code received in email or Recovery Key..." required style="font-family: monospace; letter-spacing: 1px;">
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="reset-new-password">New Password</label>
+            <div class="admin-input-wrapper">
+              <input type="password" id="reset-new-password" class="admin-form-input" placeholder="New password..." required autocomplete="new-password">
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="reset-confirm-password">Confirm New Password</label>
+            <div class="admin-input-wrapper">
+              <input type="password" id="reset-confirm-password" class="admin-form-input" placeholder="Confirm new password..." required autocomplete="new-password">
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+
+          <button type="submit" class="admin-btn-primary"><i class="fas fa-rotate"></i> Reset & Save Password</button>
+        </form>
+
+        <div class="admin-auth-footer">
+          <span id="btn-back-to-login" class="admin-link"><i class="fas fa-arrow-left"></i> Back to Login</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Change Password Modal (Triggered inside CMS) -->
+    <div id="admin-change-modal" class="admin-modal-backdrop">
+      <div class="admin-auth-card">
+        <div class="admin-auth-header">
+          <div class="admin-auth-icon"><i class="fas fa-key"></i></div>
+          <h2 class="admin-auth-title">Change Admin Password</h2>
+          <p class="admin-auth-subtitle">Update security credentials for <strong>seculexpublications@gmail.com</strong></p>
+        </div>
+
+        <div id="change-feedback" class="admin-feedback"></div>
+
+        <form id="change-password-form">
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="change-current-password">Current Password</label>
+            <div class="admin-input-wrapper">
+              <input type="password" id="change-current-password" class="admin-form-input" placeholder="Current password..." required autocomplete="current-password">
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="change-new-password">New Password</label>
+            <div class="admin-input-wrapper">
+              <input type="password" id="change-new-password" class="admin-form-input" placeholder="New password..." required autocomplete="new-password">
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="change-confirm-password">Confirm New Password</label>
+            <div class="admin-input-wrapper">
+              <input type="password" id="change-confirm-password" class="admin-form-input" placeholder="Repeat new password..." required autocomplete="new-password">
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
+            <button type="button" id="modal-btn-close-change" class="admin-btn-secondary" style="flex: 1;">Cancel</button>
+            <button type="submit" class="admin-btn-primary" style="flex: 2;"><i class="fas fa-save"></i> Update Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Include the script that builds the page and powers the CMS -->
+    <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+
+    <!-- Admin Authentication Script -->
+    <script src="/admin/admin-auth.js"></script>
+
+    <script>
+      if (typeof CMS !== "undefined") {
+        CMS.registerPreviewStyle("/css/styles.css");
+
+        // Auto-sync & prune site output whenever an entry is published, updated, or deleted
+        if (CMS.registerEventListener) {
+          CMS.registerEventListener({
+            name: "postPublish",
+            handler: function() {
+              console.log("[CMS Event] Entry published/updated. Triggering site sync...");
+              if (typeof handleSyncSite === "function") handleSyncSite();
+            }
+          });
+          CMS.registerEventListener({
+            name: "postUnpublish",
+            handler: function() {
+              console.log("[CMS Event] Entry deleted/unpublished. Triggering site sync...");
+              if (typeof handleSyncSite === "function") handleSyncSite();
+            }
+          });
+        }
+      }
+    </script>
+    <!-- Include Netlify Identity for authentication -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  </body>
+</html>

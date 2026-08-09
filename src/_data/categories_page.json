@@ -1,0 +1,9 @@
+{
+  "page_title": "Browse by Category",
+  "page_description": "Explore our scholarly articles organized by legal and security themes",
+  "single_category_suffix": "on",
+  "article_singular": "article",
+  "article_plural": "articles",
+  "read_label": "Read",
+  "no_posts_label": "No articles in this category yet."
+}

@@ -1,0 +1,17 @@
+---
+permalink: /sitemap.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{% for item in collections.all %}
+{% if item.url and item.url != page.url and not item.url.startsWith('/admin/') %}
+  <url>
+    <loc>{{ item.url | absoluteUrl(site.site_url) }}</loc>
+{% if item.date %}
+    <lastmod>{{ item.date.toISOString().slice(0, 10) }}</lastmod>
+{% endif %}
+  </url>
+{% endif %}
+{% endfor %}
+</urlset>

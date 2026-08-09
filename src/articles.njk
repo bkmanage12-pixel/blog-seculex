@@ -1,0 +1,227 @@
+---
+layout: base.njk
+title: Scholarly Publications | SecuLex
+pagination:
+  data: collections.posts
+  size: 6
+  reverse: true
+  alias: posts
+permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}index.html"
+---
+
+<div class="page-header placeholder-bg fade-in" style="padding: 24px 5% 20px; text-align: center; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);">
+    <h1 style="color: var(--accent-gold); font-size: 2.2rem; margin-bottom: 0.75rem;">{{ articles_page.page_title }}</h1>
+    <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 1.5rem;">{{ articles_page.page_description }}</p>
+    
+    <!-- Search Bar Wrapper -->
+    <div class="search-wrapper" style="max-width: 550px; margin: 0 auto; position: relative;">
+        <i class="fas fa-search search-icon" style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; font-size: 0.95rem;"></i>
+        <input type="text" id="article-search" placeholder="{{ articles_page.search_placeholder | default('Search by title, topic or author...') }}" style="width: 100%; padding: 0.85rem 1.25rem 0.85rem 2.8rem; border-radius: 50px; border: 1px solid var(--border-color); background: rgba(8, 10, 17, 0.75); color: var(--text-primary); font-size: 0.95rem; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);">
+        <button id="search-clear" class="search-clear-btn" style="position: absolute; right: 1.25rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer; display: none; font-size: 1.1rem; line-height: 1; padding: 0.2rem; transition: color 0.2s;"><i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+<main style="padding-top: 3rem;">
+    <!-- Default Paginated View -->
+    <div id="default-articles-section">
+        <div class="blog-grid fade-in">
+            {% for post in posts %}
+            <article class="blog-card">
+                <div class="card-img">
+                    <a href="{{ post.url }}">
+                        <img src="{{ post.data.thumbnail }}" alt="{{ post.data.title }}" loading="lazy">
+                        <div class="card-overlay">
+                            <span>{{ articles_page.read_label | default("Read Analysis") }}</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="card-content">
+                    <div class="meta">
+                        <span class="category">{{ post.data.category }}</span>
+                        <span class="date">{{ post.data.date | readableDate }}</span>
+                    </div>
+                    <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+                    <p>{{ post.data.description | truncate(130) }}</p>
+                    <div class="card-footer">
+                        {% if post.data.read_time %}<span class="read-time"><i class="far fa-clock"></i> {{ post.data.read_time }} {{ articles_page.min_read_label | default("min read") }}</span>{% endif %}
+                        <a href="{{ post.url }}" class="read-more">{{ articles_page.read_label | default("Read Analysis") }} <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-container" style="margin-top: 4rem; display: flex; justify-content: center; gap: 1rem; align-items: center;">
+            {% if pagination.href.previous %}
+                <a href="{{ pagination.href.previous }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> {{ articles_page.previous_label | default("Previous") }}</a>
+            {% else %}
+                <span class="btn btn-disabled" style="opacity: 0.5; pointer-events: none;"><i class="fas fa-arrow-left"></i> {{ articles_page.previous_label | default("Previous") }}</span>
+            {% endif %}
+
+            <span class="pagination-status" style="color: var(--text-secondary); font-weight: 500;">
+                {{ articles_page.page_status_label | default("Page") }} {{ pagination.pageNumber + 1 }} {{ articles_page.page_status_connector | default("of") }} {{ pagination.pages.length }}
+            </span>
+
+            {% if pagination.href.next %}
+                <a href="{{ pagination.href.next }}" class="btn btn-outline">{{ articles_page.next_label | default("Next") }} <i class="fas fa-arrow-right"></i></a>
+            {% else %}
+                <span class="btn btn-disabled" style="opacity: 0.5; pointer-events: none;">{{ articles_page.next_label | default("Next") }} <i class="fas fa-arrow-right"></i></span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search Results Section (Initially Hidden) -->
+    <div id="search-results-section" style="display: none;">
+        <div class="blog-grid" id="search-results-grid"></div>
+        <div id="search-no-results" style="display: none; justify-content: center; align-items: center; padding: 4rem 0; width: 100%;">
+            <p class="no-posts-msg" style="margin: 0;"><i class="fas fa-search-minus"></i> {{ articles_page.no_results_label | default("No articles match your search criteria.") }}</p>
+        </div>
+    </div>
+</main>
+
+<script>
+    const readLabel = {{ articles_page.read_label | default("Read Analysis") | dump | safe }};
+    const minReadLabel = {{ articles_page.min_read_label | default("min read") | dump | safe }};
+    const byLabel = {{ articles_page.by_label | default("by") | dump | safe }};
+    const recommendedReadingLabel = {{ articles_page.recommended_reading_label | default("Recommended reading:") | dump | safe }};
+
+    const ALL_POSTS = [
+        {% for post in collections.posts %}
+        {
+            title: {{ post.data.title | dump | safe }},
+            url: {{ post.url | dump | safe }},
+            category: {{ post.data.category | dump | safe }},
+            author: {{ post.data.author | dump | safe }},
+            description: {{ post.data.description | dump | safe }},
+            thumbnail: {{ post.data.thumbnail | dump | safe }},
+            readTime: {{ post.data.read_time | default(5) | dump | safe }},
+            date: {{ post.data.date | readableDate | dump | safe }},
+            paywallEnabled: {{ post.data.paywall_enabled | default(false) | dump | safe }},
+            price: {{ post.data.price_override | default(paywall.price) | dump | safe }},
+            currency: {{ paywall.currency | dump | safe }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.getElementById("article-search");
+        const clearBtn = document.getElementById("search-clear");
+        const defaultSection = document.getElementById("default-articles-section");
+        const resultsSection = document.getElementById("search-results-section");
+        const resultsGrid = document.getElementById("search-results-grid");
+        const noResultsMsg = document.getElementById("search-no-results");
+
+        const getSuggestions = (currentPost, allPosts) => {
+            // Priority 1: Same category, different author
+            let candidates = allPosts.filter(p => p.url !== currentPost.url && p.category === currentPost.category && p.author.toLowerCase() !== currentPost.author.toLowerCase());
+            
+            // Priority 2: Same category, same author
+            if (candidates.length === 0) {
+                candidates = allPosts.filter(p => p.url !== currentPost.url && p.category === currentPost.category);
+            }
+            
+            // Priority 3: Different author, any category
+            if (candidates.length === 0) {
+                candidates = allPosts.filter(p => p.url !== currentPost.url && p.author.toLowerCase() !== currentPost.author.toLowerCase());
+            }
+
+            // Fallback: Any other article
+            if (candidates.length === 0) {
+                candidates = allPosts.filter(p => p.url !== currentPost.url);
+            }
+
+            return candidates.slice(0, 2);
+        };
+
+        const renderResults = (posts) => {
+            resultsGrid.innerHTML = "";
+            if (posts.length === 0) {
+                noResultsMsg.style.display = "flex";
+                return;
+            }
+            noResultsMsg.style.display = "none";
+
+            posts.forEach(post => {
+                const suggestions = getSuggestions(post, ALL_POSTS);
+                let suggestionsHtml = "";
+
+                if (suggestions.length > 0) {
+                    const suggestionItems = suggestions.map(suggest => `
+                        <li style="margin-bottom: 0.35rem; line-height: 1.35;">
+                            <a href="${suggest.url}" style="font-size: 0.85rem; color: var(--text-primary); display: inline-flex; align-items: center; gap: 0.4rem; transition: color 0.2s;">
+                                <i class="fas fa-arrow-circle-right" style="color: var(--accent-gold); font-size: 0.8rem;"></i>
+                                <span style="text-decoration: underline;">${suggest.title}</span> 
+                                <span style="color: var(--text-secondary); font-size: 0.78rem; font-style: italic;">${byLabel} ${suggest.author}</span>
+                            </a>
+                        </li>
+                    `).join("");
+
+                    suggestionsHtml = `
+                        <div class="search-suggestions" style="margin: 1rem 0; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.08); text-align: left;">
+                            <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); display: block; margin-bottom: 0.4rem; font-weight: 600;"><i class="fas fa-lightbulb"></i> ${recommendedReadingLabel}</span>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                                ${suggestionItems}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                const cardHtml = `
+                    <article class="blog-card fade-in visible" style="opacity: 1; transform: translateY(0);">
+                        <div class="card-img">
+                            <a href="${post.url}">
+                                <img src="${post.thumbnail}" alt="${post.title}" loading="lazy">
+                                <div class="card-overlay">
+                                    <span>${readLabel}</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="card-content">
+                            <div class="meta">
+                                <span class="category">${post.category}</span>
+                                <span class="date">${post.date}</span>
+                            </div>
+                            <h3><a href="${post.url}">${post.title}</a></h3>
+                            <p>${post.description.length > 130 ? post.description.substring(0, 130) + '...' : post.description}</p>
+                            ${suggestionsHtml}
+                            <div class="card-footer">
+                                <span class="read-time"><i class="far fa-clock"></i> ${post.readTime} ${minReadLabel}</span>
+                                <a href="${post.url}" class="read-more">${readLabel} <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </article>
+                `;
+                resultsGrid.insertAdjacentHTML("beforeend", cardHtml);
+            });
+        };
+
+        const performSearch = () => {
+            const query = searchInput.value.trim().toLowerCase();
+            if (query === "") {
+                clearBtn.style.display = "none";
+                defaultSection.style.display = "block";
+                resultsSection.style.display = "none";
+                return;
+            }
+
+            clearBtn.style.display = "block";
+            defaultSection.style.display = "none";
+            resultsSection.style.display = "block";
+
+            const filtered = ALL_POSTS.filter(post => 
+                post.title.toLowerCase().includes(query) || 
+                post.author.toLowerCase().includes(query) ||
+                post.category.toLowerCase().includes(query)
+            );
+            renderResults(filtered);
+        };
+
+        searchInput.addEventListener("input", performSearch);
+        clearBtn.addEventListener("click", () => {
+            searchInput.value = "";
+            performSearch();
+            searchInput.focus();
+        });
+    });
+</script>

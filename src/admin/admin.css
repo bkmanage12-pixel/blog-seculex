@@ -1,0 +1,371 @@
+/* SecuLex Admin Security Lock & Password Management Styles */
+
+:root {
+  --admin-bg: #080a11;
+  --admin-card-bg: rgba(18, 21, 32, 0.95);
+  --admin-accent-gold: #d4af37;
+  --admin-accent-gradient: linear-gradient(135deg, #d4af37 0%, #a28328 100%);
+  --admin-text-primary: #f8fafc;
+  --admin-text-secondary: #94a3b8;
+  --admin-border-color: rgba(255, 255, 255, 0.12);
+  --admin-danger: #ef4444;
+  --admin-success: #22c55e;
+}
+
+/* Security Overlay */
+#admin-security-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, #121626 0%, #05070d 100%);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--admin-text-primary);
+  backdrop-filter: blur(12px);
+  opacity: 1;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+#admin-security-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Auth Container Card */
+.admin-auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--admin-card-bg);
+  border: 1px solid var(--admin-border-color);
+  border-radius: 16px;
+  padding: 2.2rem 2rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-auth-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--admin-accent-gradient);
+}
+
+.admin-auth-header {
+  text-align: center;
+  margin-bottom: 1.8rem;
+}
+
+.admin-auth-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  color: var(--admin-accent-gold);
+  font-size: 1.5rem;
+}
+
+.admin-auth-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--admin-text-primary);
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.01em;
+}
+
+.admin-auth-subtitle {
+  font-size: 0.88rem;
+  color: var(--admin-text-secondary);
+  margin: 0;
+}
+
+/* Form Controls */
+.admin-form-group {
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.admin-form-label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text-secondary);
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.admin-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-form-input {
+  width: 100%;
+  padding: 0.8rem 2.6rem 0.8rem 1rem;
+  background: rgba(8, 10, 17, 0.8);
+  border: 1px solid var(--admin-border-color);
+  border-radius: 8px;
+  color: var(--admin-text-primary);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.admin-form-input:focus {
+  border-color: var(--admin-accent-gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+.admin-toggle-eye {
+  position: absolute;
+  right: 0.8rem;
+  background: none;
+  border: none;
+  color: var(--admin-text-secondary);
+  cursor: pointer;
+  padding: 0.3rem;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.admin-toggle-eye:hover {
+  color: var(--admin-accent-gold);
+}
+
+.admin-btn-primary {
+  width: 100%;
+  padding: 0.85rem;
+  background: var(--admin-accent-gradient);
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.admin-btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.admin-btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--admin-text-primary);
+  border: 1px solid var(--admin-border-color);
+  padding: 0.75rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.admin-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.admin-auth-footer {
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.admin-link {
+  color: var(--admin-accent-gold);
+  text-decoration: none;
+  cursor: pointer;
+  transition: text-decoration 0.2s;
+}
+
+.admin-link:hover {
+  text-decoration: underline;
+}
+
+/* Feedback messages */
+.admin-feedback {
+  padding: 0.75rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.84rem;
+  margin-bottom: 1rem;
+  display: none;
+}
+
+.admin-feedback.error {
+  display: block;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.admin-feedback.success {
+  display: block;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+/* Recovery Key Box */
+.admin-recovery-box {
+  background: rgba(8, 10, 17, 0.9);
+  border: 1px dashed var(--admin-accent-gold);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  margin: 1rem 0;
+  user-select: all;
+}
+
+.admin-recovery-key {
+  font-family: monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--admin-accent-gold);
+  letter-spacing: 0.1em;
+}
+
+/* Floating Admin Security Bar (Inside CMS) */
+#admin-security-bar {
+  position: fixed;
+  top: 10px;
+  right: 15px;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(18, 21, 32, 0.9);
+  border: 1px solid var(--admin-border-color);
+  backdrop-filter: blur(8px);
+  border-radius: 30px;
+  padding: 5px 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.8rem;
+  color: var(--admin-text-primary);
+}
+
+.admin-bar-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--admin-border-color);
+  color: var(--admin-text-primary);
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.admin-bar-btn:hover {
+  background: var(--admin-accent-gold);
+  color: #000;
+}
+
+.admin-bar-btn-sync {
+  background: rgba(212, 175, 55, 0.18);
+  color: var(--admin-accent-gold);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  font-weight: 600;
+}
+
+.admin-bar-btn-sync:hover {
+  background: var(--admin-accent-gold);
+  color: #000;
+}
+
+.admin-bar-btn-sync.spinning i {
+  animation: adminSpin 0.8s linear infinite;
+}
+
+@keyframes adminSpin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Modal Windows for Change / Reset Password inside CMS */
+.admin-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.admin-modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Toast Notifications */
+#admin-toast-container {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 9999999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.admin-toast {
+  background: rgba(18, 21, 32, 0.96);
+  border: 1px solid var(--admin-accent-gold);
+  color: var(--admin-text-primary);
+  padding: 12px 18px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(212, 175, 55, 0.2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(10px);
+  pointer-events: auto;
+  animation: adminToastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+@keyframes adminToastIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.admin-toast.hiding {
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+}

@@ -1,0 +1,18 @@
+{
+  "page_title": "All Publications",
+  "page_description": "Comprehensive repository of scholarly articles covering public law, cyber regulation, and state responsibility.",
+  "read_label": "Read Analysis",
+  "paid_article_label": "Paid Article",
+  "free_article_label": "Free Article",
+  "price_label": "Access",
+  "previous_label": "Previous",
+  "next_label": "Next",
+  "page_status_label": "Page",
+  "page_status_connector": "of",
+  "back_to_articles_label": "Back to Articles",
+  "search_placeholder": "Search by title, topic or author...",
+  "no_results_label": "No articles match your search criteria.",
+  "recommended_reading_label": "Recommended reading:",
+  "min_read_label": "min read",
+  "by_label": "by"
+}

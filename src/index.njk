@@ -1,0 +1,145 @@
+---
+layout: base.njk
+title: Home | SecuLex
+---
+
+<section class="hero">
+    <div class="hero-bg">
+        <img src="{{ home.hero_image }}" alt="Hero Background">
+    </div>
+
+    <!-- Animated ambient particles -->
+    <div class="hero-particles" aria-hidden="true">
+        <span class="hero-particle"></span>
+        <span class="hero-particle"></span>
+        <span class="hero-particle"></span>
+        <span class="hero-particle"></span>
+    </div>
+
+    <div class="hero-content fade-in">
+        <!-- Animated top tagline badge -->
+        <div class="hero-tagline-badge">
+            <span class="hero-badge-dot"></span>
+            {{ home.hero_tagline | default("Critical Legal Analysis") }}
+        </div>
+
+        <h1 class="hero-title-split">
+            {{ home.hero_title | safe }}<br>
+            <span class="text-gold hero-accent-line">{{ home.hero_title_accent }}</span>
+        </h1>
+
+        <p class="hero-description">{{ home.hero_description }}</p>
+
+        <div class="hero-actions">
+            <a href="#articles" class="btn btn-pill-solid hero-btn-primary">
+                <i class="fas fa-book-open"></i>
+                {{ home.hero_button_text | default("Explore Articles") }}
+                <i class="fas fa-chevron-right hero-btn-chevron"></i>
+            </a>
+            <a href="#about" class="btn hero-btn-ghost">
+                <i class="fas fa-info-circle"></i>
+                About the Journal
+            </a>
+        </div>
+
+        <!-- Credibility stats bar -->
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <span class="hero-stat-value">{{ collections.posts | length }}</span>
+                <span class="hero-stat-label">Publications</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+                <span class="hero-stat-value">⚖️</span>
+                <span class="hero-stat-label">Peer Reviewed</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+                <span class="hero-stat-value">🌐</span>
+                <span class="hero-stat-label">Open Access</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-scroll-indicator">
+        <span></span>
+    </div>
+</section>
+
+<!-- About the Journal Section -->
+<section id="about" class="about-section fade-in"{% if about.background_image %} style="--about-bg-image: url('{{ about.background_image }}');"{% endif %}>
+    <div class="about-inner">
+        <div class="about-badge">
+            {% if about.profile_photo %}
+            <img src="{{ about.profile_photo }}" alt="{{ about.title }}" class="about-profile-img">
+            {% else %}
+            <i class="fas fa-balance-scale"></i>
+            {% endif %}
+        </div>
+        <div class="about-text">
+            <span class="section-tag">{{ about.section_tag }}</span>
+            <h2>{{ about.title | replace("SecuLex", "Secu<span class='text-gold'>Lex</span>") | safe }}</h2>
+            <p class="about-lead">{{ about.lead_text }}</p>
+            <p>{{ about.body_text }}</p>
+            <div class="about-pillars">
+                {% for pillar in about.pillars %}
+                <div class="pillar">
+                    <span class="pillar-emoji">{{ pillar.emoji }}</span>
+                    <span>{{ pillar.text }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<main id="articles">
+    <div class="section-header fade-in">
+        <div class="section-header-badge">
+            <i class="fas fa-scroll"></i>
+            {{ home.publications_tag }}
+        </div>
+        <h2>{{ home.publications_title }}</h2>
+        <p>{{ home.publications_description }}</p>
+        <div class="section-header-line"></div>
+    </div>
+
+    <div class="blog-grid fade-in">
+        {% set recent_posts = collections.posts | reverse %}
+        {% for post in recent_posts %}
+        {% if loop.index0 < 3 %}
+        <article class="blog-card">
+            <div class="card-img">
+                <a href="{{ post.url }}">
+                    <img src="{{ post.data.thumbnail }}" alt="{{ post.data.title }}" loading="lazy">
+                    <div class="card-overlay">
+                        <span><i class="fas fa-book-open" style="margin-right:0.4rem;"></i>{{ articles_page.read_label | default("Read Analysis") }}</span>
+                    </div>
+                </a>
+                <span class="card-category-badge">{{ post.data.category }}</span>
+            </div>
+            <div class="card-content">
+                <div class="meta">
+                    <span class="date"><i class="far fa-calendar-alt" style="margin-right:0.3rem;opacity:0.6;"></i>{{ post.data.date | readableDate }}</span>
+                    {% if post.data.read_time %}<span class="read-time"><i class="far fa-clock"></i> {{ post.data.read_time }} {{ articles_page.min_read_label | default("min read") }}</span>{% endif %}
+                </div>
+                <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+                <p>{{ post.data.description | truncate(130) }}</p>
+                <div class="card-footer">
+                    <a href="{{ post.url }}" class="read-more">{{ articles_page.read_label | default("Read Analysis") }} <i class="fas fa-arrow-right"></i></a>
+                    {% if post.data.paywall_enabled %}<span class="card-paid-badge"><i class="fas fa-lock"></i> Premium</span>{% else %}<span class="card-free-badge"><i class="fas fa-unlock"></i> Open</span>{% endif %}
+                </div>
+            </div>
+        </article>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="view-all-container fade-in">
+        <a href="/articles/" class="btn-view-all">
+            <i class="fas fa-layer-group"></i>
+            {{ home.view_all_label | default("View All Publications") }}
+            <i class="fas fa-arrow-right btn-view-all-arrow"></i>
+        </a>
+    </div>
+</main>

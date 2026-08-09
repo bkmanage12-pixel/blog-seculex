@@ -1,0 +1,297 @@
+---
+layout: base.njk
+---
+
+{% set effective_attachment = protected_attachment | default(attachment) %}
+{% set article_paywall_on = paywall_enabled and paywall.enabled %}
+{% set protected_document_id = effective_attachment | fileName %}
+{% if price_override %}
+  {% set effective_price = price_override %}
+{% else %}
+  {% set effective_price = paywall.price %}
+{% endif %}
+
+<main style="padding-top: 0;">
+    <article>
+        <!-- Scholarly Post Hero Header with Featured Image Background -->
+        <header class="scholarly-post-hero" {% if thumbnail %} style="background-image: linear-gradient(to bottom, rgba(var(--hero-overlay-rgb), 0.25) 0%, var(--bg-primary) 100%), url('{{ thumbnail }}');" {% endif %}>
+            <div class="scholarly-hero-content">
+                <div class="scholarly-back-wrapper-hero">
+                    <a href="/articles/" class="back-link"><i class="fas fa-arrow-left"></i> {{ articles_page.back_to_articles_label | default("Back to Articles") }}</a>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
+                    <div class="scholarly-peer-badge" style="margin-bottom: 0; display: inline-flex; align-items: center;">
+                        {% if peer_reviewed != false %}
+                        <i class="fas fa-check-circle" style="color: #4ade80; margin-right: 0.4rem;"></i>
+                        <span style="color: #4ade80; font-weight: 700; margin-right: 0.4rem;">{{ post_settings.peer_reviewed_label | default("Peer reviewed") }}</span>
+                        <span style="color: rgba(74, 222, 128, 0.3); margin-right: 0.4rem;">|</span>
+                        {% endif %}
+                        <span style="color: var(--text-secondary); font-weight: 600;">{{ publication_type | default("Academic Journal") }}</span>
+                    </div>
+                    
+                    {% if category %}
+                    {% set cat_key = "" %}
+                    {% for key, cat in categories %}
+                        {% if cat.title == category %}
+                            {% set cat_key = key %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if cat_key %}
+                    <a href="/categories/{{ cat_key }}/" class="cat-badge cat-badge--{{ categories[cat_key].color_class }}" style="text-decoration: none;">{{ category }}</a>
+                    {% else %}
+                    <span class="cat-badge">{{ category }}</span>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                
+                <h1 class="scholarly-hero-title">{{ title }}</h1>
+                
+                <div class="scholarly-subtitle">
+                    <strong>{{ post_settings.by_label | default("By:") }}</strong> 
+                    {% if author %}
+                      {% set author_list = author.split(";") %}
+                      {% for auth in author_list %}
+                        <a href="#" class="scholarly-meta-link">{{ auth.trim() }}</a>{% if not loop.last %}, {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      <a href="#" class="scholarly-meta-link">Thierry, Murangira B.</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+        <div class="scholarly-layout-container fade-in">
+            <!-- Left Column: Academic Metadata & Document Outline -->
+            <div class="scholarly-main-column">
+                
+                <!-- Authors Section -->
+                <div class="scholarly-section">
+                    <h4 class="scholarly-section-title">{{ post_settings.authors_section_title | default("Authors") }}</h4>
+                    <div class="scholarly-authors-container">
+                        <div class="scholarly-author-avatar">
+                            {% if author_image %}
+                            <img src="{{ author_image }}" alt="{{ author }}">
+                            {% else %}
+                            <span>{{ author | truncate(1, true, "") }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="scholarly-author-links">
+                            {% if author %}
+                              {% set author_list = author.split(";") %}
+                              {% for auth in author_list %}
+                                <a href="#" class="scholarly-link">{{ auth.trim() }}</a>{% if not loop.last %}, {% endif %}
+                              {% endfor %}
+                            {% else %}
+                              <a href="#" class="scholarly-link">Thierry, Murangira B.</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Abstract Section -->
+                <div class="scholarly-section">
+                    <h4 class="scholarly-section-title">{{ post_settings.abstract_section_title | default("Abstract") }}</h4>
+                    <p class="scholarly-abstract-text{% if restrict_abstract_copy != false %} restrict-select{% endif %}"{% if restrict_abstract_copy != false %} oncopy="return false;" onselectstart="return false;"{% endif %}>{{ description | default("No abstract available for this article.") }}</p>
+                </div>
+                
+                <!-- Table of Contents Section -->
+                <div class="scholarly-section">
+                    <h4 class="scholarly-section-title">{{ post_settings.toc_section_title | default("Table of Contents") }}</h4>
+                    {% if toc and toc.length > 0 %}
+                    <ul class="scholarly-toc-list" id="toc-list">
+                        {% for section in toc %}
+                        <li class="scholarly-toc-item{% if article_paywall_on %} toc-locked{% endif %}"
+                            {% if article_paywall_on %}
+                            onclick="tocPaywallNotify()"
+                            role="button"
+                            tabindex="0"
+                            aria-label="Locked — {{ section.title }}"
+                            onkeydown="if(event.key==='Enter'||event.key===' ')tocPaywallNotify()"
+                            {% endif %}>
+                            <span class="scholarly-toc-text">
+                                <span class="scholarly-toc-bullet">
+                                    {% if article_paywall_on %}
+                                    <i class="fas fa-lock toc-lock-icon"></i>
+                                    {% else %}
+                                    <i class="fas fa-chevron-right"></i>
+                                    {% endif %}
+                                </span>
+                                {{ section.title }}
+                            </span>
+                            <span class="scholarly-toc-dots"></span>
+                            <span class="scholarly-toc-arrow">
+                                {% if article_paywall_on %}
+                                <i class="fas fa-lock" style="font-size:0.75rem; opacity:0.5;"></i>
+                                {% else %}
+                                <i class="fas fa-arrow-right"></i>
+                                {% endif %}
+                            </span>
+                        </li>
+                        {% if section.subsections and section.subsections.length > 0 %}
+                            {% for sub in section.subsections %}
+                            <li class="scholarly-toc-item scholarly-toc-item--indent{% if article_paywall_on %} toc-locked{% endif %}"
+                                {% if article_paywall_on %}
+                                onclick="tocPaywallNotify()"
+                                role="button"
+                                tabindex="0"
+                                aria-label="Locked — {% if sub.title %}{{ sub.title }}{% else %}{{ sub }}{% endif %}"
+                                onkeydown="if(event.key==='Enter'||event.key===' ')tocPaywallNotify()"
+                                {% endif %}>
+                                <span class="scholarly-toc-text">
+                                    <span class="scholarly-toc-bullet">
+                                        {% if article_paywall_on %}
+                                        <i class="fas fa-lock toc-lock-icon" style="font-size:0.55rem;"></i>
+                                        {% else %}
+                                        <i class="far fa-circle"></i>
+                                        {% endif %}
+                                    </span>
+                                    {% if sub.title %}{{ sub.title }}{% else %}{{ sub }}{% endif %}
+                                </span>
+                                <span class="scholarly-toc-dots"></span>
+                                <span class="scholarly-toc-arrow">
+                                    {% if article_paywall_on %}
+                                    <i class="fas fa-lock" style="font-size:0.7rem; opacity:0.45;"></i>
+                                    {% else %}
+                                    <i class="fas fa-chevron-right"></i>
+                                    {% endif %}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% if article_paywall_on %}
+                    <div class="toc-paywall-notice">
+                        <i class="fas fa-lock"></i>
+                        Full content access requires purchase — click any section to unlock
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <p class="no-toc" style="color: var(--text-secondary); font-style: italic; font-size: 0.95rem;">{{ post_settings.no_toc_label | default("No table of contents outlined.") }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Right Column: Sidebar Action (Looking for Full Text) -->
+            <div class="scholarly-sidebar-column">
+                <div class="scholarly-sidebar-card" id="attachment-block"
+                     {% if effective_attachment %}
+                     data-attachment="{% if article_paywall_on %}{% else %}{% if protected_document_id %}/.netlify/functions/download-document?file={{ protected_document_id }}{% else %}{{ effective_attachment }}{% endif %}{% endif %}"
+                     data-document-id="{{ protected_document_id }}"
+                     data-paywall-enabled="{{ article_paywall_on }}"
+                     data-paywall-price="{{ effective_price }}"
+                     data-paywall-currency="{{ paywall.currency }}"
+                     data-paywall-note="{{ paywall.payment_note }}"
+                     data-checkout-loading-message="{{ paywall.checkout_loading_message | default('Preparing secure PayPal checkout...') }}"
+                     data-checkout-error-message="{{ paywall.checkout_error_message | default('Could not start payment.') }}"
+                     data-verification-loading-message="{{ paywall.verification_loading_message | default('Verifying payment with PayPal...') }}"
+                     data-verification-error-message="{{ paywall.verification_error_message | default('Payment verification failed.') }}"
+                     data-verification-success-message="{{ paywall.verification_success_message | default('Payment verified. Your download is starting now.') }}"
+                     data-download-again-label="{{ paywall.download_again_label | default('Download Again') }}"
+                     {% endif %}>
+                     
+                     <h3 class="sidebar-card-title">{{ post_settings.sidebar_title | default("Looking for full text?") }}</h3>
+                     
+                     {% if effective_attachment %}
+                         {% if article_paywall_on %}
+                             <p class="sidebar-card-text">{{ post_settings.sidebar_paid_description | default("Access to this peer-reviewed publication requires purchase. Unlock to download the full PDF format document.") }}</p>
+                             
+                             <div class="sidebar-access-format">
+                                 <span><i class="far fa-file-pdf"></i> {{ post_settings.format_pdf_label | default("Format: PDF (Full Text)") }}</span>
+                                 <span><i class="fas fa-shield-alt"></i> {{ post_settings.secure_download_label | default("Secure Download") }}</span>
+                             </div>
+                             
+                             <button class="btn-access-action" id="download-trigger-btn" type="button" onclick="openPaywall()">
+                                 <i class="fas fa-lock"></i> {{ post_settings.unlock_button_label | default("Unlock Full PDF") }}
+                                 <span class="access-price-badge">{{ paywall.currency }} {{ effective_price }}</span>
+                             </button>
+                         {% else %}
+                             <p class="sidebar-card-text">{{ post_settings.sidebar_free_description | default("This is an open-access publication. You can download the full text PDF below.") }}</p>
+                             
+                             <div class="sidebar-access-format">
+                                 <span><i class="far fa-file-pdf"></i> {{ post_settings.format_pdf_label | default("Format: PDF (Full Text)") }}</span>
+                                 <span><i class="fas fa-check-circle" style="color:#4ade80;"></i> {{ post_settings.open_access_label | default("Open Access") }}</span>
+                             </div>
+                             
+                             <a href="{% if protected_document_id %}/.netlify/functions/download-document?file={{ protected_document_id }}{% else %}{{ effective_attachment }}{% endif %}" class="btn-access-action btn-access-action--free" download target="_blank">
+                                 <i class="fas fa-download"></i> {{ post_settings.download_button_label | default("Download PDF") }}
+                             </a>
+                         {% endif %}
+                     {% else %}
+                         <p class="sidebar-card-text">{{ post_settings.sidebar_no_attachment_description | default("This article does not have an attached PDF document.") }}</p>
+                     {% endif %}
+                     
+                     <div class="sidebar-card-footer">
+                         <i class="fas fa-balance-scale"></i> {{ post_settings.repository_footer_text | default("SecuLex Scholarly Repository") }}
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        {% if article_paywall_on %}
+        <!-- Paywall Modal -->
+        <div id="paywall-modal" class="paywall-overlay" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
+            <div class="paywall-card">
+                <button class="paywall-close" onclick="closePaywall()" aria-label="{{ paywall.close_label | default('Close') }}">&times;</button>
+
+                <div class="paywall-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+
+                <span class="paywall-badge">{{ paywall.modal_badge | default("Secured Document") }}</span>
+                <h2 id="paywall-title" class="paywall-title">{{ paywall.modal_title | default("Download This Article") }}</h2>
+
+                <div class="paywall-price-block">
+                    <span class="paywall-amount">{{ paywall.currency }} {{ effective_price }}</span>
+                    <span class="paywall-per">{{ paywall.per_document_label | default("per document") }}</span>
+                </div>
+
+                <p class="paywall-note">{{ paywall.payment_note }}</p>
+
+                <div class="paywall-actions">
+                    <button type="button" class="btn-pay btn-pay-paypal" id="btn-pay-now-paypal" onclick="startPaywallPayment('paypal')">
+                        <i class="fab fa-paypal"></i> {{ paywall.pay_now_paypal_label | default("Pay with PayPal / Cards") }}
+                    </button>
+                    <button type="button" class="btn-pay btn-pay-flutterwave" id="btn-pay-now-flutterwave" onclick="startPaywallPayment('flutterwave')">
+                        <i class="fas fa-mobile-alt"></i> {{ paywall.pay_now_flutterwave_label | default("Pay with Mobile Money / Cards") }}
+                    </button>
+                    <button class="btn-already-paid" id="btn-already-paid" type="button" disabled>
+                        <i class="fas fa-shield-alt"></i> {{ paywall.verified_required_label | default("Verified Payment Required") }}
+                    </button>
+                </div>
+
+                <p class="paywall-hint" id="paywall-hint">
+                    {{ paywall.redirect_hint | default("You will be redirected to PayPal. After payment is approved, SecuLex verifies the transaction before the document download is unlocked.") }}
+                </p>
+
+                <div class="paywall-secure-notice">
+                    <i class="fas fa-shield-alt"></i> {{ paywall.secure_notice | default("Secure payment via trusted provider") }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </article>
+
+    {% if site.disqus_shortname %}
+    <!-- Disqus Comments Section -->
+    <div id="disqus_thread" class="comments-section fade-in"></div>
+    <script>
+        var disqus_config = function () {
+            this.page.url = "{{ page.url | absoluteUrl(site.site_url) }}";
+            this.page.identifier = "{{ page.fileSlug }}";
+        };
+        (function() {
+        var d = document, s = d.createElement('script');
+        
+        s.src = 'https://{{ site.disqus_shortname }}.disqus.com/embed.js';
+        
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>{{ site.comments_noscript_text | default("Please enable JavaScript to view the comments powered by Disqus.") }}</noscript>
+    {% endif %}
+    
+</main>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% set pageTitle = title | default(site.site_title) | default("SecuLex") %}
+    {% set pageDescription = description | default(site.site_description) %}
+    {% set pageImage = thumbnail | default(home.hero_image) | absoluteUrl(site.site_url) %}
+    {% set canonicalUrl = page.url | absoluteUrl(site.site_url) %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle }}</title>
+    <meta name="description" content="{{ pageDescription }}">
+    <link rel="canonical" href="{{ canonicalUrl }}">
+    <meta property="og:type" content="{% if layout == 'post.njk' %}article{% else %}website{% endif %}">
+    <meta property="og:title" content="{{ pageTitle }}">
+    <meta property="og:description" content="{{ pageDescription }}">
+    <meta property="og:url" content="{{ canonicalUrl }}">
+    <meta property="og:image" content="{{ pageImage }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ pageTitle }}">
+    <meta name="twitter:description" content="{{ pageDescription }}">
+    <meta name="twitter:image" content="{{ pageImage }}">
+    <!-- Admin CMS Identity Widget -->
+    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+      :root {
+        --bg-primary: {{ theme.bg_primary | default("#080a11") }};
+        --bg-secondary: {{ theme.bg_secondary | default("#121520") }};
+        --bg-tertiary: {{ theme.bg_tertiary | default("#191e2b") }};
+        --text-primary: {{ theme.text_primary | default("#f8fafc") }};
+        --text-secondary: {{ theme.text_secondary | default("#94a3b8") }};
+        --heading-text-color: {{ theme.heading_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --body-text-color: {{ theme.body_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --logo-main-text-color: {{ theme.logo_main_text_color | default("#ffffff") }};
+        --logo-accent-text-color: {{ theme.logo_accent_text_color | default(theme.accent_color) | default("#d4af37") }};
+        --logo-tagline-text-color: {{ theme.logo_tagline_text_color | default(theme.text_secondary) | default("#94a3b8") }};
+        --logo-badge-text-color: {{ theme.logo_badge_text_color | default(theme.bg_primary) | default("#080a11") }};
+        --header-brand-title-color: {{ theme.header_brand_title_color | default(theme.accent_color) | default("#d4af37") }};
+        --header-brand-subtitle-color: {{ theme.header_brand_subtitle_color | default(theme.text_primary) | default("#f8fafc") }};
+        --header-tagline-text-color: {{ theme.header_tagline_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --nav-link-text-color: {{ theme.nav_link_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --nav-active-text-color: {{ theme.nav_active_text_color | default(theme.bg_primary) | default("#080a11") }};
+        --hero-title-text-color: {{ theme.hero_title_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --hero-accent-text-color: {{ theme.hero_accent_text_color | default(theme.accent_color) | default("#d4af37") }};
+        --hero-description-text-color: {{ theme.hero_description_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --button-text-color: {{ theme.button_text_color | default(theme.bg_primary) | default("#080a11") }};
+        --section-tag-text-color: {{ theme.section_tag_text_color | default(theme.accent_color) | default("#d4af37") }};
+        --section-title-text-color: {{ theme.section_title_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --section-description-text-color: {{ theme.section_description_text_color | default(theme.text_secondary) | default("#94a3b8") }};
+        --card-title-text-color: {{ theme.card_title_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --card-body-text-color: {{ theme.card_body_text_color | default(theme.text_secondary) | default("#94a3b8") }};
+        --card-meta-text-color: {{ theme.card_meta_text_color | default(theme.text_secondary) | default("#94a3b8") }};
+        --card-link-text-color: {{ theme.card_link_text_color | default(theme.accent_color) | default("#d4af37") }};
+        --post-title-text-color: {{ theme.post_title_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --post-body-text-color: {{ theme.post_body_text_color | default("#cad4e0") }};
+        --post-heading-text-color: {{ theme.post_heading_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --post-meta-text-color: {{ theme.post_meta_text_color | default(theme.text_secondary) | default("#94a3b8") }};
+        --footer-title-text-color: {{ theme.footer_title_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --footer-body-text-color: {{ theme.footer_body_text_color | default(theme.text_secondary) | default("#94a3b8") }};
+        --footer-link-text-color: {{ theme.footer_link_text_color | default(theme.text_secondary) | default("#94a3b8") }};
+        --footer-link-hover-text-color: {{ theme.footer_link_hover_text_color | default(theme.accent_color) | default("#d4af37") }};
+        --paywall-title-text-color: {{ theme.paywall_title_text_color | default(theme.text_primary) | default("#f8fafc") }};
+        --paywall-body-text-color: {{ theme.paywall_body_text_color | default(theme.text_secondary) | default("#94a3b8") }};
+        --accent-gold: {{ theme.accent_color | default("#d4af37") }};
+        --accent-blue: {{ theme.accent_blue | default("#3b82f6") }};
+        --border-color: {{ theme.border_color | default("rgba(255, 255, 255, 0.08)") }};
+        --glass-bg: {{ theme.glass_bg | default("rgba(18, 21, 32, 0.7)") }};
+        --glass-border: {{ theme.glass_border | default("rgba(255, 255, 255, 0.1)") }};
+        --hero-image-opacity: {{ theme.hero_image_opacity | default(0.85) }};
+        --hero-overlay-rgb: {{ theme.hero_overlay_color | default("#080d51") | hexToRgb }};
+        --hero-overlay-top-opacity: {{ theme.hero_overlay_top_opacity | default(0.22) }};
+        --hero-overlay-bottom-opacity: {{ theme.hero_overlay_bottom_opacity | default(0.62) }};
+        --hero-overlay-left-opacity: {{ theme.hero_overlay_left_opacity | default(0.58) }};
+        --hero-overlay-right-opacity: {{ theme.hero_overlay_right_opacity | default(0.12) }};
+        --accent-gradient: linear-gradient(135deg, {{ theme.accent_color | default("#d4af37") }} 0%, {{ theme.accent_gradient_end | default("#a28328") }} 100%);
+      }
+    </style>
+    <!-- Inline Screen Sizing Boot Script (Avoids layout shifts/flashes) -->
+    <script>
+      (function() {
+        try {
+          const autoAdjust = localStorage.getItem('display-auto-adjust') !== 'false';
+          const storedCat = localStorage.getItem('display-screen-cat');
+          const storedInches = localStorage.getItem('display-screen-inches');
+          const storedScale = localStorage.getItem('display-text-scale') || '1.0';
+
+          document.documentElement.style.setProperty('--text-scale', storedScale);
+
+          if (autoAdjust) {
+            const dpr = window.devicePixelRatio || 1;
+            const cssW = window.screen.width;
+            const cssH = window.screen.height;
+            const maxCss = Math.max(cssW, cssH);
+            const minCss = Math.min(cssW, cssH);
+
+            let estPPI = 96;
+            if (maxCss < 960 && minCss < 500) {
+              estPPI = dpr >= 3 ? 400 : 326;
+            } else if (maxCss <= 1366 && minCss <= 1024 && (navigator.maxTouchPoints > 1 || dpr > 1.5)) {
+              estPPI = 264;
+            } else if (dpr > 1.5) {
+              estPPI = maxCss < 2000 ? 220 : 160;
+            } else {
+              estPPI = 100;
+            }
+
+            const diagPx = Math.sqrt((cssW * dpr) * (cssW * dpr) + (cssH * dpr) * (cssH * dpr));
+            const inches = parseFloat((diagPx / estPPI).toFixed(1));
+            
+            let cat = 'laptop';
+            if (inches < 7.0) cat = 'phone';
+            else if (inches < 13.0) cat = 'tablet';
+            else if (inches < 18.0) cat = 'laptop';
+            else cat = 'desktop';
+
+            document.documentElement.setAttribute('data-screen-inches', inches);
+            document.documentElement.setAttribute('data-screen-inches-cat', cat);
+          } else if (storedCat && storedInches) {
+            document.documentElement.setAttribute('data-screen-inches', storedInches);
+            document.documentElement.setAttribute('data-screen-inches-cat', storedCat);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+    </script>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-top">
+            <a href="/" class="logo">
+                <!-- Shield Image -->
+                {% if site.logo_image %}
+                <img src="{{ site.logo_image }}" alt="{{ site.logo_alt | default(site.site_title) }}" class="logo-shield-img" width="65" height="65">
+                {% endif %}
+                <!-- Logo Text -->
+                <div class="logo-text-block">
+                    <span class="logo-name">{{ site.logo_text_main }}<span class="logo-name-accent">{{ site.logo_text_accent }}</span></span>
+                    <span class="logo-tagline">{{ site.logo_tagline }}</span>
+                    {% if site.logo_badge %}
+                    <span class="logo-badge">{{ site.logo_badge }}</span>
+                    {% endif %}
+                </div>
+            </a>
+            
+            {% if site.header_brand_subtitle or site.header_brand_title %}
+            <div class="header-divider"></div>
+            
+            <div class="header-brand-text">
+                {% if site.header_brand_title %}<span class="brand-title">{{ site.header_brand_title }}</span>{% endif %}
+                {% if site.header_brand_subtitle %}<span class="brand-subtitle">{{ site.header_brand_subtitle | safe }}</span>{% endif %}
+            </div>
+            {% endif %}
+            
+            {% if site.header_tagline %}
+            <div class="header-spacer"></div>
+            
+            <div class="header-divider"></div>
+            
+            <div class="header-tagline">
+                {{ site.header_tagline | safe }}
+            </div>
+            {% endif %}
+        </div>
+
+        <nav class="pill-nav">
+            <ul>
+                <li><a href="/" {% if page.url == '/' %}class="active"{% endif %} id="nav-home"><i class="fas fa-home"></i> {{ site.nav_home | default("Home") }}</a></li>
+                <li><a href="/#about" id="nav-about"><i class="far fa-user"></i> {{ site.nav_about | default("About") }}</a></li>
+                <li><a href="/articles/" {% if '/articles/' in page.url or '/posts/' in page.url %}class="active"{% endif %} id="nav-articles"><i class="far fa-file-alt"></i> {{ site.nav_articles | default("Articles") }}</a></li>
+                <li class="has-dropdown">
+                    <a href="/categories/" {% if '/categories/' in page.url %}class="active"{% endif %} id="nav-categories"><i class="fas fa-th-large"></i> {{ site.nav_categories | default("Categories") }} <i class="fas fa-chevron-down nav-chevron"></i></a>
+                    <ul class="nav-dropdown">
+                        {% for key, cat in categories %}
+                        <li>
+                            <a href="/categories/{{ key }}/">
+                                <span class="drop-icon drop-icon--{{ cat.color_class }}"><i class="fas {{ cat.icon }}"></i></span>
+                                {{ cat.title }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li><a href="/#contact" id="nav-contact"><i class="far fa-envelope"></i> {{ site.nav_contact | default("Contact") }}</a></li>
+            </ul>
+            <button class="mobile-toggle" type="button" aria-label="{{ site.mobile_menu_label | default('Open navigation') }}" aria-expanded="false"><i class="fas fa-bars"></i></button>
+        </nav>
+    </header>
+
+    {{ content | safe }}
+
+    <footer id="contact">
+        <!-- Gold accent top bar -->
+        <div class="footer-accent-bar"></div>
+
+        <div class="footer-inner">
+            <!-- Top section: brand + columns -->
+            <div class="footer-content">
+
+                <!-- Brand Column -->
+                <div class="footer-col footer-col--brand">
+                    <div class="footer-brand-logo">
+                        {% if site.logo_image %}
+                        <img src="{{ site.logo_image }}" alt="{{ site.logo_alt | default(site.site_title) }}" class="footer-logo-img">
+                        {% endif %}
+                        <div class="footer-brand-text">
+                            <span class="footer-logo-name">{{ site.logo_text_main }}<span class="footer-logo-accent">{{ site.logo_text_accent }}</span></span>
+                            <span class="footer-logo-tagline">{{ site.logo_tagline }}</span>
+                        </div>
+                    </div>
+                    <p class="footer-desc">{{ site.site_description }}</p>
+                </div>
+
+                <!-- Themes Column -->
+                <div class="footer-col">
+                    <h4 class="footer-col-heading"><i class="fas fa-layer-group footer-col-icon"></i>{{ site.footer_themes_title | default("Themes") }}</h4>
+                    <ul class="footer-nav-list">
+                        {% for theme in site.footer_themes %}
+                        <li><a href="{{ theme.url }}"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ theme.text }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Legal Column -->
+                <div class="footer-col">
+                    <h4 class="footer-col-heading"><i class="fas fa-balance-scale footer-col-icon"></i>{{ site.footer_legal_title | default("Legal") }}</h4>
+                    <ul class="footer-nav-list">
+                        <li><a href="/legal/academic-integrity/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_academic_integrity_label | default("Academic Integrity") }}</a></li>
+                        <li><a href="/legal/terms/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_terms_label | default("Terms of Use") }}</a></li>
+                        <li><a href="/legal/privacy/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_privacy_label | default("Privacy Policy") }}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="footer-col">
+                    <h4 class="footer-col-heading"><i class="fas fa-paper-plane footer-col-icon"></i>{{ site.footer_contact_title | default("Contact") }}</h4>
+                    <ul class="footer-contact-list">
+                        {% if site.email %}
+                        <li><a href="mailto:{{ site.email }}"><i class="fas fa-envelope"></i>{{ site.email }}</a></li>
+                        {% endif %}
+                        {% if site.whatsapp_url %}
+                        <li><a href="{{ site.whatsapp_url }}" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i>{{ site.footer_contact_whatsapp_label | default("WhatsApp") }}</a></li>
+                        {% endif %}
+                        {% if site.linkedin_url %}
+                        <li><a href="{{ site.linkedin_url }}" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i>{{ site.footer_contact_linkedin_label | default("LinkedIn") }}</a></li>
+                        {% endif %}
+                        {% if site.twitter_url %}
+                        <li><a href="{{ site.twitter_url }}" target="_blank" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i>{{ site.footer_contact_x_label | default("X (Twitter)") }}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Glowing Divider -->
+            <div class="footer-glow-divider"></div>
+
+            <!-- Bottom bar -->
+            <div class="footer-bottom">
+                <p class="footer-copyright"><i class="fas fa-shield-alt footer-bottom-icon"></i>&copy; {{ site.footer_copyright }}</p>
+                <div class="footer-bottom-right">
+                    <span class="footer-powered">{{ site.footer_powered_label | default("Scholarly Publishing Platform") }}</span>
+                    <a href="#" class="footer-back-top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Display Control Widget -->
+    <div id="display-widget-container">
+        <button id="display-widget-trigger" class="display-widget-trigger" aria-label="Toggle Display Controls" title="Display Sizing Controls">
+            <i class="fas fa-sliders-h"></i>
+        </button>
+        
+        <div id="display-widget-panel" class="display-widget-panel">
+            <div class="display-widget-header">
+                <span class="display-widget-title"><i class="fas fa-desktop"></i> Display Settings</span>
+                <button id="display-widget-close" class="display-widget-close" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="display-widget-section">
+                <div class="display-widget-switch-row">
+                    <span style="font-size: 0.85rem; font-weight: 500;">Auto-Adjust Display</span>
+                    <label class="switch-container">
+                        <input type="checkbox" id="display-widget-auto-toggle" checked>
+                        <span class="slider-toggle"></span>
+                    </label>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.4rem; line-height: 1.3;">
+                    Optimizes layouts based on estimated physical screen size.
+                </div>
+            </div>
+            
+            <div class="display-widget-section">
+                <div class="display-widget-label">
+                    <span>Display Category</span>
+                    <span id="display-widget-inches-val" class="display-widget-value">15.6"</span>
+                </div>
+                <div id="display-widget-tabs" class="widget-tabs disabled">
+                    <button class="widget-tab" data-cat="phone" data-val="5.5" title="Simulate 5.5 inch Phone">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Phone</span>
+                    </button>
+                    <button class="widget-tab" data-cat="tablet" data-val="10.2" title="Simulate 10.2 inch Tablet">
+                        <i class="fas fa-tablet-alt"></i>
+                        <span>Tablet</span>
+                    </button>
+                    <button class="widget-tab" data-cat="laptop" data-val="14.0" title="Simulate 14 inch Laptop">
+                        <i class="fas fa-laptop"></i>
+                        <span>Laptop</span>
+                    </button>
+                    <button class="widget-tab" data-cat="desktop" data-val="24.0" title="Simulate 24 inch Desktop">
+                        <i class="fas fa-tv"></i>
+                        <span>Desktop</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="display-widget-section">
+                <div class="display-widget-label">
+                    <span>Text Sizing Scale</span>
+                    <span id="display-widget-zoom-val" class="display-widget-value">100%</span>
+                </div>
+                <div class="widget-slider-row">
+                    <input type="range" id="display-widget-zoom-slider" class="widget-slider" min="80" max="120" step="5" value="100">
+                </div>
+            </div>
+            
+            <div class="widget-stats">
+                <div class="widget-stat-item">
+                    <span>Resolution:</span>
+                    <span id="stat-resolution">-</span>
+                </div>
+                <div class="widget-stat-item">
+                    <span>Device Pixel Ratio:</span>
+                    <span id="stat-dpr">-</span>
+                </div>
+                <div class="widget-stat-item">
+                    <span>Estimated PPI:</span>
+                    <span id="stat-ppi">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="/js/script.js"></script>
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", user => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+    </script>
+</body>
+</html>
