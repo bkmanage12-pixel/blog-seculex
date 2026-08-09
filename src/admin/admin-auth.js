@@ -435,21 +435,30 @@
         window.netlifyIdentity.open("recovery");
       }
 
-      await fetch("/.netlify/functions/request-admin-reset", {
+      const response = await fetch("/.netlify/functions/request-admin-reset", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ action: "request", email: ADMIN_EMAIL })
       });
+      const data = await response.json();
 
-      showFeedback(
-        "reset-feedback",
-        `✅ Reset instructions sent to ${ADMIN_EMAIL}. Check email or enter your saved Recovery Key below.`,
-        "success"
-      );
+      if (data && data.message) {
+        showFeedback(
+          "reset-feedback",
+          data.message,
+          data.emailDispatched ? "success" : "error"
+        );
+      } else {
+        showFeedback(
+          "reset-feedback",
+          `Reset request sent for ${ADMIN_EMAIL}. Check email or enter Recovery Key below.`,
+          "success"
+        );
+      }
     } catch (err) {
       showFeedback(
         "reset-feedback",
-        `Reset request sent to ${ADMIN_EMAIL}. Check email or enter Recovery Key.`,
+        `Reset request sent to ${ADMIN_EMAIL}. Check email or enter Recovery Key below.`,
         "success"
       );
     } finally {
