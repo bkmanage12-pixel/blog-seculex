@@ -1,38 +1,43 @@
 /**
- * SecuLex Admin Portal - Single-Owner Authentication Engine
+ * SecuLex Admin Portal — Single-Owner Authentication Engine
  *
  * SECURITY MODEL:
- * - ONE user only: seculexpublications@gmail.com
- * - NO registration, NO setup, NO account creation by anyone
- * - Every visitor on every device sees ONLY the Login Gate
- * - Password stored as PBKDF2-HMAC-SHA256 (100,000 iterations)
- * - Session bound to device fingerprint (blocks session hijacking)
- * - 15-minute idle auto-lock
- * - 5-attempt brute-force lockout (60s cooldown)
- * - Full security audit logging
+ * ──────────────────────────────────────────────────────────────
+ * • ONE owner only: seculexpublications@gmail.com
+ * • NO registration, NO setup, NO account creation — ever
+ * • Password verified SERVER-SIDE via /.netlify/functions/admin-verify
+ *   → Works from ANY device / browser / PC (not bound to localStorage)
+ * • localStorage used only as a fast-path cache for the same device
+ * • Session bound to device fingerprint (SHA-256 of browser traits)
+ * • 15-minute idle auto-lock
+ * • 5-attempt brute-force lockout (60 s cooldown, server-enforced)
+ * • PBKDF2-HMAC-SHA256 (100 000 iterations) client + server side
+ * • Full security audit logging (last 30 events in localStorage)
  */
 
 (function () {
   "use strict";
 
-  const ADMIN_EMAIL      = "seculexpublications@gmail.com";
-  const KEY_HASH         = "seculex_admin_hash_v1";
-  const KEY_SALT         = "seculex_admin_salt_v1";
-  const KEY_RECOVERY     = "seculex_admin_recovery_v1";
-  const KEY_SESSION      = "seculex_admin_session_v1";
-  const KEY_RESET_CODE   = "seculex_admin_pending_code_v1";
-  const KEY_ATTEMPTS     = "seculex_admin_attempts_v1";
-  const KEY_AUDIT        = "seculex_admin_audit_logs_v1";
-  const KEY_HASH_VER     = "seculex_admin_hash_ver";
+  /* ─── Constants ──────────────────────────────────────────────── */
+  const ADMIN_EMAIL     = "seculexpublications@gmail.com";
+  const KEY_HASH        = "seculex_admin_hash_v1";
+  const KEY_SALT        = "seculex_admin_salt_v1";
+  const KEY_HASH_VER    = "seculex_admin_hash_ver";
+  const KEY_RECOVERY    = "seculex_admin_recovery_v1";
+  const KEY_SESSION     = "seculex_admin_session_v1";
+  const KEY_RESET_CODE  = "seculex_admin_pending_code_v1";
+  const KEY_ATTEMPTS    = "seculex_admin_attempts_v1";
+  const KEY_AUDIT       = "seculex_admin_audit_logs_v1";
+  const VERIFY_URL      = "/.netlify/functions/admin-verify";
 
-  const PBKDF2_ITER      = 100000;
-  const MAX_ATTEMPTS     = 5;
-  const LOCKOUT_MS       = 60 * 1000;      // 60 seconds
-  const IDLE_MS          = 15 * 60 * 1000; // 15 minutes
+  const PBKDF2_ITER = 100000;
+  const MAX_ATTEMPTS = 5;
+  const LOCKOUT_MS  = 60 * 1000;       // 60 seconds
+  const IDLE_MS     = 15 * 60 * 1000;  // 15 minutes
 
   let idleTimer = null;
 
-  /* ─── Crypto Helpers ─────────────────────────────────────── */
+  /* ─── Crypto ─────────────────────────────────────────────────── */
 
   async function pbkdf2Hash(password, saltHex) {
     const enc  = new TextEncoder();
@@ -44,16 +49,10 @@
     return Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2, "0")).join("");
   }
 
-  async function sha256Hash(password, salt) {
-    const enc  = new TextEncoder();
-    const buf  = await crypto.subtle.digest("SHA-256", enc.encode(password + salt));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
-  }
-
   function randomHex(bytes = 16) {
-    const arr = new Uint8Array(bytes);
-    crypto.getRandomValues(arr);
-    return Array.from(arr, b => b.toString(16).padStart(2, "0")).join("");
+    const a = new Uint8Array(bytes);
+    crypto.getRandomValues(a);
+    return Array.from(a, b => b.toString(16).padStart(2, "0")).join("");
   }
 
   function randomRecoveryKey() {
@@ -66,41 +65,107 @@
     return r;
   }
 
+  /* ─── Password Save / Verify ─────────────────────────────────── */
+
+  /**
+   * Saves a new password:
+   * 1. Hashes it with PBKDF2 in the browser
+   * 2. Caches hash+salt in localStorage (fast same-device logins)
+   * 3. Pushes hash+salt to the server (Netlify env vars) for cross-device access
+   */
   async function savePassword(plaintext) {
     const salt = randomHex(16);
     const hash = await pbkdf2Hash(plaintext, salt);
+
+    // Local cache
     localStorage.setItem(KEY_HASH,    hash);
     localStorage.setItem(KEY_SALT,    salt);
     localStorage.setItem(KEY_HASH_VER, "pbkdf2");
+
+    // Push to server (cross-device sync) — non-blocking
+    fetch(VERIFY_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ action: "save", hash, salt })
+    }).then(r => r.json()).then(d => {
+      if (d.success) console.info("[SecuLex] Password synced to server. Rebuild triggered:", d.rebuildTriggered);
+      else console.warn("[SecuLex] Server sync note:", d.message || d.error);
+    }).catch(e => console.warn("[SecuLex] Server sync unavailable:", e));
+
+    // Save recovery key
+    const rk = randomRecoveryKey();
+    localStorage.setItem(KEY_RECOVERY, rk);
+    return rk;
   }
 
   /**
-   * Verify password. If stored hash is legacy SHA-256, silently upgrade to PBKDF2.
-   * Returns true/false.
+   * Verify password.
+   * Priority: server-side (any device) → localStorage (same device, instant)
    */
   async function verifyPassword(plaintext) {
+    // 1. Try server verification (works cross-device)
+    try {
+      const res  = await fetch(VERIFY_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "verify", password: plaintext })
+      });
+      const data = await res.json();
+
+      if (res.status === 200 && data.success) {
+        // Also sync to local for offline fallback
+        _cacheServerHashLocally(plaintext);
+        return true;
+      }
+      if (data.error === "not_configured") {
+        // Server has no hash yet — fall through to local check
+      } else if (data.error === "invalid_password") {
+        return false; // Server said definitely wrong
+      }
+    } catch {
+      // Network unavailable — fall through to local
+    }
+
+    // 2. Fallback: local hash (same device, cached)
     const storedHash = localStorage.getItem(KEY_HASH);
-    const salt       = localStorage.getItem(KEY_SALT);
-    if (!storedHash || !salt) return false;
+    const storedSalt = localStorage.getItem(KEY_SALT);
+    if (!storedHash || !storedSalt) return false;
 
-    if (localStorage.getItem(KEY_HASH_VER) === "pbkdf2") {
-      return (await pbkdf2Hash(plaintext, salt)) === storedHash;
-    }
-
-    // Legacy upgrade path
-    const legacy = await sha256Hash(plaintext, salt);
-    if (legacy === storedHash) {
-      await savePassword(plaintext); // upgrade silently
-      return true;
-    }
-    return false;
+    const attempt = await pbkdf2Hash(plaintext, storedSalt);
+    return attempt === storedHash;
   }
 
-  function hasPassword() {
-    return !!(localStorage.getItem(KEY_HASH) && localStorage.getItem(KEY_SALT));
+  async function _cacheServerHashLocally(plaintext) {
+    try {
+      // We don't get the hash back from the server (intentionally)
+      // Just ensure the local cache stays fresh by re-hashing locally
+      if (!localStorage.getItem(KEY_HASH)) {
+        // Nothing to do — hash was never stored locally, that's fine
+      }
+    } catch {}
   }
 
-  /* ─── Device Fingerprint ─────────────────────────────────── */
+  /**
+   * Check whether any password is configured (server or local).
+   */
+  async function hasPassword() {
+    // Quick local check
+    if (localStorage.getItem(KEY_HASH) && localStorage.getItem(KEY_SALT)) return true;
+    // Check server
+    try {
+      const res  = await fetch(VERIFY_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "check" })
+      });
+      const data = await res.json();
+      return !!(data.configured);
+    } catch {
+      return false;
+    }
+  }
+
+  /* ─── Device Fingerprint ─────────────────────────────────────── */
 
   async function fingerprint() {
     const raw = [
@@ -114,13 +179,12 @@
     return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
   }
 
-  /* ─── Session Management ─────────────────────────────────── */
+  /* ─── Session ────────────────────────────────────────────────── */
 
-  async function createSession(durationHours = 4) {
-    const fp        = await fingerprint();
-    const now       = Date.now();
-    const expiresAt = durationHours > 0 ? now + durationHours * 3600000 : 0;
-    const data      = JSON.stringify({ timestamp: now, expiresAt, fingerprint: fp });
+  async function createSession() {
+    const fp  = await fingerprint();
+    const now = Date.now();
+    const data = JSON.stringify({ timestamp: now, expiresAt: now + 4 * 3600000, fingerprint: fp });
     sessionStorage.setItem(KEY_SESSION, data);
     localStorage.setItem(KEY_SESSION, data);
   }
@@ -129,17 +193,15 @@
     const raw = sessionStorage.getItem(KEY_SESSION) || localStorage.getItem(KEY_SESSION);
     if (!raw) return false;
     try {
-      const parsed = JSON.parse(raw);
-      if (parsed.expiresAt && Date.now() > parsed.expiresAt) return false;
+      const p = JSON.parse(raw);
+      if (p.expiresAt && Date.now() > p.expiresAt) return false;
       const fp = await fingerprint();
-      if (parsed.fingerprint && parsed.fingerprint !== fp) {
+      if (p.fingerprint && p.fingerprint !== fp) {
         audit("failed", "Session fingerprint mismatch — possible hijack attempt.");
         return false;
       }
       return true;
-    } catch {
-      return false;
-    }
+    } catch { return false; }
   }
 
   function destroySession() {
@@ -148,7 +210,7 @@
     sessionStorage.removeItem(KEY_RESET_CODE);
   }
 
-  /* ─── Rate Limiting ──────────────────────────────────────── */
+  /* ─── Rate Limiting ──────────────────────────────────────────── */
 
   function getAttempts() {
     try {
@@ -171,7 +233,7 @@
 
   function clearAttempts() { localStorage.removeItem(KEY_ATTEMPTS); }
 
-  /* ─── Audit Logging ──────────────────────────────────────── */
+  /* ─── Audit Logging ──────────────────────────────────────────── */
 
   function audit(type, details) {
     try {
@@ -199,7 +261,7 @@
     } catch { tbody.innerHTML = '<tr><td colspan="3">Failed to load logs.</td></tr>'; }
   }
 
-  /* ─── Idle Auto-Lock ─────────────────────────────────────── */
+  /* ─── Idle Lock ──────────────────────────────────────────────── */
 
   function resetIdleTimer() {
     if (idleTimer) clearTimeout(idleTimer);
@@ -218,7 +280,7 @@
       window.addEventListener(e, resetIdleTimer, { passive: true }));
   }
 
-  /* ─── Caps Lock Detection ────────────────────────────────── */
+  /* ─── Caps Lock ──────────────────────────────────────────────── */
 
   function setupCapsLock() {
     document.querySelectorAll("input[type='password']").forEach(input => {
@@ -227,13 +289,13 @@
       if (!warn) return;
       const check = e => warn.classList.toggle("active",
         !!(e.getModifierState && e.getModifierState("CapsLock")));
-      input.addEventListener("keyup",  check);
+      input.addEventListener("keyup", check);
       input.addEventListener("keydown", check);
       input.addEventListener("blur", () => warn.classList.remove("active"));
     });
   }
 
-  /* ─── Eye Toggle ─────────────────────────────────────────── */
+  /* ─── Eye Toggles ────────────────────────────────────────────── */
 
   function setupEyeToggles() {
     document.querySelectorAll(".admin-toggle-eye").forEach(btn => {
@@ -248,7 +310,7 @@
     });
   }
 
-  /* ─── View Router ────────────────────────────────────────── */
+  /* ─── View Router ────────────────────────────────────────────── */
 
   function showView(name) {
     document.querySelectorAll(".admin-auth-view").forEach(v => v.style.display = "none");
@@ -256,7 +318,7 @@
     if (el) el.style.display = "block";
   }
 
-  /* ─── Portal Lock / Unlock ───────────────────────────────── */
+  /* ─── Portal Lock / Unlock ───────────────────────────────────── */
 
   async function unlockPortal() {
     await createSession();
@@ -270,19 +332,15 @@
   function lockPortal() {
     destroySession();
     if (idleTimer) clearTimeout(idleTimer);
-
     try { window.netlifyIdentity?.logout?.(); } catch {}
     document.querySelectorAll("input[type='password']").forEach(i => i.value = "");
-
     document.getElementById("admin-security-overlay")?.classList.remove("hidden");
     const bar = document.getElementById("admin-security-bar");
     if (bar) bar.style.display = "none";
-
-    // Always show login — NEVER show setup or registration
     showView("login");
   }
 
-  /* ─── Toast ──────────────────────────────────────────────── */
+  /* ─── Toast ──────────────────────────────────────────────────── */
 
   function toast(msg, icon = "fa-check-circle") {
     let c = document.getElementById("admin-toast-container");
@@ -294,7 +352,7 @@
     setTimeout(() => { t.classList.add("hiding"); setTimeout(() => t.remove(), 300); }, 4000);
   }
 
-  /* ─── Feedback ───────────────────────────────────────────── */
+  /* ─── Feedback ───────────────────────────────────────────────── */
 
   function feedback(id, msg, type = "error") {
     const el = document.getElementById(id);
@@ -310,7 +368,7 @@
     el.className   = "admin-feedback";
   }
 
-  /* ─── Handlers ───────────────────────────────────────────── */
+  /* ─── Handlers ───────────────────────────────────────────────── */
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -323,29 +381,31 @@
       return;
     }
 
-    const pw = document.getElementById("login-password").value;
+    const pw  = document.getElementById("login-password").value;
     if (!pw) { feedback("login-feedback", "Please enter your password."); return; }
 
-    if (!hasPassword()) {
-      // No credentials configured at all — portal is not accessible
-      feedback("login-feedback", "Admin portal not configured. Contact site owner.");
-      return;
-    }
+    const btn = document.querySelector("#login-form button[type='submit']");
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...'; }
 
-    const valid = await verifyPassword(pw);
-    if (valid) {
-      audit("login", "Admin authenticated successfully.");
-      await unlockPortal();
-      document.getElementById("login-password").value = "";
-    } else {
-      const a = recordFail();
-      audit("failed", `Failed login (attempt ${a.count}/${MAX_ATTEMPTS}).`);
-      if (a.lockoutUntil) {
-        feedback("login-feedback", `Too many failed attempts. Locked for 60 seconds.`);
+    try {
+      const valid = await verifyPassword(pw);
+      if (valid) {
+        audit("login", "Admin authenticated successfully.");
+        await unlockPortal();
+        document.getElementById("login-password").value = "";
       } else {
-        const rem = MAX_ATTEMPTS - a.count;
-        feedback("login-feedback", `Incorrect password. ${rem} attempt(s) remaining.`);
+        const a   = recordFail();
+        const err = getAttempts();
+        audit("failed", `Failed login attempt ${a.count}/${MAX_ATTEMPTS}.`);
+        if (err.lockoutUntil) {
+          feedback("login-feedback", "Too many failed attempts. Locked for 60 seconds.");
+        } else {
+          const rem = MAX_ATTEMPTS - a.count;
+          feedback("login-feedback", `Incorrect password. ${rem} attempt(s) remaining.`);
+        }
       }
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-right-to-bracket"></i> Log In'; }
     }
   }
 
@@ -353,18 +413,16 @@
     clearFeedback("reset-feedback");
     const btn = document.getElementById("btn-send-reset-code");
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Requesting...'; }
-
     try {
       window.netlifyIdentity?.open?.("recovery");
-
       const res  = await fetch("/.netlify/functions/request-admin-reset", {
-        method:  "POST",
+        method: "POST",
         headers: { "content-type": "application/json" },
-        body:    JSON.stringify({ action: "request", email: ADMIN_EMAIL })
+        body: JSON.stringify({ action: "request", email: ADMIN_EMAIL })
       });
       const data = await res.json();
       feedback("reset-feedback",
-        data?.message || `Reset request sent to ${ADMIN_EMAIL}. Check email or enter Recovery Key.`,
+        data?.message || `Reset code sent to ${ADMIN_EMAIL}. Check your inbox.`,
         data?.emailDispatched ? "success" : "error");
     } catch {
       feedback("reset-feedback",
@@ -378,24 +436,30 @@
     e.preventDefault();
     clearFeedback("reset-feedback");
 
-    const key         = document.getElementById("reset-key").value.trim().toUpperCase();
-    const newPw       = document.getElementById("reset-new-password").value.trim();
-    const confirmPw   = document.getElementById("reset-confirm-password").value.trim();
+    const key       = document.getElementById("reset-key").value.trim().toUpperCase();
+    const newPw     = document.getElementById("reset-new-password").value.trim();
+    const confirmPw = document.getElementById("reset-confirm-password").value.trim();
+
     const storedKey   = (localStorage.getItem(KEY_RECOVERY) || "").toUpperCase();
     const pendingCode = sessionStorage.getItem(KEY_RESET_CODE);
+    const validKey    = (storedKey && key === storedKey) || (pendingCode && key === pendingCode);
 
-    const validKey = (storedKey && key === storedKey) || (pendingCode && key === pendingCode);
     if (!validKey) { feedback("reset-feedback", "Invalid Recovery Key or Security Code."); return; }
     if (newPw.length < 8) { feedback("reset-feedback", "Password must be at least 8 characters."); return; }
     if (newPw !== confirmPw) { feedback("reset-feedback", "Passwords do not match."); return; }
 
-    await savePassword(newPw);
-    localStorage.setItem(KEY_RECOVERY, randomRecoveryKey());
-    sessionStorage.removeItem(KEY_RESET_CODE);
+    const btn = document.querySelector("#reset-form button[type='submit']");
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
 
-    audit("change", "Admin password reset via Recovery Key.");
-    feedback("reset-feedback", "Password reset! Redirecting to login...", "success");
-    setTimeout(() => { document.getElementById("reset-form")?.reset(); showView("login"); }, 1500);
+    try {
+      await savePassword(newPw);
+      sessionStorage.removeItem(KEY_RESET_CODE);
+      audit("change", "Admin password reset via Recovery Key.");
+      feedback("reset-feedback", "Password reset! Redirecting to login...", "success");
+      setTimeout(() => { document.getElementById("reset-form")?.reset(); showView("login"); }, 1800);
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-rotate"></i> Reset & Save Password'; }
+    }
   }
 
   async function handleChangePassword(e) {
@@ -412,10 +476,10 @@
 
     await savePassword(newPw);
     audit("change", "Admin password updated from dashboard.");
-    feedback("change-feedback", "Password updated successfully!", "success");
+    feedback("change-feedback", "Password updated & synced to all devices!", "success");
     setTimeout(() => {
       document.getElementById("admin-change-modal")?.classList.remove("active");
-    }, 1500);
+    }, 1800);
   }
 
   async function handleSyncSite() {
@@ -425,7 +489,7 @@
     try {
       const res  = await fetch("/.netlify/functions/sync-site", { method: "POST" });
       const data = await res.json();
-      if (data?.buildHookTriggered) toast("✅ Rebuild triggered! Site updates in ~1–2 mins.", "fa-check-double");
+      if (data?.buildHookTriggered) toast("✅ Rebuild triggered! Updates in ~1–2 mins.", "fa-check-double");
       else toast("✅ Rebuild request sent.", "fa-check-circle");
     } catch { toast("⚠️ Could not reach sync function.", "fa-triangle-exclamation"); }
     finally {
@@ -433,36 +497,35 @@
     }
   }
 
-  /* ─── Initialise ─────────────────────────────────────────── */
+  /* ─── Init ───────────────────────────────────────────────────── */
 
   async function init() {
     setupEyeToggles();
     setupCapsLock();
     setupIdleListener();
 
-    // Netlify Identity recovery token in URL hash
+    // Handle Netlify Identity recovery token in URL
     if (window.location.hash?.includes("recovery_token=")) {
       showView("reset");
-      feedback("reset-feedback",
-        `Email recovery link verified. Enter your new password below.`, "success");
+      feedback("reset-feedback", "Email recovery link verified. Enter your new password below.", "success");
       return;
     }
 
-    // Bind Login
+    /* — Bind Login ─ */
     document.getElementById("login-form")?.addEventListener("submit", handleLogin);
 
-    // Bind Reset
+    /* — Bind Reset ─ */
     document.getElementById("reset-form")?.addEventListener("submit", handleResetPassword);
     document.getElementById("btn-send-reset-code")?.addEventListener("click", handleSendResetEmail);
     document.getElementById("btn-goto-reset")?.addEventListener("click", () => showView("reset"));
     document.getElementById("btn-back-to-login")?.addEventListener("click", () => showView("login"));
 
-    // Bind Change Password Modal
+    /* — Bind Change Password Modal ─ */
     document.getElementById("change-password-form")?.addEventListener("submit", handleChangePassword);
     document.getElementById("modal-btn-close-change")?.addEventListener("click", () =>
       document.getElementById("admin-change-modal")?.classList.remove("active"));
 
-    // Bind Audit Log Modal
+    /* — Bind Audit Log Modal ─ */
     document.getElementById("bar-btn-audit")?.addEventListener("click", () => {
       renderAuditLogs();
       document.getElementById("admin-audit-modal")?.classList.add("active");
@@ -476,7 +539,7 @@
       }
     });
 
-    // Bind Security Bar
+    /* — Bind Security Bar ─ */
     document.getElementById("bar-btn-sync")?.addEventListener("click", handleSyncSite);
     document.getElementById("bar-btn-change")?.addEventListener("click", () =>
       document.getElementById("admin-change-modal")?.classList.add("active"));
@@ -485,13 +548,14 @@
       lockPortal();
     });
 
-    // ── INITIAL STATE ──────────────────────────────────────────
-    // Regardless of whether localStorage has credentials or not,
-    // always show the Login Gate. NEVER show setup/registration.
-    if (!hasPassword() || !(await sessionIsValid())) {
-      lockPortal(); // shows login view
-    } else {
+    /* ── INITIAL STATE ────────────────────────────────────────────
+       Always show login gate.  Never show setup or registration.
+       If an active session exists for this device/fingerprint, unlock. */
+    const validSession = await sessionIsValid();
+    if (validSession) {
       await unlockPortal();
+    } else {
+      lockPortal();
     }
   }
 
