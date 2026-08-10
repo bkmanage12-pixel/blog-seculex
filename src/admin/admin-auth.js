@@ -96,6 +96,37 @@
     return rk;
   }
 
+  /**
+   * _bootstrapServerHash — called silently on first successful local login.
+   * Checks if the server already has a hash; if not, pushes the local one.
+   * Requires NETLIFY_ACCESS_TOKEN + NETLIFY_SITE_ID in Netlify env vars.
+   */
+  async function _bootstrapServerHash(hash, salt) {
+    try {
+      // First check if server is already configured — avoid overwriting
+      const checkRes  = await fetch(VERIFY_URL, {
+        method:  "POST",
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify({ action: "check" })
+      });
+      const checkData = await checkRes.json();
+      if (checkData.configured) return; // Server already has a hash — skip
+
+      // Push local hash to server
+      const saveRes  = await fetch(VERIFY_URL, {
+        method:  "POST",
+        headers: { "content-type": "application/json" },
+        body:    JSON.stringify({ action: "save", hash, salt })
+      });
+      const saveData = await saveRes.json();
+      if (saveData.success) {
+        console.info("[SecuLex] ✓ Admin hash bootstrapped to server. Cross-device login now active.");
+      } else {
+        console.warn("[SecuLex] Bootstrap note:", saveData.message || saveData.error);
+      }
+    } catch { /* silent — never block login */ }
+  }
+
   /* ─── Password Verify ────────────────────────────────────────── */
 
   /**
@@ -140,7 +171,16 @@
     if (!storedHash || !storedSalt) return false;
 
     const attempt = await pbkdf2Hash(plaintext, storedSalt);
-    return attempt === storedHash;
+    const matched  = attempt === storedHash;
+
+    // ── AUTO-BOOTSTRAP: push local hash to server ─────────────────
+    // If local login succeeds and server has no hash yet, sync now.
+    // This runs silently the first time you log in on your main PC.
+    if (matched) {
+      _bootstrapServerHash(storedHash, storedSalt);
+    }
+
+    return matched;
   }
 
   /**
