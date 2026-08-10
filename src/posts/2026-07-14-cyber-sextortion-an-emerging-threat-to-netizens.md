@@ -28,7 +28,7 @@ description: "Sextortion is a form of online blackmail where perpetrators use
   groups. Comprehensive interventions are essential to ensure a safer and more
   accountable digital space in Rwanda and similar settings."
 author: Ass. Prof. Dr MURANGIRA B. Thierry
-date: 2026-07-14T13:53:30.887Z
+date: 2025-12-01T13:53:30.887Z
 read_time: 5
 thumbnail: /assets/images/sextortion.png
 peer_reviewed: true
