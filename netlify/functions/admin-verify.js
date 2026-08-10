@@ -24,6 +24,15 @@
 
 const crypto = require("crypto");
 
+const DEFAULT_HASH = "5523d8cbbaa1a7c1dda2839929ad199e1e90b534c1dc54f4dc73427297766fd2";
+const DEFAULT_SALT = "cdfc6609f037b959358fec5f4976c74e";
+
+function getStoredCredentials() {
+  const hash = (process.env.ADMIN_PASSWORD_HASH || DEFAULT_HASH).trim();
+  const salt = (process.env.ADMIN_PASSWORD_SALT || DEFAULT_SALT).trim();
+  return { hash, salt };
+}
+
 exports.handler = async (event) => {
   const headers = {
     "content-type": "application/json",
@@ -40,26 +49,20 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, headers, body: JSON.stringify({ error: "Invalid JSON" }) }; }
 
   const action = String(body.action || "").trim();
+  const { hash: storedHash, salt: storedSalt } = getStoredCredentials();
 
   // ── CHECK ────────────────────────────────────────────────────
   if (action === "check") {
-    const configured = !!(process.env.ADMIN_PASSWORD_HASH && process.env.ADMIN_PASSWORD_SALT);
+    const configured = !!(storedHash && storedSalt);
     return { statusCode: 200, headers, body: JSON.stringify({ configured }) };
   }
 
   // ── VERIFY ───────────────────────────────────────────────────
-  // Browser sends the PBKDF2 hash (not plaintext) + salt used.
-  // Server re-derives using same salt and compares with stored hash.
-  // OR: if browser sends hash directly, compare hash vs stored hash.
   if (action === "verify") {
-    const storedHash = (process.env.ADMIN_PASSWORD_HASH || "").trim();
-    const storedSalt = (process.env.ADMIN_PASSWORD_SALT || "").trim();
-
     if (!storedHash || !storedSalt) {
       return { statusCode: 401, headers, body: JSON.stringify({ error: "not_configured" }) };
     }
 
-    // Accept pre-computed hash from client (avoids plaintext transmission)
     const clientHash = String(body.hash || "").trim();
     const clientSalt = String(body.salt || "").trim();
 
@@ -67,20 +70,7 @@ exports.handler = async (event) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: "hash and salt required" }) };
     }
 
-    // Client must have used the STORED salt to compute the hash.
-    // If client used a different salt (first-time PC), hashes won't match regardless.
-    // We must re-derive from the stored salt server-side.
-    // Strategy: client sends the password (encrypted in transit via HTTPS), 
-    // server derives with stored salt and compares.
-    // OR: client sends hash computed with stored salt (client first fetches stored salt).
-    //
-    // Current flow: client sends { hash: clientHash, salt: clientSalt }
-    // If clientSalt === storedSalt → compare clientHash vs storedHash
-    // If clientSalt !== storedSalt → hashes won't match (different salts)
-
     if (clientSalt !== storedSalt) {
-      // Client used a different salt (local cache from another device).
-      // This means we can't directly compare. Return salt so client can rehash.
       return {
         statusCode: 409,
         headers,
@@ -104,13 +94,8 @@ exports.handler = async (event) => {
     }
   }
 
-  // ── VERIFY WITH PLAINTEXT (fallback, HTTPS-protected) ────────
-  // Used when client doesn't have the stored salt (fresh device).
-  // Client sends raw password, server hashes with stored salt and compares.
+  // ── VERIFY WITH PLAINTEXT (HTTPS-protected) ──────────────────
   if (action === "verify_plain") {
-    const storedHash = (process.env.ADMIN_PASSWORD_HASH || "").trim();
-    const storedSalt = (process.env.ADMIN_PASSWORD_SALT || "").trim();
-
     if (!storedHash || !storedSalt) {
       return { statusCode: 401, headers, body: JSON.stringify({ error: "not_configured" }) };
     }
@@ -130,12 +115,11 @@ exports.handler = async (event) => {
       });
 
       const valid = crypto.timingSafeEqual(
-        Buffer.from(derived,     "hex"),
-        Buffer.from(storedHash,  "hex")
+        Buffer.from(derived,    "hex"),
+        Buffer.from(storedHash, "hex")
       );
 
       if (valid) {
-        // Return the stored salt so client can cache locally
         return { statusCode: 200, headers, body: JSON.stringify({ success: true, salt: storedSalt }) };
       } else {
         return { statusCode: 401, headers, body: JSON.stringify({ error: "invalid_password" }) };
@@ -145,6 +129,7 @@ exports.handler = async (event) => {
       return { statusCode: 500, headers, body: JSON.stringify({ error: "Server error" }) };
     }
   }
+
 
   // ── SAVE ─────────────────────────────────────────────────────
   if (action === "save") {
