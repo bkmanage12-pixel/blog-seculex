@@ -1,33 +1,108 @@
 /**
- * SecuLex Admin Portal Security & Authentication System
- * Features:
- * - Minimal Clean Login Interface
- * - Single-Owner Security Lockout (Disallows open password creation by unauthorized visitors)
- * - PBKDF2 100k-iteration Password Hashing & Legacy Auto-Migration
- * - Device Session Fingerprinting & Inactivity Auto-Lock
- * - Security Audit Logging
+ * SecuLex Admin Portal - Single-Owner Authentication Engine
+ *
+ * SECURITY MODEL:
+ * - ONE user only: seculexpublications@gmail.com
+ * - NO registration, NO setup, NO account creation by anyone
+ * - Every visitor on every device sees ONLY the Login Gate
+ * - Password stored as PBKDF2-HMAC-SHA256 (100,000 iterations)
+ * - Session bound to device fingerprint (blocks session hijacking)
+ * - 15-minute idle auto-lock
+ * - 5-attempt brute-force lockout (60s cooldown)
+ * - Full security audit logging
  */
 
 (function () {
-  const ADMIN_EMAIL = "seculexpublications@gmail.com";
-  const STORAGE_HASH_KEY = "seculex_admin_hash_v1";
-  const STORAGE_SALT_KEY = "seculex_admin_salt_v1";
-  const STORAGE_RECOVERY_KEY = "seculex_admin_recovery_v1";
-  const STORAGE_SESSION_KEY = "seculex_admin_session_v1";
-  const STORAGE_PENDING_CODE_KEY = "seculex_admin_pending_code_v1";
-  const STORAGE_LOGIN_ATTEMPTS = "seculex_admin_attempts_v1";
-  const STORAGE_AUDIT_LOGS = "seculex_admin_audit_logs_v1";
-  const HASH_VERSION_KEY = "seculex_admin_hash_ver";
+  "use strict";
 
-  const PBKDF2_ITERATIONS = 100000;
-  const MAX_LOGIN_ATTEMPTS = 5;
-  const LOCKOUT_DURATION_MS = 60 * 1000; // 60 seconds lockout
-  const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes idle timeout
+  const ADMIN_EMAIL      = "seculexpublications@gmail.com";
+  const KEY_HASH         = "seculex_admin_hash_v1";
+  const KEY_SALT         = "seculex_admin_salt_v1";
+  const KEY_RECOVERY     = "seculex_admin_recovery_v1";
+  const KEY_SESSION      = "seculex_admin_session_v1";
+  const KEY_RESET_CODE   = "seculex_admin_pending_code_v1";
+  const KEY_ATTEMPTS     = "seculex_admin_attempts_v1";
+  const KEY_AUDIT        = "seculex_admin_audit_logs_v1";
+  const KEY_HASH_VER     = "seculex_admin_hash_ver";
+
+  const PBKDF2_ITER      = 100000;
+  const MAX_ATTEMPTS     = 5;
+  const LOCKOUT_MS       = 60 * 1000;      // 60 seconds
+  const IDLE_MS          = 15 * 60 * 1000; // 15 minutes
 
   let idleTimer = null;
 
-  // Device Fingerprint Generator
-  async function generateDeviceFingerprint() {
+  /* ─── Crypto Helpers ─────────────────────────────────────── */
+
+  async function pbkdf2Hash(password, saltHex) {
+    const enc  = new TextEncoder();
+    const salt = new Uint8Array(saltHex.match(/.{2}/g).map(h => parseInt(h, 16)));
+    const key  = await crypto.subtle.importKey("raw", enc.encode(password),
+                   { name: "PBKDF2" }, false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits(
+      { name: "PBKDF2", salt, iterations: PBKDF2_ITER, hash: "SHA-256" }, key, 256);
+    return Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function sha256Hash(password, salt) {
+    const enc  = new TextEncoder();
+    const buf  = await crypto.subtle.digest("SHA-256", enc.encode(password + salt));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  function randomHex(bytes = 16) {
+    const arr = new Uint8Array(bytes);
+    crypto.getRandomValues(arr);
+    return Array.from(arr, b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  function randomRecoveryKey() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let r = "";
+    for (let i = 0; i < 16; i++) {
+      if (i && i % 4 === 0) r += "-";
+      r += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return r;
+  }
+
+  async function savePassword(plaintext) {
+    const salt = randomHex(16);
+    const hash = await pbkdf2Hash(plaintext, salt);
+    localStorage.setItem(KEY_HASH,    hash);
+    localStorage.setItem(KEY_SALT,    salt);
+    localStorage.setItem(KEY_HASH_VER, "pbkdf2");
+  }
+
+  /**
+   * Verify password. If stored hash is legacy SHA-256, silently upgrade to PBKDF2.
+   * Returns true/false.
+   */
+  async function verifyPassword(plaintext) {
+    const storedHash = localStorage.getItem(KEY_HASH);
+    const salt       = localStorage.getItem(KEY_SALT);
+    if (!storedHash || !salt) return false;
+
+    if (localStorage.getItem(KEY_HASH_VER) === "pbkdf2") {
+      return (await pbkdf2Hash(plaintext, salt)) === storedHash;
+    }
+
+    // Legacy upgrade path
+    const legacy = await sha256Hash(plaintext, salt);
+    if (legacy === storedHash) {
+      await savePassword(plaintext); // upgrade silently
+      return true;
+    }
+    return false;
+  }
+
+  function hasPassword() {
+    return !!(localStorage.getItem(KEY_HASH) && localStorage.getItem(KEY_SALT));
+  }
+
+  /* ─── Device Fingerprint ─────────────────────────────────── */
+
+  async function fingerprint() {
     const raw = [
       navigator.userAgent,
       screen.width + "x" + screen.height,
@@ -35,105 +110,30 @@
       new Date().getTimezoneOffset(),
       navigator.language || "en"
     ].join("|");
-    
-    const encoder = new TextEncoder();
-    const data = encoder.encode(raw);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(raw));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
   }
 
-  // PBKDF2 Key Derivation using Web Crypto API
-  async function hashPasswordPBKDF2(password, saltHex) {
-    const encoder = new TextEncoder();
-    const passwordBuffer = encoder.encode(password);
-    const saltBuffer = new Uint8Array(saltHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-    
-    const keyMaterial = await crypto.subtle.importKey(
-      "raw",
-      passwordBuffer,
-      { name: "PBKDF2" },
-      false,
-      ["deriveBits"]
-    );
-    
-    const derivedBits = await crypto.subtle.deriveBits(
-      {
-        name: "PBKDF2",
-        salt: saltBuffer,
-        iterations: PBKDF2_ITERATIONS,
-        hash: "SHA-256"
-      },
-      keyMaterial,
-      256
-    );
-    
-    const hashArray = Array.from(new Uint8Array(derivedBits));
-    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  /* ─── Session Management ─────────────────────────────────── */
+
+  async function createSession(durationHours = 4) {
+    const fp        = await fingerprint();
+    const now       = Date.now();
+    const expiresAt = durationHours > 0 ? now + durationHours * 3600000 : 0;
+    const data      = JSON.stringify({ timestamp: now, expiresAt, fingerprint: fp });
+    sessionStorage.setItem(KEY_SESSION, data);
+    localStorage.setItem(KEY_SESSION, data);
   }
 
-  // Legacy SHA-256 helper
-  async function hashPasswordLegacy(password, salt) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password + salt);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-  }
-
-  async function verifyAndMigratePassword(enteredPassword, storedHash, saltHex) {
-    const hashVer = localStorage.getItem(HASH_VERSION_KEY);
-    if (hashVer === "pbkdf2") {
-      const computed = await hashPasswordPBKDF2(enteredPassword, saltHex);
-      return computed === storedHash;
-    } else {
-      const legacyComputed = await hashPasswordLegacy(enteredPassword, saltHex);
-      if (legacyComputed === storedHash) {
-        await setAdminPassword(enteredPassword);
-        return true;
-      }
-      return false;
-    }
-  }
-
-  async function setAdminPassword(newPassword) {
-    const salt = generateSalt();
-    const hash = await hashPasswordPBKDF2(newPassword, salt);
-    localStorage.setItem(STORAGE_HASH_KEY, hash);
-    localStorage.setItem(STORAGE_SALT_KEY, salt);
-    localStorage.setItem(HASH_VERSION_KEY, "pbkdf2");
-  }
-
-  function generateSalt() {
-    const array = new Uint8Array(16);
-    crypto.getRandomValues(array);
-    return Array.from(array, b => b.toString(16).padStart(2, "0")).join("");
-  }
-
-  function generateRecoveryKey() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let result = "";
-    for (let i = 0; i < 16; i++) {
-      if (i > 0 && i % 4 === 0) result += "-";
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  }
-
-  function hasAdminPassword() {
-    return Boolean(localStorage.getItem(STORAGE_HASH_KEY) && localStorage.getItem(STORAGE_SALT_KEY));
-  }
-
-  async function isSessionValid() {
-    const session = sessionStorage.getItem(STORAGE_SESSION_KEY) || localStorage.getItem(STORAGE_SESSION_KEY);
-    if (!session) return false;
+  async function sessionIsValid() {
+    const raw = sessionStorage.getItem(KEY_SESSION) || localStorage.getItem(KEY_SESSION);
+    if (!raw) return false;
     try {
-      const parsed = JSON.parse(session);
+      const parsed = JSON.parse(raw);
       if (parsed.expiresAt && Date.now() > parsed.expiresAt) return false;
-      const currentFingerprint = await generateDeviceFingerprint();
-      if (parsed.fingerprint && parsed.fingerprint !== currentFingerprint) {
-        console.warn("[Admin Security] Device fingerprint mismatch. Session invalidated.");
-        logAuditEvent("failed", "Session fingerprint mismatch detected.");
+      const fp = await fingerprint();
+      if (parsed.fingerprint && parsed.fingerprint !== fp) {
+        audit("failed", "Session fingerprint mismatch — possible hijack attempt.");
         return false;
       }
       return true;
@@ -142,582 +142,356 @@
     }
   }
 
-  async function createSession(durationHours = 4) {
-    const fingerprint = await generateDeviceFingerprint();
-    const now = Date.now();
-    const expiresAt = durationHours > 0 ? now + durationHours * 60 * 60 * 1000 : 0;
-    
-    const sessionData = JSON.stringify({
-      timestamp: now,
-      expiresAt: expiresAt,
-      fingerprint: fingerprint
-    });
-
-    sessionStorage.setItem(STORAGE_SESSION_KEY, sessionData);
-    localStorage.setItem(STORAGE_SESSION_KEY, sessionData);
+  function destroySession() {
+    sessionStorage.removeItem(KEY_SESSION);
+    localStorage.removeItem(KEY_SESSION);
+    sessionStorage.removeItem(KEY_RESET_CODE);
   }
 
-  function clearSession() {
-    sessionStorage.removeItem(STORAGE_SESSION_KEY);
-    localStorage.removeItem(STORAGE_SESSION_KEY);
-    sessionStorage.removeItem(STORAGE_PENDING_CODE_KEY);
-  }
+  /* ─── Rate Limiting ──────────────────────────────────────── */
 
-  // Audit Log Storage
-  function logAuditEvent(type, details) {
+  function getAttempts() {
     try {
-      const logs = JSON.parse(localStorage.getItem(STORAGE_AUDIT_LOGS) || "[]");
-      logs.unshift({
-        type: type,
-        details: details,
-        timestamp: new Date().toLocaleString()
-      });
-      localStorage.setItem(STORAGE_AUDIT_LOGS, JSON.stringify(logs.slice(0, 30)));
-    } catch (e) {}
+      const d = JSON.parse(localStorage.getItem(KEY_ATTEMPTS) || "{}");
+      if (d.lockoutUntil && Date.now() >= d.lockoutUntil) {
+        localStorage.removeItem(KEY_ATTEMPTS);
+        return { count: 0, lockoutUntil: 0 };
+      }
+      return d.count ? d : { count: 0, lockoutUntil: 0 };
+    } catch { return { count: 0, lockoutUntil: 0 }; }
+  }
+
+  function recordFail() {
+    const s     = getAttempts();
+    const count = (s.count || 0) + 1;
+    const lockoutUntil = count >= MAX_ATTEMPTS ? Date.now() + LOCKOUT_MS : 0;
+    localStorage.setItem(KEY_ATTEMPTS, JSON.stringify({ count, lockoutUntil }));
+    return { count, lockoutUntil };
+  }
+
+  function clearAttempts() { localStorage.removeItem(KEY_ATTEMPTS); }
+
+  /* ─── Audit Logging ──────────────────────────────────────── */
+
+  function audit(type, details) {
+    try {
+      const logs = JSON.parse(localStorage.getItem(KEY_AUDIT) || "[]");
+      logs.unshift({ type, details, timestamp: new Date().toLocaleString() });
+      localStorage.setItem(KEY_AUDIT, JSON.stringify(logs.slice(0, 30)));
+    } catch {}
   }
 
   function renderAuditLogs() {
     const tbody = document.getElementById("audit-log-rows");
     if (!tbody) return;
     try {
-      const logs = JSON.parse(localStorage.getItem(STORAGE_AUDIT_LOGS) || "[]");
-      if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--admin-text-secondary); padding: 1.5rem;">No security logs recorded yet.</td></tr>';
+      const logs = JSON.parse(localStorage.getItem(KEY_AUDIT) || "[]");
+      if (!logs.length) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--admin-text-secondary);padding:1.5rem;">No security logs recorded yet.</td></tr>';
         return;
       }
-      tbody.innerHTML = logs.map(log => `
+      tbody.innerHTML = logs.map(l => `
         <tr>
-          <td><span class="admin-audit-tag ${log.type}">${log.type.toUpperCase()}</span></td>
-          <td style="white-space: nowrap; color: var(--admin-text-secondary);">${log.timestamp}</td>
-          <td>${log.details}</td>
-        </tr>
-      `).join("");
-    } catch (e) {
-      tbody.innerHTML = '<tr><td colspan="3">Failed to load logs.</td></tr>';
-    }
+          <td><span class="admin-audit-tag ${l.type}">${l.type.toUpperCase()}</span></td>
+          <td style="white-space:nowrap;color:var(--admin-text-secondary);">${l.timestamp}</td>
+          <td>${l.details}</td>
+        </tr>`).join("");
+    } catch { tbody.innerHTML = '<tr><td colspan="3">Failed to load logs.</td></tr>'; }
   }
 
-  // Idle Timer
+  /* ─── Idle Auto-Lock ─────────────────────────────────────── */
+
   function resetIdleTimer() {
     if (idleTimer) clearTimeout(idleTimer);
-    const sessionActive = document.getElementById("admin-security-bar")?.style.display === "flex";
-    if (sessionActive) {
+    const bar = document.getElementById("admin-security-bar");
+    if (bar && bar.style.display === "flex") {
       idleTimer = setTimeout(() => {
-        showToast("🔒 Session auto-locked due to inactivity.", "fa-lock");
-        logAuditEvent("logout", "Session auto-locked due to inactivity.");
-        lockAdminPortal();
-      }, IDLE_TIMEOUT_MS);
+        toast("🔒 Session locked after 15 minutes of inactivity.", "fa-lock");
+        audit("logout", "Session auto-locked due to inactivity.");
+        lockPortal();
+      }, IDLE_MS);
     }
   }
 
-  function setupInactivityListener() {
-    ["mousemove", "keydown", "scroll", "touchstart"].forEach(evt => {
-      window.addEventListener(evt, resetIdleTimer, { passive: true });
-    });
+  function setupIdleListener() {
+    ["mousemove", "keydown", "scroll", "touchstart"].forEach(e =>
+      window.addEventListener(e, resetIdleTimer, { passive: true }));
   }
 
-  // Caps Lock Warning Detection
-  function setupCapsLockDetection() {
+  /* ─── Caps Lock Detection ────────────────────────────────── */
+
+  function setupCapsLock() {
     document.querySelectorAll("input[type='password']").forEach(input => {
-      const warningId = input.id.startsWith("setup") ? "setup-caps-warning" : "login-caps-warning";
-      const warningEl = document.getElementById(warningId);
-      if (!warningEl) return;
-
-      const checkCaps = (e) => {
-        if (e.getModifierState && e.getModifierState("CapsLock")) {
-          warningEl.classList.add("active");
-        } else {
-          warningEl.classList.remove("active");
-        }
-      };
-
-      input.addEventListener("keyup", checkCaps);
-      input.addEventListener("keydown", checkCaps);
-      input.addEventListener("blur", () => warningEl.classList.remove("active"));
+      const warnId = input.closest("#admin-view-login") ? "login-caps-warning" : null;
+      const warn   = warnId ? document.getElementById(warnId) : null;
+      if (!warn) return;
+      const check = e => warn.classList.toggle("active",
+        !!(e.getModifierState && e.getModifierState("CapsLock")));
+      input.addEventListener("keyup",  check);
+      input.addEventListener("keydown", check);
+      input.addEventListener("blur", () => warn.classList.remove("active"));
     });
   }
 
-  // Rate Limiting
-  function getLoginAttemptsState() {
-    try {
-      const data = JSON.parse(localStorage.getItem(STORAGE_LOGIN_ATTEMPTS) || "{}");
-      if (data.lockoutUntil && Date.now() >= data.lockoutUntil) {
-        localStorage.removeItem(STORAGE_LOGIN_ATTEMPTS);
-        return { count: 0, lockoutUntil: 0 };
-      }
-      return data.count ? data : { count: 0, lockoutUntil: 0 };
-    } catch {
-      return { count: 0, lockoutUntil: 0 };
-    }
-  }
+  /* ─── Eye Toggle ─────────────────────────────────────────── */
 
-  function recordFailedLoginAttempt() {
-    const state = getLoginAttemptsState();
-    const newCount = (state.count || 0) + 1;
-    let lockoutUntil = 0;
-    if (newCount >= MAX_LOGIN_ATTEMPTS) {
-      lockoutUntil = Date.now() + LOCKOUT_DURATION_MS;
-    }
-    localStorage.setItem(STORAGE_LOGIN_ATTEMPTS, JSON.stringify({ count: newCount, lockoutUntil }));
-    return { count: newCount, lockoutUntil };
-  }
-
-  function clearLoginAttempts() {
-    localStorage.removeItem(STORAGE_LOGIN_ATTEMPTS);
-  }
-
-  function showFeedback(elementId, message, type = "error") {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.textContent = message;
-    el.className = `admin-feedback ${type}`;
-  }
-
-  function hideFeedback(elementId) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.className = "admin-feedback";
-    el.textContent = "";
-  }
-
-  // Toggle Password Visibility Eye
   function setupEyeToggles() {
     document.querySelectorAll(".admin-toggle-eye").forEach(btn => {
       btn.addEventListener("click", () => {
         const input = btn.previousElementSibling;
         if (!input) return;
         const icon = btn.querySelector("i");
-        if (input.type === "password") {
-          input.type = "text";
-          if (icon) {
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
-          }
-        } else {
-          input.type = "password";
-          if (icon) {
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
-          }
-        }
+        input.type = input.type === "password" ? "text" : "password";
+        icon?.classList.toggle("fa-eye",       input.type === "password");
+        icon?.classList.toggle("fa-eye-slash", input.type === "text");
       });
     });
   }
 
-  function showAuthView(viewName) {
+  /* ─── View Router ────────────────────────────────────────── */
+
+  function showView(name) {
     document.querySelectorAll(".admin-auth-view").forEach(v => v.style.display = "none");
-    const target = document.getElementById(`admin-view-${viewName}`);
-    if (target) target.style.display = "block";
+    const el = document.getElementById(`admin-view-${name}`);
+    if (el) el.style.display = "block";
   }
 
-  async function unlockAdminPortal(durationHours = 4) {
-    await createSession(durationHours);
-    clearLoginAttempts();
-    const overlay = document.getElementById("admin-security-overlay");
-    if (overlay) overlay.classList.add("hidden");
+  /* ─── Portal Lock / Unlock ───────────────────────────────── */
+
+  async function unlockPortal() {
+    await createSession();
+    clearAttempts();
+    document.getElementById("admin-security-overlay")?.classList.add("hidden");
     const bar = document.getElementById("admin-security-bar");
     if (bar) bar.style.display = "flex";
     resetIdleTimer();
   }
 
-  function lockAdminPortal() {
-    clearSession();
+  function lockPortal() {
+    destroySession();
     if (idleTimer) clearTimeout(idleTimer);
 
-    if (window.netlifyIdentity && typeof window.netlifyIdentity.logout === "function") {
-      try {
-        window.netlifyIdentity.logout();
-      } catch (e) {}
-    }
+    try { window.netlifyIdentity?.logout?.(); } catch {}
+    document.querySelectorAll("input[type='password']").forEach(i => i.value = "");
 
-    document.querySelectorAll("input[type='password']").forEach(input => input.value = "");
-
-    const overlay = document.getElementById("admin-security-overlay");
-    if (overlay) overlay.classList.remove("hidden");
+    document.getElementById("admin-security-overlay")?.classList.remove("hidden");
     const bar = document.getElementById("admin-security-bar");
     if (bar) bar.style.display = "none";
 
-    showAuthView("login");
+    // Always show login — NEVER show setup or registration
+    showView("login");
   }
 
-  // Initial Password Setup Handler
-  async function handleCreatePassword(e) {
-    e.preventDefault();
-    hideFeedback("setup-feedback");
+  /* ─── Toast ──────────────────────────────────────────────── */
 
-    const pass = document.getElementById("setup-password").value.trim();
-    const confirm = document.getElementById("setup-confirm").value.trim();
-
-    if (pass.length < 8) {
-      showFeedback("setup-feedback", "Password must be at least 8 characters long.");
-      return;
-    }
-    if (pass !== confirm) {
-      showFeedback("setup-feedback", "Passwords do not match.");
-      return;
-    }
-
-    await setAdminPassword(pass);
-    const recoveryKey = generateRecoveryKey();
-    localStorage.setItem(STORAGE_RECOVERY_KEY, recoveryKey);
-
-    logAuditEvent("change", "Admin master password configured.");
-    document.getElementById("generated-recovery-key").textContent = recoveryKey;
-    showAuthView("recovery-display");
+  function toast(msg, icon = "fa-check-circle") {
+    let c = document.getElementById("admin-toast-container");
+    if (!c) { c = document.createElement("div"); c.id = "admin-toast-container"; document.body.appendChild(c); }
+    const t = document.createElement("div");
+    t.className = "admin-toast";
+    t.innerHTML = `<i class="fas ${icon}" style="color:var(--admin-accent-gold)"></i> <span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(() => { t.classList.add("hiding"); setTimeout(() => t.remove(), 300); }, 4000);
   }
 
-  // Login Handler
+  /* ─── Feedback ───────────────────────────────────────────── */
+
+  function feedback(id, msg, type = "error") {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.className   = `admin-feedback ${type}`;
+  }
+
+  function clearFeedback(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = "";
+    el.className   = "admin-feedback";
+  }
+
+  /* ─── Handlers ───────────────────────────────────────────── */
+
   async function handleLogin(e) {
     e.preventDefault();
-    hideFeedback("login-feedback");
+    clearFeedback("login-feedback");
 
-    const attemptState = getLoginAttemptsState();
-    if (attemptState.lockoutUntil && Date.now() < attemptState.lockoutUntil) {
-      const secondsLeft = Math.ceil((attemptState.lockoutUntil - Date.now()) / 1000);
-      showFeedback("login-feedback", `Lockout active. Retry in ${secondsLeft} seconds.`);
+    const attempts = getAttempts();
+    if (attempts.lockoutUntil && Date.now() < attempts.lockoutUntil) {
+      const secs = Math.ceil((attempts.lockoutUntil - Date.now()) / 1000);
+      feedback("login-feedback", `Locked out. Retry in ${secs} seconds.`);
       return;
     }
 
-    const entered = document.getElementById("login-password").value;
+    const pw = document.getElementById("login-password").value;
+    if (!pw) { feedback("login-feedback", "Please enter your password."); return; }
 
-    if (!entered) {
-      showFeedback("login-feedback", "Please enter your password.");
+    if (!hasPassword()) {
+      // No credentials configured at all — portal is not accessible
+      feedback("login-feedback", "Admin portal not configured. Contact site owner.");
       return;
     }
 
-    const storedHash = localStorage.getItem(STORAGE_HASH_KEY);
-    const salt = localStorage.getItem(STORAGE_SALT_KEY);
-
-    if (!storedHash || !salt) {
-      // Prompt first-time creation only if initializing master for the first time
-      showAuthView("setup");
-      return;
-    }
-
-    const isValid = await verifyAndMigratePassword(entered, storedHash, salt);
-    if (isValid) {
-      logAuditEvent("login", "Admin authenticated successfully.");
-      await unlockAdminPortal();
+    const valid = await verifyPassword(pw);
+    if (valid) {
+      audit("login", "Admin authenticated successfully.");
+      await unlockPortal();
       document.getElementById("login-password").value = "";
     } else {
-      const newAttempts = recordFailedLoginAttempt();
-      logAuditEvent("failed", `Failed login attempt (${newAttempts.count}/${MAX_LOGIN_ATTEMPTS}).`);
-      if (newAttempts.lockoutUntil) {
-        showFeedback("login-feedback", `Too many invalid attempts! Locked for 60 seconds.`);
+      const a = recordFail();
+      audit("failed", `Failed login (attempt ${a.count}/${MAX_ATTEMPTS}).`);
+      if (a.lockoutUntil) {
+        feedback("login-feedback", `Too many failed attempts. Locked for 60 seconds.`);
       } else {
-        const remaining = MAX_LOGIN_ATTEMPTS - newAttempts.count;
-        showFeedback("login-feedback", `Incorrect password. ${remaining} attempt(s) remaining.`);
+        const rem = MAX_ATTEMPTS - a.count;
+        feedback("login-feedback", `Incorrect password. ${rem} attempt(s) remaining.`);
       }
     }
   }
 
-  // Request Reset Handler
-  async function handleRequestEmailReset(e) {
-    if (e) e.preventDefault();
-    hideFeedback("reset-feedback");
-
-    const emailInput = document.getElementById("reset-email");
-    const enteredEmail = emailInput ? emailInput.value.trim().toLowerCase() : ADMIN_EMAIL;
-
-    if (enteredEmail !== ADMIN_EMAIL.toLowerCase()) {
-      showFeedback("reset-feedback", `Resets are restricted to ${ADMIN_EMAIL}`);
-      return;
-    }
-
+  async function handleSendResetEmail() {
+    clearFeedback("reset-feedback");
     const btn = document.getElementById("btn-send-reset-code");
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Requesting...';
-    }
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Requesting...'; }
 
     try {
-      if (window.netlifyIdentity && typeof window.netlifyIdentity.open === "function") {
-        window.netlifyIdentity.open("recovery");
-      }
+      window.netlifyIdentity?.open?.("recovery");
 
-      const response = await fetch("/.netlify/functions/request-admin-reset", {
-        method: "POST",
+      const res  = await fetch("/.netlify/functions/request-admin-reset", {
+        method:  "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action: "request", email: ADMIN_EMAIL })
+        body:    JSON.stringify({ action: "request", email: ADMIN_EMAIL })
       });
-      const data = await response.json();
-
-      if (data && data.message) {
-        showFeedback(
-          "reset-feedback",
-          data.message,
-          data.emailDispatched ? "success" : "error"
-        );
-      } else {
-        showFeedback(
-          "reset-feedback",
-          `Reset request sent for ${ADMIN_EMAIL}. Check email or enter Recovery Key below.`,
-          "success"
-        );
-      }
-    } catch (err) {
-      showFeedback(
-        "reset-feedback",
-        `Reset request sent to ${ADMIN_EMAIL}. Check email or enter Recovery Key below.`,
-        "success"
-      );
+      const data = await res.json();
+      feedback("reset-feedback",
+        data?.message || `Reset request sent to ${ADMIN_EMAIL}. Check email or enter Recovery Key.`,
+        data?.emailDispatched ? "success" : "error");
+    } catch {
+      feedback("reset-feedback",
+        `Reset request sent to ${ADMIN_EMAIL}. Check email or enter Recovery Key.`, "success");
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Email';
-      }
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Email'; }
     }
   }
 
-  // Reset Password Handler
   async function handleResetPassword(e) {
     e.preventDefault();
-    hideFeedback("reset-feedback");
+    clearFeedback("reset-feedback");
 
-    const enteredKey = document.getElementById("reset-key").value.trim().toUpperCase();
-    const newPass = document.getElementById("reset-new-password").value.trim();
-    const confirmPass = document.getElementById("reset-confirm-password").value.trim();
+    const key         = document.getElementById("reset-key").value.trim().toUpperCase();
+    const newPw       = document.getElementById("reset-new-password").value.trim();
+    const confirmPw   = document.getElementById("reset-confirm-password").value.trim();
+    const storedKey   = (localStorage.getItem(KEY_RECOVERY) || "").toUpperCase();
+    const pendingCode = sessionStorage.getItem(KEY_RESET_CODE);
 
-    const storedRecoveryKey = (localStorage.getItem(STORAGE_RECOVERY_KEY) || "").toUpperCase();
-    const pendingCode = sessionStorage.getItem(STORAGE_PENDING_CODE_KEY);
+    const validKey = (storedKey && key === storedKey) || (pendingCode && key === pendingCode);
+    if (!validKey) { feedback("reset-feedback", "Invalid Recovery Key or Security Code."); return; }
+    if (newPw.length < 8) { feedback("reset-feedback", "Password must be at least 8 characters."); return; }
+    if (newPw !== confirmPw) { feedback("reset-feedback", "Passwords do not match."); return; }
 
-    let isValidCode = false;
-    if (storedRecoveryKey && enteredKey === storedRecoveryKey) {
-      isValidCode = true;
-    } else if (pendingCode && enteredKey === pendingCode) {
-      isValidCode = true;
-    }
+    await savePassword(newPw);
+    localStorage.setItem(KEY_RECOVERY, randomRecoveryKey());
+    sessionStorage.removeItem(KEY_RESET_CODE);
 
-    if (!isValidCode) {
-      showFeedback("reset-feedback", `Invalid Recovery Key or Security Code.`);
-      return;
-    }
-
-    if (newPass.length < 8) {
-      showFeedback("reset-feedback", "Password must be at least 8 characters long.");
-      return;
-    }
-
-    if (newPass !== confirmPass) {
-      showFeedback("reset-feedback", "Passwords do not match.");
-      return;
-    }
-
-    await setAdminPassword(newPass);
-    const newRecoveryKey = generateRecoveryKey();
-    localStorage.setItem(STORAGE_RECOVERY_KEY, newRecoveryKey);
-    sessionStorage.removeItem(STORAGE_PENDING_CODE_KEY);
-
-    logAuditEvent("change", "Admin password reset via Recovery Key.");
-    showFeedback("reset-feedback", `Password reset successfully! Redirecting to login...`, "success");
-    setTimeout(() => {
-      document.getElementById("reset-form").reset();
-      showAuthView("login");
-    }, 1500);
+    audit("change", "Admin password reset via Recovery Key.");
+    feedback("reset-feedback", "Password reset! Redirecting to login...", "success");
+    setTimeout(() => { document.getElementById("reset-form")?.reset(); showView("login"); }, 1500);
   }
 
-  // Change Password Handler
   async function handleChangePassword(e) {
     e.preventDefault();
-    hideFeedback("change-feedback");
+    clearFeedback("change-feedback");
 
-    const current = document.getElementById("change-current-password").value;
-    const newPass = document.getElementById("change-new-password").value.trim();
-    const confirmPass = document.getElementById("change-confirm-password").value.trim();
+    const cur     = document.getElementById("change-current-password").value;
+    const newPw   = document.getElementById("change-new-password").value.trim();
+    const confirm = document.getElementById("change-confirm-password").value.trim();
 
-    const storedHash = localStorage.getItem(STORAGE_HASH_KEY);
-    const salt = localStorage.getItem(STORAGE_SALT_KEY);
+    if (!(await verifyPassword(cur))) { feedback("change-feedback", "Current password is incorrect."); return; }
+    if (newPw.length < 8) { feedback("change-feedback", "New password must be at least 8 characters."); return; }
+    if (newPw !== confirm) { feedback("change-feedback", "New passwords do not match."); return; }
 
-    const isValidCurrent = await verifyAndMigratePassword(current, storedHash, salt);
-    if (!isValidCurrent) {
-      showFeedback("change-feedback", "Current password is incorrect.");
-      return;
-    }
-
-    if (newPass.length < 8) {
-      showFeedback("change-feedback", "New password must be at least 8 characters long.");
-      return;
-    }
-
-    if (newPass !== confirmPass) {
-      showFeedback("change-feedback", "New passwords do not match.");
-      return;
-    }
-
-    await setAdminPassword(newPass);
-    logAuditEvent("change", "Admin password updated.");
-
-    showFeedback("change-feedback", "Password updated successfully!", "success");
+    await savePassword(newPw);
+    audit("change", "Admin password updated from dashboard.");
+    feedback("change-feedback", "Password updated successfully!", "success");
     setTimeout(() => {
-      closeChangePasswordModal();
+      document.getElementById("admin-change-modal")?.classList.remove("active");
     }, 1500);
-  }
-
-  function openChangePasswordModal() {
-    hideFeedback("change-feedback");
-    const form = document.getElementById("change-password-form");
-    if (form) form.reset();
-    const modal = document.getElementById("admin-change-modal");
-    if (modal) modal.classList.add("active");
-  }
-
-  function closeChangePasswordModal() {
-    const modal = document.getElementById("admin-change-modal");
-    if (modal) modal.classList.remove("active");
-  }
-
-  function openAuditModal() {
-    renderAuditLogs();
-    const modal = document.getElementById("admin-audit-modal");
-    if (modal) modal.classList.add("active");
-  }
-
-  function closeAuditModal() {
-    const modal = document.getElementById("admin-audit-modal");
-    if (modal) modal.classList.remove("active");
-  }
-
-  function clearAuditLogs() {
-    if (confirm("Are you sure you want to clear security audit logs?")) {
-      localStorage.removeItem(STORAGE_AUDIT_LOGS);
-      renderAuditLogs();
-    }
-  }
-
-  function checkUrlRecoveryToken() {
-    if (window.location.hash && window.location.hash.includes("recovery_token=")) {
-      showAuthView("reset");
-      showFeedback("reset-feedback", `Email recovery link verified for ${ADMIN_EMAIL}! Enter your new password below.`, "success");
-    }
-  }
-
-  function showToast(message, iconClass = "fa-check-circle") {
-    let container = document.getElementById("admin-toast-container");
-    if (!container) {
-      container = document.createElement("div");
-      container.id = "admin-toast-container";
-      document.body.appendChild(container);
-    }
-
-    const toast = document.createElement("div");
-    toast.className = "admin-toast";
-    toast.innerHTML = `<i class="fas ${iconClass}" style="color: var(--admin-accent-gold);"></i> <span>${message}</span>`;
-    container.appendChild(toast);
-
-    setTimeout(() => {
-      toast.classList.add("hiding");
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
   }
 
   async function handleSyncSite() {
     const btn = document.getElementById("bar-btn-sync");
-    if (btn) {
-      btn.classList.add("spinning");
-      btn.disabled = true;
-    }
-
-    showToast("Triggering site rebuild on Netlify...", "fa-rotate");
-
+    if (btn) { btn.classList.add("spinning"); btn.disabled = true; }
+    toast("Triggering site rebuild...", "fa-rotate");
     try {
-      const response = await fetch("/.netlify/functions/sync-site", { method: "POST" });
-      const data = await response.json();
-
-      if (data && data.buildHookTriggered) {
-        showToast(
-          "✅ Rebuild triggered! Your site will update in ~1–2 minutes.",
-          "fa-check-double"
-        );
-      } else if (data && data.needsSetup) {
-        showToast("⚠️ Build hook not set up yet — see instructions.", "fa-triangle-exclamation");
-      } else {
-        showToast("✅ Rebuild request sent. Site will update shortly.", "fa-check-circle");
-      }
-    } catch (err) {
-      console.warn("[Sync] Failed to reach sync function:", err);
-      showToast("⚠️ Could not reach sync function.", "fa-triangle-exclamation");
-    } finally {
-      setTimeout(() => {
-        if (btn) {
-          btn.classList.remove("spinning");
-          btn.disabled = false;
-        }
-      }, 2000);
+      const res  = await fetch("/.netlify/functions/sync-site", { method: "POST" });
+      const data = await res.json();
+      if (data?.buildHookTriggered) toast("✅ Rebuild triggered! Site updates in ~1–2 mins.", "fa-check-double");
+      else toast("✅ Rebuild request sent.", "fa-check-circle");
+    } catch { toast("⚠️ Could not reach sync function.", "fa-triangle-exclamation"); }
+    finally {
+      setTimeout(() => { if (btn) { btn.classList.remove("spinning"); btn.disabled = false; } }, 2000);
     }
   }
 
+  /* ─── Initialise ─────────────────────────────────────────── */
+
   async function init() {
     setupEyeToggles();
-    setupCapsLockDetection();
-    setupInactivityListener();
-    checkUrlRecoveryToken();
+    setupCapsLock();
+    setupIdleListener();
 
-    // Bind Forms
-    const setupForm = document.getElementById("setup-form");
-    if (setupForm) setupForm.addEventListener("submit", handleCreatePassword);
-
-    const loginForm = document.getElementById("login-form");
-    if (loginForm) loginForm.addEventListener("submit", handleLogin);
-
-    const resetForm = document.getElementById("reset-form");
-    if (resetForm) resetForm.addEventListener("submit", handleResetPassword);
-
-    const btnSendReset = document.getElementById("btn-send-reset-code");
-    if (btnSendReset) btnSendReset.addEventListener("click", handleRequestEmailReset);
-
-    const changeForm = document.getElementById("change-password-form");
-    if (changeForm) changeForm.addEventListener("submit", handleChangePassword);
-
-    // Navigation links
-    const forgotBtn = document.getElementById("btn-goto-reset");
-    if (forgotBtn) forgotBtn.addEventListener("click", () => showAuthView("reset"));
-
-    const backToLoginBtn = document.getElementById("btn-back-to-login");
-    if (backToLoginBtn) backToLoginBtn.addEventListener("click", () => showAuthView("login"));
-
-    const btnFinishSetup = document.getElementById("btn-finish-setup");
-    if (btnFinishSetup) {
-      btnFinishSetup.addEventListener("click", () => {
-        unlockAdminPortal();
-      });
+    // Netlify Identity recovery token in URL hash
+    if (window.location.hash?.includes("recovery_token=")) {
+      showView("reset");
+      feedback("reset-feedback",
+        `Email recovery link verified. Enter your new password below.`, "success");
+      return;
     }
 
-    // Security Bar buttons
-    const btnSyncNow = document.getElementById("bar-btn-sync");
-    if (btnSyncNow) btnSyncNow.addEventListener("click", handleSyncSite);
+    // Bind Login
+    document.getElementById("login-form")?.addEventListener("submit", handleLogin);
 
-    const btnLockNow = document.getElementById("bar-btn-lock");
-    if (btnLockNow) btnLockNow.addEventListener("click", () => {
-      logAuditEvent("logout", "Logged out manually.");
-      lockAdminPortal();
+    // Bind Reset
+    document.getElementById("reset-form")?.addEventListener("submit", handleResetPassword);
+    document.getElementById("btn-send-reset-code")?.addEventListener("click", handleSendResetEmail);
+    document.getElementById("btn-goto-reset")?.addEventListener("click", () => showView("reset"));
+    document.getElementById("btn-back-to-login")?.addEventListener("click", () => showView("login"));
+
+    // Bind Change Password Modal
+    document.getElementById("change-password-form")?.addEventListener("submit", handleChangePassword);
+    document.getElementById("modal-btn-close-change")?.addEventListener("click", () =>
+      document.getElementById("admin-change-modal")?.classList.remove("active"));
+
+    // Bind Audit Log Modal
+    document.getElementById("bar-btn-audit")?.addEventListener("click", () => {
+      renderAuditLogs();
+      document.getElementById("admin-audit-modal")?.classList.add("active");
+    });
+    document.getElementById("modal-btn-close-audit")?.addEventListener("click", () =>
+      document.getElementById("admin-audit-modal")?.classList.remove("active"));
+    document.getElementById("btn-clear-audit-logs")?.addEventListener("click", () => {
+      if (confirm("Clear all security audit logs?")) {
+        localStorage.removeItem(KEY_AUDIT);
+        renderAuditLogs();
+      }
     });
 
-    const btnChangePass = document.getElementById("bar-btn-change");
-    if (btnChangePass) btnChangePass.addEventListener("click", openChangePasswordModal);
+    // Bind Security Bar
+    document.getElementById("bar-btn-sync")?.addEventListener("click", handleSyncSite);
+    document.getElementById("bar-btn-change")?.addEventListener("click", () =>
+      document.getElementById("admin-change-modal")?.classList.add("active"));
+    document.getElementById("bar-btn-lock")?.addEventListener("click", () => {
+      audit("logout", "Admin logged out manually.");
+      lockPortal();
+    });
 
-    const btnCloseModal = document.getElementById("modal-btn-close-change");
-    if (btnCloseModal) btnCloseModal.addEventListener("click", closeChangePasswordModal);
-
-    const btnAudit = document.getElementById("bar-btn-audit");
-    if (btnAudit) btnAudit.addEventListener("click", openAuditModal);
-
-    const btnCloseAudit = document.getElementById("modal-btn-close-audit");
-    if (btnCloseAudit) btnCloseAudit.addEventListener("click", closeAuditModal);
-
-    const btnClearAudit = document.getElementById("btn-clear-audit-logs");
-    if (btnClearAudit) btnClearAudit.addEventListener("click", clearAuditLogs);
-
-    // Initial session verification
-    if (!hasAdminPassword()) {
-      // First-time setup on owner's browser
-      showAuthView("setup");
+    // ── INITIAL STATE ──────────────────────────────────────────
+    // Regardless of whether localStorage has credentials or not,
+    // always show the Login Gate. NEVER show setup/registration.
+    if (!hasPassword() || !(await sessionIsValid())) {
+      lockPortal(); // shows login view
     } else {
-      const valid = await isSessionValid();
-      if (valid) {
-        await unlockAdminPortal();
-      } else {
-        lockAdminPortal();
-      }
+      await unlockPortal();
     }
   }
 
@@ -726,4 +500,5 @@
   } else {
     init();
   }
+
 })();

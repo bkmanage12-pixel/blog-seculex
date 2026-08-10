@@ -4,13 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SecuLex Admin Portal</title>
-    <!-- Icons & Admin Portal Styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/admin/admin.css">
   </head>
   <body>
 
-    <!-- Floating Security Controls (Shown inside CMS when unlocked) -->
+    <!-- Floating Security Controls (shown when unlocked) -->
     <div id="admin-security-bar" style="display: none;">
       <span style="font-weight: 600; color: var(--admin-accent-gold);"><i class="fas fa-shield-halved"></i> SecuLex Admin</span>
       <button id="bar-btn-sync" class="admin-bar-btn admin-bar-btn-sync" title="Sync site changes"><i class="fas fa-rotate"></i> Sync Site</button>
@@ -22,11 +21,14 @@
     <!-- Toast Notification Container -->
     <div id="admin-toast-container"></div>
 
-
-    <!-- Admin Security Overlay -->
+    <!-- ===================================================
+         ADMIN SECURITY OVERLAY
+         Single Login Gate only — NO registration, NO setup.
+         Only one user can ever log in: the master admin.
+    =================================================== -->
     <div id="admin-security-overlay">
 
-      <!-- 1. CLEAN MINIMAL LOGIN VIEW -->
+      <!-- LOGIN GATE (the ONLY entry point) -->
       <div id="admin-view-login" class="admin-auth-card admin-auth-view" style="display: none;">
         <div class="admin-auth-header">
           <div class="admin-auth-icon"><i class="fas fa-lock"></i></div>
@@ -53,59 +55,12 @@
         </div>
       </div>
 
-      <!-- 2. PROTECTED SETUP VIEW (ONLY ACCESSIBLE WITH AUTHORIZATION) -->
-      <div id="admin-view-setup" class="admin-auth-card admin-auth-view" style="display: none;">
-        <div class="admin-auth-header">
-          <div class="admin-auth-icon"><i class="fas fa-user-shield"></i></div>
-          <h1 class="admin-auth-title">Initialize Admin Password</h1>
-          <p class="admin-auth-subtitle">Set your master password for <strong>seculexpublications@gmail.com</strong></p>
-        </div>
-
-        <div id="setup-feedback" class="admin-feedback"></div>
-
-        <form id="setup-form">
-          <div class="admin-form-group">
-            <label class="admin-form-label" for="setup-password">Create Password</label>
-            <div class="admin-input-wrapper">
-              <input type="password" id="setup-password" class="admin-form-input" placeholder="At least 8 characters..." required autocomplete="new-password">
-              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
-            </div>
-            <div id="setup-caps-warning" class="admin-caps-warning"><i class="fas fa-exclamation-triangle"></i> Caps Lock is ON</div>
-          </div>
-
-          <div class="admin-form-group">
-            <label class="admin-form-label" for="setup-confirm">Confirm Password</label>
-            <div class="admin-input-wrapper">
-              <input type="password" id="setup-confirm" class="admin-form-input" placeholder="Repeat password..." required autocomplete="new-password">
-              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
-            </div>
-          </div>
-
-          <button type="submit" class="admin-btn-primary"><i class="fas fa-check-circle"></i> Save Password & Lock Portal</button>
-        </form>
-      </div>
-
-      <!-- 3. RECOVERY KEY DISPLAY -->
-      <div id="admin-view-recovery-display" class="admin-auth-card admin-auth-view" style="display: none;">
-        <div class="admin-auth-header">
-          <div class="admin-auth-icon" style="color: var(--admin-success); border-color: rgba(34, 197, 94, 0.4); background: rgba(34, 197, 94, 0.1);"><i class="fas fa-key"></i></div>
-          <h1 class="admin-auth-title">Save Recovery Key</h1>
-          <p class="admin-auth-subtitle">Keep this emergency key safe. You can also reset password via email sent to <strong>seculexpublications@gmail.com</strong>.</p>
-        </div>
-
-        <div class="admin-recovery-box">
-          <div id="generated-recovery-key" class="admin-recovery-key">XXXX-XXXX-XXXX-XXXX</div>
-        </div>
-
-        <button id="btn-finish-setup" class="admin-btn-primary"><i class="fas fa-arrow-right"></i> Continue to CMS</button>
-      </div>
-
-      <!-- 4. EMAIL RESET / RECOVERY KEY VIEW -->
+      <!-- PASSWORD RESET (Recovery Key or Email Code — no open registration) -->
       <div id="admin-view-reset" class="admin-auth-card admin-auth-view" style="display: none;">
         <div class="admin-auth-header">
           <div class="admin-auth-icon"><i class="fas fa-paper-plane"></i></div>
-          <h1 class="admin-auth-title">Reset Admin Password</h1>
-          <p class="admin-auth-subtitle">Send reset code to email or enter Recovery Key.</p>
+          <h1 class="admin-auth-title">Reset Password</h1>
+          <p class="admin-auth-subtitle">Enter your Recovery Key, or request an email reset code.</p>
         </div>
 
         <div id="reset-feedback" class="admin-feedback"></div>
@@ -149,14 +104,14 @@
       </div>
 
     </div>
+    <!-- END ADMIN SECURITY OVERLAY -->
 
-    <!-- Change Password Modal -->
+    <!-- Change Password Modal (inside CMS, for logged-in admin only) -->
     <div id="admin-change-modal" class="admin-modal-backdrop">
       <div class="admin-auth-card">
         <div class="admin-auth-header">
           <div class="admin-auth-icon"><i class="fas fa-key"></i></div>
           <h2 class="admin-auth-title">Change Password</h2>
-          <p class="admin-auth-subtitle">Update password for <strong>seculexpublications@gmail.com</strong></p>
         </div>
 
         <div id="change-feedback" class="admin-feedback"></div>
@@ -212,9 +167,7 @@
                 <th>Details</th>
               </tr>
             </thead>
-            <tbody id="audit-log-rows">
-              <!-- Dynamically populated via JS -->
-            </tbody>
+            <tbody id="audit-log-rows"></tbody>
           </table>
         </div>
 
@@ -234,19 +187,16 @@
     <script>
       if (typeof CMS !== "undefined") {
         CMS.registerPreviewStyle("/css/styles.css");
-
         if (CMS.registerEventListener) {
           CMS.registerEventListener({
             name: "postPublish",
             handler: function() {
-              console.log("[CMS Event] Entry published/updated. Triggering site sync...");
               if (typeof handleSyncSite === "function") handleSyncSite();
             }
           });
           CMS.registerEventListener({
             name: "postUnpublish",
             handler: function() {
-              console.log("[CMS Event] Entry deleted/unpublished. Triggering site sync...");
               if (typeof handleSyncSite === "function") handleSyncSite();
             }
           });
