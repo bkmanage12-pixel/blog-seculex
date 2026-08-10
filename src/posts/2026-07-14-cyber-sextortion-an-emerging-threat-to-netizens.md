@@ -31,6 +31,40 @@ author: Ass. Prof. Dr MURANGIRA B. Thierry
 date: 2025-12-01T13:53:30.887Z
 read_time: 5
 thumbnail: /assets/images/sextortion.png
+toc:
+  - title: INTRODUCTION
+    subsections: []
+  - title: RESEARCH OBJECTIVES
+  - title: RESEARCH QUESTIONS
+    subsections:
+      - title: a. What is the extent and nature of sextortion in Rwanda?
+      - title: b. Who are the primary victims and perpetrators, and what methods are
+          commonly used?
+      - title: c. How effective are legal responses to sextortion?
+      - title: d. What measures can be adopted to mitigate the threat of sextortion in
+          Rwanda?
+  - title: RESEARCH METHODOLOGY
+  - title: LITERATURE REVIEW
+    subsections:
+      - title: Understanding Sextortion
+      - title: Sextortion a type of corruption
+      - title: Sextortion as Blackmail
+      - title: Sextortion in Different Jurisdictions
+      - title: Sextortion as a Multi-Faceted Crime
+      - title: Technology as an Enabler of Sextortion
+  - title: Difference Between Extortion, Sextortion and Sexual-related Corruption
+  - title: DATA ANALYSIS AND INTERPRETATION
+    subsections:
+      - title: Trend of Sextortion Cases in last 6 Fiscal Years 2018-2024
+      - title: Victim-Suspect Demographics
+      - title: Categories of Victims
+      - title: Forms of Sextortion
+  - title: GENERAL CONCLUSION
+    subsections:
+      - title: Summary of Findings
+      - title: Need for a Specific Provision on Sextortion
+  - title: RECOMMENDATIONS
+  - title: Scope for Further Research
 peer_reviewed: true
 restrict_abstract_copy: true
 publication_type: Academic journal
