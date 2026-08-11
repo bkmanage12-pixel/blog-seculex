@@ -25,6 +25,18 @@
     {
       "emoji": "🔒",
       "text": "Security Policy"
+    },
+    {
+      "emoji": "🧬",
+      "text": "Forensic law"
+    },
+    {
+      "emoji": "🩺",
+      "text": "Medical law"
+    },
+    {
+      "emoji": "🎓",
+      "text": "PhD Thesis"
     }
   ]
 }
