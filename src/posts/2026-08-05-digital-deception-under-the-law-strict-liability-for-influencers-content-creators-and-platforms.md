@@ -38,7 +38,44 @@ author: Ass. Prof. Dr MURANGIRA B. Thierry
 date: 2025-12-04T12:44:03.423Z
 read_time: 5
 thumbnail: /assets/images/digital.png
-toc: []
+toc:
+  - title: "INTRODUCTION "
+  - title: "Objectives of the Research "
+  - title: "Legal Research Problem "
+  - title: Research Questions
+    subsections:
+      - title: "1. How does sensationalised content undermine consumer protection in
+          Rwanda’s digital marketplace? "
+      - title: 2. What are the limitations of Rwanda’s current legal framework in
+          addressing deceptive practices by creators, influencers, and
+          platforms?
+      - title: "3. How can a strict liability regime, informed by comparative
+          international experiences, enhance accountability without hampering
+          freedom of expression and innovation? "
+  - title: "Scope of the Research "
+  - title: "Research Methodology "
+  - title: "Significance of the Research "
+  - title: "LITERATURE REVIEW "
+  - title: "TERMINOLOGY AND KEY CONCEPTS "
+  - title: "COMPARATIVE ASPECT OF EUROPEAN UNION’S DIGITAL SERVICES ACT AND THE U.S.
+      FEDERAL TRADE COMMISSION ENFORCEMENT PRACTICES, UK, INDIA AND SOUTH AFRICA
+      "
+  - title: "GLOBAL CASE STUDIES ON MISLEADING ADVERTISING AND DIGITAL PLATFORM
+      ACCOUNTABILITY "
+  - title: "HOW DOES SENSATIONALISED CONTENT UNDERMINE CONSUMER PROTECTION IN
+      RWANDA’S DIGITAL MARKETPLACE? "
+  - title: "WHAT ARE THE LIMITATIONS OF RWANDA’S CURRENT LEGAL FRAMEWORK IN
+      ADDRESSING DECEPTIVE PRACTICES BY CREATORS, INFLUENCERS, AND PLATFORMS? "
+  - title: "HOW CAN A STRICT LIABILITY REGIME, INFORMED BY COMPARATIVE INTERNATIONAL
+      EXPERIENCES, ENHANCE ACCOUNTABILITY WITHOUT HAMPERING FREEDOM OF
+      EXPRESSION AND INNOVATION? "
+  - title: BORROWING BEST PRACTICES
+  - title: "ENFORCEMENT CHALLENGES AND BALANCING CONSUMER PROTECTION WITH FREE
+      EXPRESSION "
+  - title: "RESEARCH FINDINGS  "
+  - title: "CONCLUSION "
+  - title: RECOMMENDATIONS
+  - title: "SCOPE FOR FURTHER RESEARCH  "
 peer_reviewed: true
 restrict_abstract_copy: true
 publication_type: Academic journal
