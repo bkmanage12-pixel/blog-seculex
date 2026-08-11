@@ -49,7 +49,7 @@ description: >
 
   DNA, Scientific Evidence, Forensic Sciences, Genetic Evidence, Chain of Custody, Criminal Justice Chain
 author: Ass. Prof. Dr MURANGIRA B. Thierry
-date: 2026-08-11T09:39:21.896Z
+date: 2016-12-01T09:39:21.896Z
 read_time: 15
 thumbnail: /assets/images/dna.png
 toc:
