@@ -52,6 +52,31 @@ author: Ass. Prof. Dr MURANGIRA B. Thierry
 date: 2026-08-11T08:54:50.599Z
 read_time: 5
 thumbnail: /assets/images/dna.png
+toc:
+  - title: 1. Introduction
+  - title: 2. Statement of the Problem
+  - title: 3. Material and Methodology
+  - title: 4. Definition of Key Concepts
+    subsections:
+      - title: 4.1. Meaning of DNA
+      - title: 4.2. Meaning of Evidence
+  - title: 5. Physical/Direct and Circumstantial Evidence
+    subsections:
+      - title: 5.1. Physical or Direct Evidence
+      - title: 5.2. Circumstantial Evidence
+  - title: 6. The Effectiveness of DNA Evidence as Tool of Forensic Science in Crime
+      Reduction
+    subsections:
+      - title: 6.1. Role of DNA Evidence in Criminal Cases
+      - title: 6.2. Advantage of Forensic DNA Evidence
+  - title: 7. Need for Specific DNA Legislation in Rwanda
+    subsections:
+      - title: 7.1. Why Is the DNA Law Needed at This Time?
+      - title: 7.2. Whether the Enactment of DNA Law Is Built on Existing Activities
+      - title: 7.3. How Is the Proposed DNA Law in Line with National/Local Strategies
+          and Conform to Others Existing Legislations?
+      - title: 7.4. The Law Shall Seek to Achieve Following Objects
+  - title: 8. Conclusion
 peer_reviewed: true
 restrict_abstract_copy: true
 publication_type: Academic journal
