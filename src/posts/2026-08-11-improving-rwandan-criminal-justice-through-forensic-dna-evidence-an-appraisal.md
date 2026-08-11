@@ -4,7 +4,7 @@ tags:
   - posts
 title: "Improving Rwandan Criminal Justice through Forensic DNA Evidence: An
   Appraisal "
-category: Medical Law
+category: Forensic Law
 description: >
   At present, the utility of forensic evidence has acquired admissibility in the
   area of criminal justice. This utility has been applied in various legal
