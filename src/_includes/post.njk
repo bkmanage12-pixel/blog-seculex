@@ -27,7 +27,7 @@ layout: base.njk
                         <span style="color: #4ade80; font-weight: 700; margin-right: 0.4rem;">{{ post_settings.peer_reviewed_label | default("Peer reviewed") }}</span>
                         <span style="color: rgba(74, 222, 128, 0.3); margin-right: 0.4rem;">|</span>
                         {% endif %}
-                        <span style="color: var(--text-secondary); font-weight: 600;">{{ publication_type | default("Academic Journal") }}</span>
+                        <span style="color: var(--text-secondary); font-weight: 600;">{{ publication_type | default(post_settings.default_publication_type | default("Academic Journal")) }}</span>
                     </div>
                     
                     {% if category %}
@@ -55,7 +55,7 @@ layout: base.njk
                         <a href="#" class="scholarly-meta-link">{{ auth.trim() }}</a>{% if not loop.last %}, {% endif %}
                       {% endfor %}
                     {% else %}
-                      <a href="#" class="scholarly-meta-link">Thierry, Murangira B.</a>
+                      <a href="#" class="scholarly-meta-link">{{ post_settings.default_author_name | default("Thierry, Murangira B.") }}</a>
                     {% endif %}
                 </div>
             </div>
@@ -92,7 +92,7 @@ layout: base.njk
                 <!-- Abstract Section -->
                 <div class="scholarly-section">
                     <h4 class="scholarly-section-title">{{ post_settings.abstract_section_title | default("Abstract") }}</h4>
-                    <p class="scholarly-abstract-text{% if restrict_abstract_copy != false %} restrict-select{% endif %}"{% if restrict_abstract_copy != false %} oncopy="return false;" onselectstart="return false;"{% endif %}>{{ description | default("No abstract available for this article.") }}</p>
+                    <p class="scholarly-abstract-text{% if restrict_abstract_copy != false %} restrict-select{% endif %}"{% if restrict_abstract_copy != false %} oncopy="return false;" onselectstart="return false;"{% endif %}>{{ description | default(post_settings.no_abstract_label | default("No abstract available for this article.")) }}</p>
                 </div>
                 
                 <!-- Table of Contents Section -->
@@ -164,7 +164,7 @@ layout: base.njk
                     {% if article_paywall_on %}
                     <div class="toc-paywall-notice">
                         <i class="fas fa-lock"></i>
-                        Full content access requires purchase — click any section to unlock
+                        {{ post_settings.toc_locked_notice | default("Full content access requires purchase — click any section to unlock") }}
                     </div>
                     {% endif %}
                     {% else %}

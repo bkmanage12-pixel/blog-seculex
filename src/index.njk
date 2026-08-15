@@ -31,7 +31,7 @@ title: Home | SecuLex
             </a>
             <a href="#about" class="btn hero-btn-ghost">
                 <i class="fas fa-info-circle"></i>
-                About the Journal
+                {{ home.hero_secondary_button_text | default("About the Journal") }}
             </a>
         </div>
 
@@ -39,17 +39,17 @@ title: Home | SecuLex
         <div class="hero-stats">
             <div class="hero-stat">
                 <span class="hero-stat-value">{{ collections.posts | length }}</span>
-                <span class="hero-stat-label">Publications</span>
+                <span class="hero-stat-label">{{ home.stat_publications_label | default("Publications") }}</span>
             </div>
             <div class="hero-stat-divider"></div>
             <div class="hero-stat">
-                <span class="hero-stat-value">⚖️</span>
-                <span class="hero-stat-label">Peer Reviewed</span>
+                <span class="hero-stat-value">{{ home.stat_peer_reviewed_icon | default("⚖️") }}</span>
+                <span class="hero-stat-label">{{ home.stat_peer_reviewed_label | default("Peer Reviewed") }}</span>
             </div>
             <div class="hero-stat-divider"></div>
             <div class="hero-stat">
-                <span class="hero-stat-value">🌐</span>
-                <span class="hero-stat-label">Open Access</span>
+                <span class="hero-stat-value">{{ home.stat_open_access_icon | default("🌐") }}</span>
+                <span class="hero-stat-label">{{ home.stat_open_access_label | default("Open Access") }}</span>
             </div>
         </div>
     </div>
@@ -120,7 +120,7 @@ title: Home | SecuLex
                 <p>{{ post.data.description | truncate(130) }}</p>
                 <div class="card-footer">
                     <a href="{{ post.url }}" class="read-more">{{ articles_page.read_label | default("Read Analysis") }} <i class="fas fa-arrow-right"></i></a>
-                    {% if post.data.paywall_enabled %}<span class="card-paid-badge"><i class="fas fa-lock"></i> Premium</span>{% else %}<span class="card-free-badge"><i class="fas fa-unlock"></i> Open</span>{% endif %}
+                    {% if post.data.paywall_enabled %}<span class="card-paid-badge"><i class="fas fa-lock"></i> {{ home.card_premium_badge_label | default("Premium") }}</span>{% else %}<span class="card-free-badge"><i class="fas fa-unlock"></i> {{ home.card_open_badge_label | default("Open") }}</span>{% endif %}
                 </div>
             </div>
         </article>

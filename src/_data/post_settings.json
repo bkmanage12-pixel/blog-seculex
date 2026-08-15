@@ -1,9 +1,13 @@
 {
   "peer_reviewed_label": "Peer reviewed",
+  "default_publication_type": "Academic Journal",
   "by_label": "By:",
+  "default_author_name": "Thierry, Murangira B.",
   "authors_section_title": "Authors",
   "abstract_section_title": "Abstract",
+  "no_abstract_label": "No abstract available for this article.",
   "toc_section_title": "Table of Contents",
+  "toc_locked_notice": "Full content access requires purchase — click any section to unlock",
   "no_toc_label": "No table of contents outlined.",
   "sidebar_title": "Looking for full text?",
   "sidebar_paid_description": "Access to this peer-reviewed publication requires purchase. Unlock to download the full PDF format document.",

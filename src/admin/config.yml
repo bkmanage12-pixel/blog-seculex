@@ -116,7 +116,7 @@ collections:
         hint: "Leave empty to use the global default price. Set a number here to charge a different amount for this specific article."
 
   - name: "pages"
-    label: "Pages"
+    label: "Pages & Site Sections"
     files:
       - label: "Home Page"
         name: "home"
@@ -126,12 +126,21 @@ collections:
           - {label: "Hero Title", name: "hero_title", widget: "string"}
           - {label: "Hero Title Accent", name: "hero_title_accent", widget: "string"}
           - {label: "Hero Description", name: "hero_description", widget: "text"}
-          - {label: "Hero Button Text", name: "hero_button_text", widget: "string"}
-          - {label: "View All Button Label", name: "view_all_label", widget: "string"}
+          - {label: "Hero Button Text (Explore)", name: "hero_button_text", widget: "string"}
+          - {label: "Hero Secondary Button Text (About)", name: "hero_secondary_button_text", widget: "string", default: "About the Journal"}
           - {label: "Hero Image", name: "hero_image", widget: "image"}
-          - {label: "Publications Tag", name: "publications_tag", widget: "string"}
-          - {label: "Publications Title", name: "publications_title", widget: "string"}
-          - {label: "Publications Description", name: "publications_description", widget: "string"}
+          - {label: "Stat 1: Publications Label", name: "stat_publications_label", widget: "string", default: "Publications"}
+          - {label: "Stat 2: Peer Reviewed Icon", name: "stat_peer_reviewed_icon", widget: "string", default: "⚖️"}
+          - {label: "Stat 2: Peer Reviewed Label", name: "stat_peer_reviewed_label", widget: "string", default: "Peer Reviewed"}
+          - {label: "Stat 3: Open Access Icon", name: "stat_open_access_icon", widget: "string", default: "🌐"}
+          - {label: "Stat 3: Open Access Label", name: "stat_open_access_label", widget: "string", default: "Open Access"}
+          - {label: "Publications Section Tag", name: "publications_tag", widget: "string"}
+          - {label: "Publications Section Title", name: "publications_title", widget: "string"}
+          - {label: "Publications Section Description", name: "publications_description", widget: "string"}
+          - {label: "Card Premium Badge Label", name: "card_premium_badge_label", widget: "string", default: "Premium"}
+          - {label: "Card Open Badge Label", name: "card_open_badge_label", widget: "string", default: "Open"}
+          - {label: "View All Button Label", name: "view_all_label", widget: "string"}
+
       - label: "About Section"
         name: "about"
         file: "src/_data/about.json"
@@ -148,18 +157,24 @@ collections:
             fields:
               - {label: "Icon / Emoji", name: "emoji", widget: "string", hint: "Paste a small icon or emoji here."}
               - {label: "Text", name: "text", widget: "string"}
-      - label: "Site Settings & Contact"
+
+      - label: "Site Settings & Navigation"
         name: "site"
         file: "src/_data/site.json"
         fields:
           - {label: "Site Title", name: "site_title", widget: "string"}
           - {label: "Production Site URL", name: "site_url", widget: "string", hint: "Full public URL, e.g. https://seculex.netlify.app"}
+          - {label: "Site Description", name: "site_description", widget: "text"}
+          - {label: "Contact Email", name: "email", widget: "string"}
+          - {label: "Email Accessibility Label", name: "social_email_label", widget: "string", default: "Email SecuLex"}
+          - {label: "WhatsApp URL", name: "whatsapp_url", widget: "string", required: false, hint: "Use https://wa.me/YOURNUMBER"}
+          - {label: "WhatsApp Accessibility Label", name: "social_whatsapp_label", widget: "string"}
+          - {label: "LinkedIn URL", name: "linkedin_url", widget: "string", required: false}
+          - {label: "LinkedIn Accessibility Label", name: "social_linkedin_label", widget: "string"}
+          - {label: "Twitter / X URL", name: "twitter_url", widget: "string", required: false}
+          - {label: "Twitter / X Accessibility Label", name: "social_x_label", widget: "string"}
           - {label: "Disqus Shortname", name: "disqus_shortname", widget: "string", required: false, hint: "Leave blank to disable article comments."}
-          - {label: "Nav Home Label", name: "nav_home", widget: "string"}
-          - {label: "Nav Articles Label", name: "nav_articles", widget: "string"}
-          - {label: "Nav Categories Label", name: "nav_categories", widget: "string"}
-          - {label: "Nav About Label", name: "nav_about", widget: "string"}
-          - {label: "Nav Contact Label", name: "nav_contact", widget: "string"}
+          - {label: "Comments No-JavaScript Message", name: "comments_noscript_text", widget: "string"}
           - {label: "Logo Image", name: "logo_image", widget: "image", required: false, hint: "Optional. Upload a physical image logo to replace the text logo."}
           - {label: "Logo Image Alt Text", name: "logo_alt", widget: "string", hint: "Short accessible description of the header logo image."}
           - {label: "Logo Text (Main)", name: "logo_text_main", widget: "string", default: "Secu", hint: "The main white text of your logo (used if no Image is uploaded)."}
@@ -169,74 +184,89 @@ collections:
           - {label: "Header Brand Title", name: "header_brand_title", widget: "string", hint: "Title text in the middle of the header"}
           - {label: "Header Brand Subtitle", name: "header_brand_subtitle", widget: "string", hint: "Subtitle text in the middle of the header"}
           - {label: "Header Tagline", name: "header_tagline", widget: "string", hint: "Tagline text on the right side of the header"}
-          - {label: "Mobile Menu Button Label", name: "mobile_menu_label", widget: "string"}
-          - {label: "Site Description", name: "site_description", widget: "text"}
-          - {label: "Comments No-JavaScript Message", name: "comments_noscript_text", widget: "string"}
-          - {label: "Footer Copyright", name: "footer_copyright", widget: "string"}
-          - {label: "Footer Themes Title", name: "footer_themes_title", widget: "string"}
-          - {label: "Footer Legal Title", name: "footer_legal_title", widget: "string"}
-          - {label: "Academic Integrity Link Label", name: "legal_academic_integrity_label", widget: "string"}
-          - {label: "Terms Link Label", name: "legal_terms_label", widget: "string"}
-          - {label: "Privacy Link Label", name: "legal_privacy_label", widget: "string"}
-          - {label: "Contact Email", name: "email", widget: "string"}
-          - {label: "Twitter / X URL", name: "twitter_url", widget: "string", required: false}
-          - {label: "Twitter / X Accessibility Label", name: "social_x_label", widget: "string"}
-          - {label: "LinkedIn URL", name: "linkedin_url", widget: "string", required: false}
-          - {label: "LinkedIn Accessibility Label", name: "social_linkedin_label", widget: "string"}
-          - {label: "WhatsApp URL", name: "whatsapp_url", widget: "string", required: false, hint: "Use https://wa.me/YOURNUMBER"}
-          - {label: "WhatsApp Accessibility Label", name: "social_whatsapp_label", widget: "string"}
-          - {label: "Email Accessibility Label", name: "social_email_label", widget: "string"}
-          - label: "Footer Themes"
+          - {label: "Nav Home Label", name: "nav_home", widget: "string", default: "Home"}
+          - {label: "Nav About Label", name: "nav_about", widget: "string", default: "About"}
+          - {label: "Nav Articles Label", name: "nav_articles", widget: "string", default: "Articles"}
+          - {label: "Nav Categories Label", name: "nav_categories", widget: "string", default: "Categories"}
+          - {label: "Nav Contact Label", name: "nav_contact", widget: "string", default: "Contact"}
+          - {label: "Mobile Menu Button Label", name: "mobile_menu_label", widget: "string", default: "Open navigation"}
+          - {label: "Enable Live Publications Ticker", name: "ticker_enabled", widget: "boolean", default: true}
+          - {label: "Publications Ticker Badge Text", name: "ticker_badge_text", widget: "string", default: "RECENT PUBLICATIONS"}
+          - {label: "Enable Floating Display Settings Widget", name: "display_widget_enabled", widget: "boolean", default: true}
+          - {label: "Footer Themes Title", name: "footer_themes_title", widget: "string", default: "Themes"}
+          - label: "Footer Themes Links"
             name: "footer_themes"
             widget: "list"
             fields:
               - {label: "Theme Name", name: "text", widget: "string"}
-              - {label: "Link URL", name: "url", widget: "string", hint: "e.g., # or /some-link/"}
-          - {label: "Footer Contact Column Title", name: "footer_contact_title", widget: "string", default: "Contact", hint: "Heading of the Contact column in the footer."}
-          - {label: "Footer Contact — WhatsApp Label", name: "footer_contact_whatsapp_label", widget: "string", default: "WhatsApp", hint: "Display label for the WhatsApp link in the Contact column."}
-          - {label: "Footer Contact — LinkedIn Label", name: "footer_contact_linkedin_label", widget: "string", default: "LinkedIn", hint: "Display label for the LinkedIn link in the Contact column."}
-          - {label: "Footer Contact — X (Twitter) Label", name: "footer_contact_x_label", widget: "string", default: "X (Twitter)", hint: "Display label for the X / Twitter link in the Contact column."}
-          - {label: "Footer Bottom Tagline", name: "footer_powered_label", widget: "string", default: "Scholarly Publishing Platform", hint: "Small tagline shown in the bottom-right of the footer bar."}
-      - label: "Articles Page"
+              - {label: "Link URL", name: "url", widget: "string", hint: "e.g., /categories/cyber-law/"}
+          - {label: "Footer Legal Title", name: "footer_legal_title", widget: "string", default: "Legal"}
+          - {label: "Academic Integrity Link Label", name: "legal_academic_integrity_label", widget: "string", default: "Academic Integrity"}
+          - {label: "Terms Link Label", name: "legal_terms_label", widget: "string", default: "Terms of Use"}
+          - {label: "Privacy Link Label", name: "legal_privacy_label", widget: "string", default: "Privacy Policy"}
+          - {label: "Footer Contact Column Title", name: "footer_contact_title", widget: "string", default: "Contact"}
+          - {label: "Footer Contact — WhatsApp Label", name: "footer_contact_whatsapp_label", widget: "string", default: "WhatsApp"}
+          - {label: "Footer Contact — LinkedIn Label", name: "footer_contact_linkedin_label", widget: "string", default: "LinkedIn"}
+          - {label: "Footer Contact — X (Twitter) Label", name: "footer_contact_x_label", widget: "string", default: "X (Twitter)"}
+          - {label: "Footer Copyright Text", name: "footer_copyright", widget: "string"}
+          - {label: "Footer Bottom Tagline", name: "footer_powered_label", widget: "string", default: "Scholarly Publishing Platform"}
+
+      - label: "Articles & Repository Page"
         name: "articles_page"
         file: "src/_data/articles_page.json"
         fields:
-          - {label: "Page Title", name: "page_title", widget: "string"}
+          - {label: "Page Title", name: "page_title", widget: "string", default: "All Publications"}
           - {label: "Page Description", name: "page_description", widget: "text"}
-          - {label: "Read Link Label", name: "read_label", widget: "string"}
-          - {label: "Paid Article Label", name: "paid_article_label", widget: "string"}
-          - {label: "Free Article Label", name: "free_article_label", widget: "string"}
-          - {label: "Article Price Label", name: "price_label", widget: "string"}
-          - {label: "Previous Button Label", name: "previous_label", widget: "string"}
-          - {label: "Next Button Label", name: "next_label", widget: "string"}
-          - {label: "Page Status Label", name: "page_status_label", widget: "string"}
-          - {label: "Page Status Connector", name: "page_status_connector", widget: "string"}
-          - {label: "Back to Articles Label", name: "back_to_articles_label", widget: "string"}
-          - {label: "Search Input Placeholder", name: "search_placeholder", widget: "string", default: "Search by title, topic or author..."}
-          - {label: "Search No Results Message", name: "no_results_label", widget: "string", default: "No articles match your search criteria."}
-          - {label: "Recommended Reading Prefix", name: "recommended_reading_label", widget: "string", default: "Recommended reading:"}
+          - {label: "Search Input Placeholder", name: "search_placeholder", widget: "string", default: "Search title, topic or keyword..."}
+          - {label: "Filter Theme Label", name: "filter_theme_label", widget: "string", default: "Theme"}
+          - {label: "Filter Theme All Label", name: "filter_theme_all_label", widget: "string", default: "All"}
+          - {label: "Filter Year Label", name: "filter_year_label", widget: "string", default: "Year"}
+          - {label: "Filter Year All Label", name: "filter_year_all_label", widget: "string", default: "All"}
+          - {label: "Results Count (All)", name: "results_count_all_label", widget: "string", default: "Showing all publications"}
+          - {label: "Results Count (Filtered Suffix)", name: "results_count_filtered_label", widget: "string", default: "publications found"}
+          - {label: "Active Filters Prefix", name: "active_filter_prefix", widget: "string", default: "Active filters:"}
+          - {label: "Reset Filters Button Label", name: "reset_filter_button_label", widget: "string", default: "Reset"}
+          - {label: "No Results Title", name: "no_results_title", widget: "string", default: "No Publications Found"}
+          - {label: "No Results Message", name: "no_results_label", widget: "text", default: "We could not find any publications matching your selected criteria. Try adjusting your theme, year, or search terms."}
+          - {label: "No Results Reset Button Label", name: "no_results_reset_label", widget: "string", default: "View All Publications"}
+          - {label: "Read Link Label", name: "read_label", widget: "string", default: "Read Analysis"}
           - {label: "Min Read Suffix Label", name: "min_read_label", widget: "string", default: "min read"}
+          - {label: "Paid Article Label", name: "paid_article_label", widget: "string", default: "Paid Article"}
+          - {label: "Free Article Label", name: "free_article_label", widget: "string", default: "Free Article"}
+          - {label: "Article Price Label", name: "price_label", widget: "string", default: "Access"}
+          - {label: "Previous Button Label", name: "previous_label", widget: "string", default: "Previous"}
+          - {label: "Next Button Label", name: "next_label", widget: "string", default: "Next"}
+          - {label: "Page Status Label", name: "page_status_label", widget: "string", default: "Page"}
+          - {label: "Page Status Connector", name: "page_status_connector", widget: "string", default: "of"}
+          - {label: "Back to Articles Label", name: "back_to_articles_label", widget: "string", default: "Back to Articles"}
+          - {label: "Recommended Reading Prefix", name: "recommended_reading_label", widget: "string", default: "Recommended reading:"}
           - {label: "By Author Prefix", name: "by_label", widget: "string", default: "by"}
+
       - label: "Categories Page"
         name: "categories_page"
         file: "src/_data/categories_page.json"
         fields:
-          - {label: "Page Title", name: "page_title", widget: "string"}
+          - {label: "Page Title", name: "page_title", widget: "string", default: "Browse by Category"}
           - {label: "Page Description", name: "page_description", widget: "text"}
-          - {label: "Single Category Suffix", name: "single_category_suffix", widget: "string", hint: "Text between the article count and category name, e.g. on"}
+          - {label: "Single Category Suffix", name: "single_category_suffix", widget: "string", default: "on", hint: "Text between the article count and category name, e.g. on"}
           - {label: "Article Count Singular Label", name: "article_singular", widget: "string", default: "article"}
           - {label: "Article Count Plural Label", name: "article_plural", widget: "string", default: "articles"}
-          - {label: "Read Link Label", name: "read_label", widget: "string"}
-          - {label: "No Posts Message", name: "no_posts_label", widget: "string"}
+          - {label: "Read Link Label", name: "read_label", widget: "string", default: "Read"}
+          - {label: "No Posts Message", name: "no_posts_label", widget: "string", default: "No articles in this category yet."}
+
       - label: "Article Details Page Labels"
         name: "post_settings"
         file: "src/_data/post_settings.json"
         fields:
           - {label: "Peer Reviewed Badge Label", name: "peer_reviewed_label", widget: "string", default: "Peer reviewed"}
+          - {label: "Default Publication Type", name: "default_publication_type", widget: "string", default: "Academic Journal"}
           - {label: "By Author Prefix", name: "by_label", widget: "string", default: "By:"}
+          - {label: "Default Author Fallback Name", name: "default_author_name", widget: "string", default: "Thierry, Murangira B."}
           - {label: "Authors Section Title", name: "authors_section_title", widget: "string", default: "Authors"}
           - {label: "Abstract Section Title", name: "abstract_section_title", widget: "string", default: "Abstract"}
+          - {label: "No Abstract Fallback Message", name: "no_abstract_label", widget: "string", default: "No abstract available for this article."}
           - {label: "Table of Contents Title", name: "toc_section_title", widget: "string", default: "Table of Contents"}
+          - {label: "TOC Paywall Notice", name: "toc_locked_notice", widget: "string", default: "Full content access requires purchase — click any section to unlock"}
           - {label: "No Table of Contents Message", name: "no_toc_label", widget: "string", default: "No table of contents outlined."}
           - {label: "Sidebar Title", name: "sidebar_title", widget: "string", default: "Looking for full text?"}
           - {label: "Paid Article Description", name: "sidebar_paid_description", widget: "text", default: "Access to this peer-reviewed publication requires purchase. Unlock to download the full PDF format document."}
@@ -248,6 +278,16 @@ collections:
           - {label: "Unlock Button Text", name: "unlock_button_label", widget: "string", default: "Unlock Full PDF"}
           - {label: "Download Button Text", name: "download_button_label", widget: "string", default: "Download PDF"}
           - {label: "Repository Footer Text", name: "repository_footer_text", widget: "string", default: "SecuLex Scholarly Repository"}
+
+      - label: "404 Not Found Page"
+        name: "not_found"
+        file: "src/_data/not_found.json"
+        fields:
+          - {label: "Error Code", name: "code", widget: "string", default: "404"}
+          - {label: "Title", name: "title", widget: "string", default: "Page Not Found"}
+          - {label: "Description", name: "description", widget: "text", default: "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable."}
+          - {label: "Button Label", name: "button_label", widget: "string", default: "Return to Homepage"}
+
       - label: "Theme Editor (Colors)"
         name: "theme"
         file: "src/_data/theme.json"
@@ -301,6 +341,7 @@ collections:
           - {label: "Home Overlay Bottom Strength", name: "hero_overlay_bottom_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.62, hint: "0 is clear. 1 is fully covered at the bottom."}
           - {label: "Home Overlay Left Strength", name: "hero_overlay_left_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.58, hint: "Controls overlay strength behind the main home title."}
           - {label: "Home Overlay Right Strength", name: "hero_overlay_right_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.12, hint: "Controls overlay strength on the open image side."}
+
       - label: "Paywall Settings"
         name: "paywall"
         file: "src/_data/paywall.json"

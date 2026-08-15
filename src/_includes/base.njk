@@ -189,13 +189,14 @@
         </nav>
     </header>
 
+    {% if site.ticker_enabled != false %}
     <!-- Live Published Articles Scroll Ticker -->
     <div class="latest-articles-ticker" aria-label="Latest Publications Ticker">
         <div class="ticker-inner">
             <div class="ticker-badge">
                 <span class="ticker-pulse-dot"></span>
                 <i class="fas fa-bolt"></i>
-                <span class="ticker-badge-text">RECENT PUBLICATIONS</span>
+                <span class="ticker-badge-text">{{ site.ticker_badge_text | default("RECENT PUBLICATIONS") }}</span>
             </div>
             <div class="ticker-track-wrapper">
                 <div class="ticker-track">
@@ -224,6 +225,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     {{ content | safe }}
 
@@ -303,6 +305,7 @@
         </div>
     </footer>
 
+    {% if site.display_widget_enabled != false %}
     <!-- Floating Display Control Widget -->
     <div id="display-widget-container">
         <button id="display-widget-trigger" class="display-widget-trigger" aria-label="Toggle Display Controls" title="Display Sizing Controls">
@@ -379,6 +382,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <script defer src="/js/script.js?v=3.1"></script>
     <script>

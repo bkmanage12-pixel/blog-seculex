@@ -6,12 +6,12 @@ eleventyExcludeFromCollections: true
 ---
 
 <div class="page-header placeholder-bg fade-in" style="padding: 80px 5% 60px; text-align: center; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color); min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-    <h1 style="color: var(--accent-gold); font-size: 4rem; margin-bottom: 0.5rem; line-height: 1;">404</h1>
-    <h2 style="color: var(--text-primary); font-size: 1.8rem; margin-bottom: 1rem;">Page Not Found</h2>
+    <h1 style="color: var(--accent-gold); font-size: 4rem; margin-bottom: 0.5rem; line-height: 1;">{{ not_found.code | default("404") }}</h1>
+    <h2 style="color: var(--text-primary); font-size: 1.8rem; margin-bottom: 1rem;">{{ not_found.title | default("Page Not Found") }}</h2>
     <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 2rem; font-size: 1.05rem;">
-        The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+        {{ not_found.description | default("The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.") }}
     </p>
     <a href="/" class="btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.8rem; border-radius: 50px; background: var(--accent-gradient); color: #000; font-weight: 600; text-decoration: none;">
-        <i class="fas fa-home"></i> Return to Homepage
+        <i class="fas fa-home"></i> {{ not_found.button_label | default("Return to Homepage") }}
     </a>
 </div>
