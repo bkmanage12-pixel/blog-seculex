@@ -15,10 +15,6 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         <!-- Top bar: Badge + Title + Search -->
         <div class="hub-topbar">
             <div class="hub-identity">
-                <div class="hub-tag-badge">
-                    <i class="fas fa-balance-scale"></i>
-                    <span>PEER-REVIEWED LEGAL REPOSITORY</span>
-                </div>
                 <h1 class="hub-title">{{ articles_page.page_title | default("All Publications") }}</h1>
             </div>
             <div class="hub-search-col">
@@ -161,21 +157,7 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
   flex: 0 0 auto;
 }
 
-.hub-tag-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.22rem 0.75rem;
-  background: rgba(212, 175, 55, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.22);
-  border-radius: 50px;
-  color: var(--accent-gold);
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 1.8px;
-  margin-bottom: 0.4rem;
-  text-transform: uppercase;
-}
+
 
 .hub-title {
   font-family: var(--font-serif);
