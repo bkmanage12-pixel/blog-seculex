@@ -129,6 +129,47 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // ── Theme Selector Modal Handler ──
+    const exploreBtn = document.getElementById('explore-articles-btn');
+    const themeModal = document.getElementById('theme-selector-modal');
+    const themeModalClose = document.getElementById('theme-modal-close-btn');
+
+    function openThemeModal() {
+        if (!themeModal) return;
+        themeModal.classList.add('active');
+        themeModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeThemeModal() {
+        if (!themeModal) return;
+        themeModal.classList.remove('active');
+        themeModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    if (exploreBtn) {
+        exploreBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openThemeModal();
+        });
+    }
+
+    if (themeModalClose) {
+        themeModalClose.addEventListener('click', closeThemeModal);
+    }
+
+    if (themeModal) {
+        themeModal.addEventListener('click', (e) => {
+            if (e.target === themeModal) closeThemeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && themeModal.classList.contains('active')) {
+                closeThemeModal();
+            }
+        });
+    }
 });
 
 // Paywall logic

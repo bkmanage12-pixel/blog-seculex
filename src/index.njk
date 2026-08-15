@@ -24,11 +24,11 @@ title: Home | SecuLex
         <p class="hero-description">{{ home.hero_description }}</p>
 
         <div class="hero-actions">
-            <a href="#articles" class="btn btn-pill-solid hero-btn-primary">
-                <i class="fas fa-book-open"></i>
+            <button type="button" class="btn btn-pill-solid hero-btn-primary" id="explore-articles-btn" aria-haspopup="dialog">
+                <i class="fas fa-layer-group"></i>
                 {{ home.hero_button_text | default("Explore Articles") }}
-                <i class="fas fa-chevron-right hero-btn-chevron"></i>
-            </a>
+                <i class="fas fa-chevron-down hero-btn-chevron"></i>
+            </button>
             <a href="#about" class="btn hero-btn-ghost">
                 <i class="fas fa-info-circle"></i>
                 About the Journal
