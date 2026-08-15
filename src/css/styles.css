@@ -486,8 +486,8 @@ ul {
 
 .hero-title-split {
   font-family: var(--font-serif);
-  font-size: 2.8rem;
-  line-height: 1.15;
+  font-size: clamp(1.4rem, 3.2vw, 2.6rem);
+  line-height: 1.25;
   margin-bottom: 1.25rem;
   color: var(--text-primary);
   font-weight: 700;
@@ -4055,7 +4055,8 @@ html[data-screen-inches-cat="desktop"] .hero-content {
   max-width: 1000px;
 }
 html[data-screen-inches-cat="desktop"] .hero-title-split {
-  font-size: 3.2rem;
+  font-size: 2.7rem;
+  white-space: nowrap;
 }
 html[data-screen-inches-cat="desktop"] .post-content {
   max-width: 900px;
