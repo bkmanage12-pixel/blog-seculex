@@ -162,7 +162,7 @@ collections:
         file: "src/_data/site.json"
         fields:
           - {label: "Site Title", name: "site_title", widget: "string"}
-          - {label: "Production Site URL", name: "site_url", widget: "string", hint: "Full public URL, e.g. https://seculex.netlify.app"}
+          - {label: "Production Site URL", name: "site_url", widget: "string", hint: "Full public URL, e.g. https://seculex.org"}
           - {label: "Site Description", name: "site_description", widget: "text"}
           - {label: "Contact Email", name: "email", widget: "string"}
           - {label: "WhatsApp URL", name: "whatsapp_url", widget: "string", required: false, hint: "Use https://wa.me/YOURNUMBER"}

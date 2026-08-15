@@ -11,6 +11,7 @@
   ADMIN_PASSWORD_HASH = "5523d8cbbaa1a7c1dda2839929ad199e1e90b534c1dc54f4dc73427297766fd2"
   ADMIN_PASSWORD_SALT = "cdfc6609f037b959358fec5f4976c74e"
 
+# 1. Block /admin on the public custom domain (seculex.org and www.seculex.org)
 [[redirects]]
   from = "https://seculex.org/admin/*"
   to = "/404.html"
@@ -35,9 +36,47 @@
   status = 404
   force = true
 
+# 2. Redirect www.seculex.org to canonical apex seculex.org
 [[redirects]]
   from = "https://www.seculex.org/*"
   to = "https://seculex.org/:splat"
   status = 301
   force = true
 
+# 3. Allow Admin Portal on the Netlify app domain (without redirecting to seculex.org)
+[[redirects]]
+  from = "https://seculexp.netlify.app/admin/*"
+  to = "/admin/:splat"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "https://seculexp.netlify.app/admin"
+  to = "/admin/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "https://seculex.netlify.app/admin/*"
+  to = "/admin/:splat"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "https://seculex.netlify.app/admin"
+  to = "/admin/index.html"
+  status = 200
+  force = false
+
+# 4. Redirect all public pages from Netlify app domain directly to seculex.org
+[[redirects]]
+  from = "https://seculexp.netlify.app/*"
+  to = "https://seculex.org/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://seculex.netlify.app/*"
+  to = "https://seculex.org/:splat"
+  status = 301
+  force = true
