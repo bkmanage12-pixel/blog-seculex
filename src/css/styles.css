@@ -537,6 +537,8 @@ ul {
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 3rem;
+  position: relative;
+  z-index: 10;
 }
 
 .btn-pill-solid,
@@ -555,6 +557,9 @@ ul {
   transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
   box-shadow: 0 6px 24px rgba(212, 175, 55, 0.3);
   letter-spacing: 0.2px;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
 }
 
 .btn-pill-solid:hover,

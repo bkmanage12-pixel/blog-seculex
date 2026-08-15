@@ -130,8 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Theme Selector Modal Handler ──
-    const exploreBtn = document.getElementById('explore-articles-btn');
+    // ── Theme Selector Modal Handler (Robust Event Delegation) ──
     const themeModal = document.getElementById('theme-selector-modal');
     const themeModalClose = document.getElementById('theme-modal-close-btn');
 
@@ -149,15 +148,20 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
     }
 
-    if (exploreBtn) {
-        exploreBtn.addEventListener('click', (e) => {
+    document.addEventListener('click', (e) => {
+        const exploreBtnTrigger = e.target.closest('#explore-articles-btn, .hero-btn-primary');
+        if (exploreBtnTrigger) {
             e.preventDefault();
+            e.stopPropagation();
             openThemeModal();
-        });
-    }
+        }
+    });
 
     if (themeModalClose) {
-        themeModalClose.addEventListener('click', closeThemeModal);
+        themeModalClose.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeThemeModal();
+        });
     }
 
     if (themeModal) {

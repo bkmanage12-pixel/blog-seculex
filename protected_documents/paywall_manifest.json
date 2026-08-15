@@ -1,6 +1,4 @@
 {
   "paywallEnabled": true,
-  "freeDocuments": [
-    "document.pdf"
-  ]
+  "freeDocuments": []
 }
