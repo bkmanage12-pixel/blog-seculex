@@ -21,7 +21,7 @@
     <meta name="twitter:image" content="{{ pageImage }}">
     <!-- Admin CMS Identity Widget -->
     <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css?v=3.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
       :root {
@@ -378,7 +378,7 @@
                 </div>
             </div>
     <!-- Interactive Theme Selector Modal -->
-    <div id="theme-selector-modal" class="theme-modal-backdrop" aria-hidden="true" role="dialog" aria-labelledby="theme-modal-title">
+    <div id="theme-selector-modal" class="theme-modal-backdrop" onclick="if(event.target===this)closeThemeModal(event)" aria-hidden="true" role="dialog" aria-labelledby="theme-modal-title">
         <div class="theme-modal-card">
             <div class="theme-modal-header">
                 <div class="theme-modal-title-group">
@@ -386,7 +386,7 @@
                     <h3 id="theme-modal-title">Explore Articles by Theme</h3>
                     <p>Select a legal theme to browse peer-reviewed commentaries & research papers.</p>
                 </div>
-                <button type="button" class="theme-modal-close" id="theme-modal-close-btn" aria-label="Close modal">
+                <button type="button" class="theme-modal-close" id="theme-modal-close-btn" onclick="closeThemeModal(event)" aria-label="Close modal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -416,7 +416,36 @@
         </div>
     </div>
 
-    <script defer src="/js/script.js"></script>
+    <!-- Inline Fast Theme Modal Controller -->
+    <script>
+      function openThemeModal(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        var m = document.getElementById('theme-selector-modal');
+        if (m) {
+          m.classList.add('active');
+          m.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+      function closeThemeModal(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        var m = document.getElementById('theme-selector-modal');
+        if (m) {
+          m.classList.remove('active');
+          m.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+      window.openThemeModal = openThemeModal;
+      window.closeThemeModal = closeThemeModal;
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeThemeModal(e);
+      });
+    </script>
+
+    <script defer src="/js/script.js?v=3.0"></script>
     <script>
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", user => {
