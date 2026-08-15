@@ -15,14 +15,9 @@
   "no_results_reset_label": "View All Publications",
   "read_label": "Read Analysis",
   "min_read_label": "min read",
-  "paid_article_label": "Paid Article",
-  "free_article_label": "Free Article",
-  "price_label": "Access",
   "previous_label": "Previous",
   "next_label": "Next",
   "page_status_label": "Page",
   "page_status_connector": "of",
-  "back_to_articles_label": "Back to Articles",
-  "recommended_reading_label": "Recommended reading:",
-  "by_label": "by"
+  "back_to_articles_label": "Back to Articles"
 }

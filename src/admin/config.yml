@@ -122,7 +122,6 @@ collections:
         name: "home"
         file: "src/_data/home.json"
         fields:
-          - {label: "Hero Tagline", name: "hero_tagline", widget: "string"}
           - {label: "Hero Title", name: "hero_title", widget: "string"}
           - {label: "Hero Title Accent", name: "hero_title_accent", widget: "string"}
           - {label: "Hero Description", name: "hero_description", widget: "text"}
@@ -166,13 +165,9 @@ collections:
           - {label: "Production Site URL", name: "site_url", widget: "string", hint: "Full public URL, e.g. https://seculex.netlify.app"}
           - {label: "Site Description", name: "site_description", widget: "text"}
           - {label: "Contact Email", name: "email", widget: "string"}
-          - {label: "Email Accessibility Label", name: "social_email_label", widget: "string", default: "Email SecuLex"}
           - {label: "WhatsApp URL", name: "whatsapp_url", widget: "string", required: false, hint: "Use https://wa.me/YOURNUMBER"}
-          - {label: "WhatsApp Accessibility Label", name: "social_whatsapp_label", widget: "string"}
           - {label: "LinkedIn URL", name: "linkedin_url", widget: "string", required: false}
-          - {label: "LinkedIn Accessibility Label", name: "social_linkedin_label", widget: "string"}
           - {label: "Twitter / X URL", name: "twitter_url", widget: "string", required: false}
-          - {label: "Twitter / X Accessibility Label", name: "social_x_label", widget: "string"}
           - {label: "Disqus Shortname", name: "disqus_shortname", widget: "string", required: false, hint: "Leave blank to disable article comments."}
           - {label: "Comments No-JavaScript Message", name: "comments_noscript_text", widget: "string"}
           - {label: "Logo Image", name: "logo_image", widget: "image", required: false, hint: "Optional. Upload a physical image logo to replace the text logo."}
@@ -180,10 +175,7 @@ collections:
           - {label: "Logo Text (Main)", name: "logo_text_main", widget: "string", default: "Secu", hint: "The main white text of your logo (used if no Image is uploaded)."}
           - {label: "Logo Text (Accent)", name: "logo_text_accent", widget: "string", default: "Lex", hint: "The golden accent text of your logo."}
           - {label: "Logo Tagline", name: "logo_tagline", widget: "string", hint: "Tagline below the logo"}
-          - {label: "Logo Badge", name: "logo_badge", widget: "string", hint: "Badge text in the logo"}
-          - {label: "Header Brand Title", name: "header_brand_title", widget: "string", hint: "Title text in the middle of the header"}
-          - {label: "Header Brand Subtitle", name: "header_brand_subtitle", widget: "string", hint: "Subtitle text in the middle of the header"}
-          - {label: "Header Tagline", name: "header_tagline", widget: "string", hint: "Tagline text on the right side of the header"}
+          - {label: "Header Brand Subtitle", name: "header_brand_subtitle", widget: "string", hint: "Subtitle text in the header"}
           - {label: "Nav Home Label", name: "nav_home", widget: "string", default: "Home"}
           - {label: "Nav About Label", name: "nav_about", widget: "string", default: "About"}
           - {label: "Nav Articles Label", name: "nav_articles", widget: "string", default: "Articles"}
@@ -231,16 +223,11 @@ collections:
           - {label: "No Results Reset Button Label", name: "no_results_reset_label", widget: "string", default: "View All Publications"}
           - {label: "Read Link Label", name: "read_label", widget: "string", default: "Read Analysis"}
           - {label: "Min Read Suffix Label", name: "min_read_label", widget: "string", default: "min read"}
-          - {label: "Paid Article Label", name: "paid_article_label", widget: "string", default: "Paid Article"}
-          - {label: "Free Article Label", name: "free_article_label", widget: "string", default: "Free Article"}
-          - {label: "Article Price Label", name: "price_label", widget: "string", default: "Access"}
           - {label: "Previous Button Label", name: "previous_label", widget: "string", default: "Previous"}
           - {label: "Next Button Label", name: "next_label", widget: "string", default: "Next"}
           - {label: "Page Status Label", name: "page_status_label", widget: "string", default: "Page"}
           - {label: "Page Status Connector", name: "page_status_connector", widget: "string", default: "of"}
           - {label: "Back to Articles Label", name: "back_to_articles_label", widget: "string", default: "Back to Articles"}
-          - {label: "Recommended Reading Prefix", name: "recommended_reading_label", widget: "string", default: "Recommended reading:"}
-          - {label: "By Author Prefix", name: "by_label", widget: "string", default: "by"}
 
       - label: "Categories Page"
         name: "categories_page"
@@ -302,10 +289,7 @@ collections:
           - {label: "Logo Main Text Color", name: "logo_main_text_color", widget: "color", default: "#ffffff"}
           - {label: "Logo Accent Text Color", name: "logo_accent_text_color", widget: "color", default: "#d4af37"}
           - {label: "Logo Tagline Text Color", name: "logo_tagline_text_color", widget: "color", default: "#94a3b8"}
-          - {label: "Logo Badge Text Color", name: "logo_badge_text_color", widget: "color", default: "#080a11"}
-          - {label: "Header Brand Title Text Color", name: "header_brand_title_color", widget: "color", default: "#d4af37"}
           - {label: "Header Brand Subtitle Text Color", name: "header_brand_subtitle_color", widget: "color", default: "#f8fafc"}
-          - {label: "Header Tagline Text Color", name: "header_tagline_text_color", widget: "color", default: "#f8fafc"}
           - {label: "Navigation Link Text Color", name: "nav_link_text_color", widget: "color", default: "#f8fafc"}
           - {label: "Navigation Active Text Color", name: "nav_active_text_color", widget: "color", default: "#080a11"}
           - {label: "Home Hero Title Text Color", name: "hero_title_text_color", widget: "color", default: "#f8fafc"}
@@ -349,16 +333,10 @@ collections:
           - {label: "Enable Paywall", name: "enabled", widget: "boolean", default: true, hint: "Turn the download paywall on or off globally"}
           - {label: "Default Download Price", name: "price", widget: "number", value_type: "float", min: 0.5, step: 0.01, default: 5, hint: "Default amount visitors must pay to download protected documents."}
           - {label: "Currency", name: "currency", widget: "string", default: "USD", hint: "Currency code e.g. USD, EUR, XAF"}
-          - {label: "Legacy Payment Link URL", name: "paypal_me_url", widget: "string", required: false, hint: "Kept only for older content. Real paywall payments use PayPal API environment variables in Netlify."}
           - {label: "Payment Modal Message", name: "payment_note", widget: "text", hint: "Message shown to visitors in the payment popup"}
-          - {label: "Buy Button Label", name: "button_label", widget: "string", default: "Buy Now"}
-          - {label: "Attachment Label", name: "attachment_label", widget: "string"}
-          - {label: "Attachment Hint", name: "attachment_hint", widget: "text"}
           - {label: "Modal Badge", name: "modal_badge", widget: "string"}
           - {label: "Modal Title", name: "modal_title", widget: "string"}
           - {label: "Per Document Label", name: "per_document_label", widget: "string"}
-          - {label: "Pay Button Prefix", name: "pay_now_prefix", widget: "string", default: "Pay"}
-          - {label: "Pay Button Suffix", name: "pay_now_suffix", widget: "string", default: "Now"}
           - {label: "Paywall Close Button Label", name: "close_label", widget: "string", default: "Close"}
           - {label: "Verified Required Label", name: "verified_required_label", widget: "string"}
           - {label: "Redirect Hint", name: "redirect_hint", widget: "text"}
@@ -369,5 +347,5 @@ collections:
           - {label: "Verification Error Message", name: "verification_error_message", widget: "string"}
           - {label: "Verification Success Message", name: "verification_success_message", widget: "string"}
           - {label: "Download Again Label", name: "download_again_label", widget: "string"}
-          - {label: "PayPal Button Label", name: "pay_now_paypal_label", widget: "string", default: "Pay with PayPal / Cards", hint: "Text shown on the PayPal payment button inside the paywall modal."}
-          - {label: "Mobile Money Button Label", name: "pay_now_flutterwave_label", widget: "string", default: "Pay with Mobile Money / Cards", hint: "Text shown on the Flutterwave / Mobile Money payment button inside the paywall modal."}
+          - {label: "PayPal Button Label", name: "pay_now_paypal_label", widget: "string", default: "Pay with Cards", hint: "Text shown on the PayPal payment button inside the paywall modal."}
+          - {label: "Mobile Money Button Label", name: "pay_now_flutterwave_label", widget: "string", default: "Pay with Mobile Money", hint: "Text shown on the Flutterwave / Mobile Money payment button inside the paywall modal."}
