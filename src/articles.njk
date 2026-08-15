@@ -9,20 +9,61 @@ pagination:
 permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}index.html"
 ---
 
-<div class="page-header placeholder-bg fade-in" style="padding: 24px 5% 20px; text-align: center; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);">
-    <h1 style="color: var(--accent-gold); font-size: 2.2rem; margin-bottom: 0.75rem;">{{ articles_page.page_title }}</h1>
-    <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 1.5rem;">{{ articles_page.page_description }}</p>
+<div class="page-header fade-in" style="padding: 32px 5% 24px; text-align: center; background: #0c0f18; border-bottom: 1px solid rgba(212, 175, 55, 0.15);">
+    <h1 style="color: var(--accent-gold); font-size: 2.2rem; margin-bottom: 0.5rem; font-family: var(--font-serif); font-weight: 700;">{{ articles_page.page_title | default("All Scholarly Publications") }}</h1>
+    <p style="color: var(--text-secondary); max-width: 650px; margin: 0 auto 1.5rem; font-size: 0.95rem;">{{ articles_page.page_description | default("Explore peer-reviewed legal analysis, commentary, and research categorized by legal discipline and year of publication.") }}</p>
     
     <!-- Search Bar Wrapper -->
-    <div class="search-wrapper" style="max-width: 550px; margin: 0 auto; position: relative;">
-        <i class="fas fa-search search-icon" style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; font-size: 0.95rem;"></i>
-        <input type="text" id="article-search" placeholder="{{ articles_page.search_placeholder | default('Search by title, topic or author...') }}" style="width: 100%; padding: 0.85rem 1.25rem 0.85rem 2.8rem; border-radius: 50px; border: 1px solid var(--border-color); background: rgba(8, 10, 17, 0.75); color: var(--text-primary); font-size: 0.95rem; outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);">
+    <div class="search-wrapper" style="max-width: 580px; margin: 0 auto 1.5rem; position: relative;">
+        <i class="fas fa-search search-icon" style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--accent-gold); pointer-events: none; font-size: 0.95rem;"></i>
+        <input type="text" id="article-search" placeholder="{{ articles_page.search_placeholder | default('Search by title, topic, author or keyword...') }}" style="width: 100%; padding: 0.85rem 1.25rem 0.85rem 2.8rem; border-radius: 50px; border: 1px solid rgba(212, 175, 55, 0.3); background: #070910; color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.25s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);">
         <button id="search-clear" class="search-clear-btn" style="position: absolute; right: 1.25rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer; display: none; font-size: 1.1rem; line-height: 1; padding: 0.2rem; transition: color 0.2s;"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- Theme & Year Selection Toolbar (Solid, Non-Glassmorphic) -->
+    <div class="publications-filter-container" style="max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+        
+        <!-- Filter Row 1: Themes -->
+        <div class="filter-row" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem;">
+            <span class="filter-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); margin-right: 0.4rem; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="fas fa-layer-group"></i> Theme:</span>
+            <button type="button" class="pub-filter-btn pub-theme-btn active" data-theme="all">
+                <i class="fas fa-globe"></i> All Themes
+            </button>
+            {% for key, cat in categories %}
+            <button type="button" class="pub-filter-btn pub-theme-btn" data-theme="{{ cat.title }}">
+                <i class="fas {{ cat.icon }}"></i> {{ cat.title }}
+            </button>
+            {% endfor %}
+        </div>
+
+        <!-- Filter Row 2: Year of Publication -->
+        <div class="filter-row" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem;">
+            <span class="filter-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); margin-right: 0.4rem; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="far fa-calendar-alt"></i> Year:</span>
+            <button type="button" class="pub-filter-btn pub-year-btn active" data-year="all">
+                All Years
+            </button>
+            <button type="button" class="pub-filter-btn pub-year-btn" data-year="2026">
+                2026
+            </button>
+            <button type="button" class="pub-filter-btn pub-year-btn" data-year="2025">
+                2025
+            </button>
+            <button type="button" class="pub-filter-btn pub-year-btn" data-year="2024">
+                2024
+            </button>
+        </div>
+
+        <!-- Active Filter Status Indicator -->
+        <div id="filter-status-indicator" style="font-size: 0.82rem; color: var(--text-secondary); display: none; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+            <span>Filtering by:</span>
+            <span id="active-filter-text" style="color: var(--accent-gold); font-weight: 600;"></span>
+            <button type="button" id="reset-all-filters-btn" style="background: none; border: 1px solid rgba(255,255,255,0.2); color: #ffffff; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">Reset All</button>
+        </div>
     </div>
 </div>
 
-<main style="padding-top: 3rem;">
-    <!-- Default Paginated View -->
+<main style="padding-top: 2.5rem; max-width: 1200px; margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem;">
+    <!-- Default Paginated View (shown before filtering/searching) -->
     <div id="default-articles-section">
         <div class="blog-grid fade-in">
             {% for post in posts %}
@@ -34,10 +75,11 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
                             <span>{{ articles_page.read_label | default("Read Analysis") }}</span>
                         </div>
                     </a>
+                    <span class="card-category-badge">{{ post.data.category }}</span>
                 </div>
                 <div class="card-content">
                     <div class="meta">
-                        <span class="category">{{ post.data.category }}</span>
+                        <span class="category" style="color: var(--accent-gold); font-weight: 600;">{{ post.data.category }}</span>
                         <span class="date">{{ post.data.date | readableDate }}</span>
                     </div>
                     <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
@@ -52,7 +94,7 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         </div>
 
         <!-- Pagination Controls -->
-        <div class="pagination-container" style="margin-top: 4rem; display: flex; justify-content: center; gap: 1rem; align-items: center;">
+        <div class="pagination-container" style="margin-top: 3.5rem; margin-bottom: 2rem; display: flex; justify-content: center; gap: 1rem; align-items: center;">
             {% if pagination.href.previous %}
                 <a href="{{ pagination.href.previous }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> {{ articles_page.previous_label | default("Previous") }}</a>
             {% else %}
@@ -71,20 +113,53 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         </div>
     </div>
 
-    <!-- Search Results Section (Initially Hidden) -->
+    <!-- Filter & Search Results Section (Rendered dynamically when filter/search active) -->
     <div id="search-results-section" style="display: none;">
+        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem;">
+            <span id="results-count-badge" style="color: var(--accent-gold); font-weight: 600; font-size: 0.95rem;"></span>
+        </div>
         <div class="blog-grid" id="search-results-grid"></div>
         <div id="search-no-results" style="display: none; justify-content: center; align-items: center; padding: 4rem 0; width: 100%;">
-            <p class="no-posts-msg" style="margin: 0;"><i class="fas fa-search-minus"></i> {{ articles_page.no_results_label | default("No articles match your search criteria.") }}</p>
+            <p class="no-posts-msg" style="margin: 0; font-size: 1.05rem; color: var(--text-secondary);"><i class="fas fa-search-minus" style="color: var(--accent-gold); margin-right: 0.5rem;"></i> {{ articles_page.no_results_label | default("No articles found matching the selected theme and publication year.") }}</p>
         </div>
     </div>
 </main>
+
+<style>
+.pub-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #121622;
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pub-filter-btn:hover {
+  background: #1c2234;
+  border-color: rgba(212, 175, 55, 0.5);
+  color: #ffffff;
+}
+
+.pub-filter-btn.active {
+  background: var(--accent-gold);
+  color: #060a10;
+  border-color: var(--accent-gold);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+</style>
 
 <script>
     const readLabel = {{ articles_page.read_label | default("Read Analysis") | dump | safe }};
     const minReadLabel = {{ articles_page.min_read_label | default("min read") | dump | safe }};
     const byLabel = {{ articles_page.by_label | default("by") | dump | safe }};
-    const recommendedReadingLabel = {{ articles_page.recommended_reading_label | default("Recommended reading:") | dump | safe }};
 
     const ALL_POSTS = [
         {% for post in collections.posts %}
@@ -92,11 +167,12 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
             title: {{ post.data.title | dump | safe }},
             url: {{ post.url | dump | safe }},
             category: {{ post.data.category | dump | safe }},
-            author: {{ post.data.author | dump | safe }},
-            description: {{ post.data.description | dump | safe }},
-            thumbnail: {{ post.data.thumbnail | dump | safe }},
+            author: {{ post.data.author | default("SecuLex Editorial") | dump | safe }},
+            description: {{ post.data.description | default("") | dump | safe }},
+            thumbnail: {{ post.data.thumbnail | default("/assets/images/default-post.png") | dump | safe }},
             readTime: {{ post.data.read_time | default(5) | dump | safe }},
             date: {{ post.data.date | readableDate | dump | safe }},
+            year: "{{ post.date.getFullYear() }}",
             paywallEnabled: {{ post.data.paywall_enabled | default(false) | dump | safe }},
             price: {{ post.data.price_override | default(paywall.price) | dump | safe }},
             currency: {{ paywall.currency | dump | safe }}
@@ -111,62 +187,43 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         const resultsSection = document.getElementById("search-results-section");
         const resultsGrid = document.getElementById("search-results-grid");
         const noResultsMsg = document.getElementById("search-no-results");
+        const countBadge = document.getElementById("results-count-badge");
+        const statusIndicator = document.getElementById("filter-status-indicator");
+        const activeFilterText = document.getElementById("active-filter-text");
+        const resetBtn = document.getElementById("reset-all-filters-btn");
 
-        const getSuggestions = (currentPost, allPosts) => {
-            // Priority 1: Same category, different author
-            let candidates = allPosts.filter(p => p.url !== currentPost.url && p.category === currentPost.category && p.author.toLowerCase() !== currentPost.author.toLowerCase());
-            
-            // Priority 2: Same category, same author
-            if (candidates.length === 0) {
-                candidates = allPosts.filter(p => p.url !== currentPost.url && p.category === currentPost.category);
-            }
-            
-            // Priority 3: Different author, any category
-            if (candidates.length === 0) {
-                candidates = allPosts.filter(p => p.url !== currentPost.url && p.author.toLowerCase() !== currentPost.author.toLowerCase());
-            }
+        const themeBtns = document.querySelectorAll(".pub-theme-btn");
+        const yearBtns = document.querySelectorAll(".pub-year-btn");
 
-            // Fallback: Any other article
-            if (candidates.length === 0) {
-                candidates = allPosts.filter(p => p.url !== currentPost.url);
-            }
+        let currentTheme = "all";
+        let currentYear = "all";
 
-            return candidates.slice(0, 2);
-        };
+        // Read URL params if present (e.g. ?theme=Cyber%20Law or ?year=2026)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("theme")) {
+            currentTheme = urlParams.get("theme");
+            themeBtns.forEach(btn => {
+                btn.classList.toggle("active", btn.getAttribute("data-theme").toLowerCase() === currentTheme.toLowerCase());
+            });
+        }
+        if (urlParams.has("year")) {
+            currentYear = urlParams.get("year");
+            yearBtns.forEach(btn => {
+                btn.classList.toggle("active", btn.getAttribute("data-year") === currentYear);
+            });
+        }
 
         const renderResults = (posts) => {
             resultsGrid.innerHTML = "";
             if (posts.length === 0) {
                 noResultsMsg.style.display = "flex";
+                countBadge.textContent = "0 publications found";
                 return;
             }
             noResultsMsg.style.display = "none";
+            countBadge.textContent = `${posts.length} publication${posts.length === 1 ? '' : 's'} found`;
 
             posts.forEach(post => {
-                const suggestions = getSuggestions(post, ALL_POSTS);
-                let suggestionsHtml = "";
-
-                if (suggestions.length > 0) {
-                    const suggestionItems = suggestions.map(suggest => `
-                        <li style="margin-bottom: 0.35rem; line-height: 1.35;">
-                            <a href="${suggest.url}" style="font-size: 0.85rem; color: var(--text-primary); display: inline-flex; align-items: center; gap: 0.4rem; transition: color 0.2s;">
-                                <i class="fas fa-arrow-circle-right" style="color: var(--accent-gold); font-size: 0.8rem;"></i>
-                                <span style="text-decoration: underline;">${suggest.title}</span> 
-                                <span style="color: var(--text-secondary); font-size: 0.78rem; font-style: italic;">${byLabel} ${suggest.author}</span>
-                            </a>
-                        </li>
-                    `).join("");
-
-                    suggestionsHtml = `
-                        <div class="search-suggestions" style="margin: 1rem 0; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.08); text-align: left;">
-                            <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); display: block; margin-bottom: 0.4rem; font-weight: 600;"><i class="fas fa-lightbulb"></i> ${recommendedReadingLabel}</span>
-                            <ul style="list-style: none; padding: 0; margin: 0;">
-                                ${suggestionItems}
-                            </ul>
-                        </div>
-                    `;
-                }
-
                 const cardHtml = `
                     <article class="blog-card fade-in visible" style="opacity: 1; transform: translateY(0);">
                         <div class="card-img">
@@ -176,15 +233,15 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
                                     <span>${readLabel}</span>
                                 </div>
                             </a>
+                            <span class="card-category-badge">${post.category}</span>
                         </div>
                         <div class="card-content">
                             <div class="meta">
-                                <span class="category">${post.category}</span>
+                                <span class="category" style="color: var(--accent-gold); font-weight: 600;">${post.category}</span>
                                 <span class="date">${post.date}</span>
                             </div>
                             <h3><a href="${post.url}">${post.title}</a></h3>
                             <p>${post.description.length > 130 ? post.description.substring(0, 130) + '...' : post.description}</p>
-                            ${suggestionsHtml}
                             <div class="card-footer">
                                 <span class="read-time"><i class="far fa-clock"></i> ${post.readTime} ${minReadLabel}</span>
                                 <a href="${post.url}" class="read-more">${readLabel} <i class="fas fa-arrow-right"></i></a>
@@ -196,32 +253,91 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
             });
         };
 
-        const performSearch = () => {
+        const applyAllFilters = () => {
             const query = searchInput.value.trim().toLowerCase();
-            if (query === "") {
+            const isFiltering = query !== "" || currentTheme !== "all" || currentYear !== "all";
+
+            if (!isFiltering) {
                 clearBtn.style.display = "none";
                 defaultSection.style.display = "block";
                 resultsSection.style.display = "none";
+                statusIndicator.style.display = "none";
                 return;
             }
 
-            clearBtn.style.display = "block";
+            clearBtn.style.display = query !== "" ? "block" : "none";
             defaultSection.style.display = "none";
             resultsSection.style.display = "block";
+            statusIndicator.style.display = "flex";
 
-            const filtered = ALL_POSTS.filter(post => 
-                post.title.toLowerCase().includes(query) || 
-                post.author.toLowerCase().includes(query) ||
-                post.category.toLowerCase().includes(query)
-            );
+            let filterDescriptions = [];
+            if (currentTheme !== "all") filterDescriptions.push(`Theme: "${currentTheme}"`);
+            if (currentYear !== "all") filterDescriptions.push(`Year: "${currentYear}"`);
+            if (query !== "") filterDescriptions.push(`Keyword: "${query}"`);
+            activeFilterText.textContent = filterDescriptions.join(" + ");
+
+            const filtered = ALL_POSTS.filter(post => {
+                // Theme filter
+                const matchesTheme = currentTheme === "all" || 
+                    post.category.toLowerCase() === currentTheme.toLowerCase();
+                
+                // Year filter
+                const matchesYear = currentYear === "all" || 
+                    post.year === currentYear;
+
+                // Search query
+                const matchesQuery = query === "" || 
+                    post.title.toLowerCase().includes(query) || 
+                    post.author.toLowerCase().includes(query) ||
+                    post.category.toLowerCase().includes(query) ||
+                    post.description.toLowerCase().includes(query);
+
+                return matchesTheme && matchesYear && matchesQuery;
+            });
+
             renderResults(filtered);
         };
 
-        searchInput.addEventListener("input", performSearch);
+        // Theme button click events
+        themeBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                themeBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentTheme = btn.getAttribute("data-theme");
+                applyAllFilters();
+            });
+        });
+
+        // Year button click events
+        yearBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                yearBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentYear = btn.getAttribute("data-year");
+                applyAllFilters();
+            });
+        });
+
+        searchInput.addEventListener("input", applyAllFilters);
+
         clearBtn.addEventListener("click", () => {
             searchInput.value = "";
-            performSearch();
+            applyAllFilters();
             searchInput.focus();
         });
+
+        resetBtn.addEventListener("click", () => {
+            currentTheme = "all";
+            currentYear = "all";
+            searchInput.value = "";
+            themeBtns.forEach(b => b.classList.toggle("active", b.getAttribute("data-theme") === "all"));
+            yearBtns.forEach(b => b.classList.toggle("active", b.getAttribute("data-year") === "all"));
+            applyAllFilters();
+        });
+
+        // If page loaded with URL params, trigger initial filtering
+        if (currentTheme !== "all" || currentYear !== "all") {
+            applyAllFilters();
+        }
     });
 </script>

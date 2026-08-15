@@ -4532,316 +4532,46 @@ input:checked + .slider-toggle:before {
 }
 
 /* ============================================================
-   INTERACTIVE THEME SELECTOR MODAL (Glassmorphic Drawer)
+   PUBLICATIONS DIRECTORY FILTER CONTROLS
    ============================================================ */
-.theme-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(4, 6, 12, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), visibility 0.3s;
-}
-
-.theme-modal-backdrop.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-.theme-modal-card {
-  background: linear-gradient(160deg, rgba(16, 20, 36, 0.95) 0%, rgba(10, 13, 24, 0.98) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 24px;
-  width: 100%;
-  max-width: 840px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 2.2rem 2.5rem;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(212, 175, 55, 0.12);
-  transform: translateY(25px) scale(0.96);
-  transition: transform 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.theme-modal-backdrop.active .theme-modal-card {
-  transform: translateY(0) scale(1);
-}
-
-.theme-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.theme-modal-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 2px;
-  color: var(--accent-gold);
-  background: rgba(212, 175, 55, 0.12);
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  padding: 0.35rem 0.9rem;
-  border-radius: 50px;
-  margin-bottom: 0.75rem;
-  text-transform: uppercase;
-}
-
-.theme-modal-title-group h3 {
-  font-family: var(--font-serif);
-  font-size: 1.85rem;
-  color: #ffffff;
-  margin-bottom: 0.4rem;
-  font-weight: 700;
-}
-
-.theme-modal-title-group p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
-
-.theme-modal-close {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  flex-shrink: 0;
-}
-
-.theme-modal-close:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: #ef4444;
-  color: #ef4444;
-  transform: rotate(90deg);
-}
-
-.theme-modal-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.25rem;
-}
-
-.theme-modal-item {
-  display: flex;
-  align-items: center;
-  gap: 1.1rem;
-  padding: 1.25rem 1.4rem;
-  background: rgba(18, 22, 38, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  text-decoration: none;
-  transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.theme-modal-item:hover {
-  transform: translateY(-4px);
-  background: rgba(24, 30, 52, 0.9);
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 175, 55, 0.1);
-}
-
-.theme-modal-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  flex-shrink: 0;
-  background: rgba(212, 175, 55, 0.12);
-  color: var(--accent-gold);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  transition: transform 0.3s ease;
-}
-
-.theme-modal-item:hover .theme-modal-icon {
-  transform: scale(1.1) rotate(-5deg);
-}
-
-.theme-modal-item--cyber .theme-modal-icon { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.3); }
-.theme-modal-item--internationallaw .theme-modal-icon { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
-.theme-modal-item--medicallaw .theme-modal-icon { background: rgba(45, 212, 191, 0.15); color: #2dd4bf; border-color: rgba(45, 212, 191, 0.3); }
-.theme-modal-item--humanrights .theme-modal-icon { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
-.theme-modal-item--forensiclaw .theme-modal-icon { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
-.theme-modal-item--phdthesis .theme-modal-icon { background: rgba(212, 175, 55, 0.15); color: var(--accent-gold); border-color: rgba(212, 175, 55, 0.3); }
-.theme-modal-item--all .theme-modal-icon { background: rgba(255, 255, 255, 0.1); color: #ffffff; border-color: rgba(255, 255, 255, 0.2); }
-
-.theme-modal-content h4 {
-  font-family: var(--font-serif);
-  font-size: 1.05rem;
-  color: #ffffff;
-  margin-bottom: 0.25rem;
-  font-weight: 700;
-}
-
-.theme-modal-link-text {
-  font-size: 0.76rem;
-  color: var(--text-secondary);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  transition: color 0.25s ease;
-}
-
-.theme-modal-item:hover .theme-modal-link-text {
-  color: var(--accent-gold);
-}
-
-@media (max-width: 600px) {
-  .theme-modal-card {
-    padding: 1.5rem 1.25rem;
-  }
-  .theme-modal-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ============================================================
-   HERO EXPLORE THEMES DROPDOWN (Direct on-page drawer)
-   ============================================================ */
-.hero-explore-dropdown-wrapper {
-  position: relative;
-  display: inline-block;
-  z-index: 100;
-}
-
-.hero-theme-dropdown {
-  position: absolute;
-  top: calc(100% + 12px);
-  left: 0;
-  width: 320px;
-  background: #090c16;
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  border-radius: 18px;
-  padding: 0.75rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 175, 55, 0.15);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(-8px);
-  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
-  z-index: 999;
-}
-
-.hero-theme-dropdown.open {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.hero-theme-dropdown-header {
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--accent-gold);
-  padding: 0.4rem 0.6rem 0.6rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 0.4rem;
-}
-
-.hero-theme-dropdown-list {
+.publications-filter-container {
+  max-width: 1000px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.85rem;
+  align-items: center;
 }
 
-.hero-theme-drop-item {
-  display: flex;
+.pub-filter-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0.75rem;
-  border-radius: 10px;
-  color: #f8fafc;
-  text-decoration: none;
-  font-size: 0.88rem;
-  font-weight: 500;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #121622;
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.hero-theme-drop-item:hover {
-  background: rgba(212, 175, 55, 0.12);
-  color: var(--accent-gold);
-  transform: translateX(3px);
+.pub-filter-btn:hover {
+  background: #1c2234;
+  border-color: rgba(212, 175, 55, 0.5);
+  color: #ffffff;
 }
 
-.hero-theme-drop-arrow {
-  margin-left: auto;
-  font-size: 0.7rem;
-  opacity: 0.4;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.hero-theme-drop-item:hover .hero-theme-drop-arrow {
-  opacity: 1;
-  transform: translateX(2px);
-}
-
-/* ============================================================
-   INTERACTIVE THEME FILTER TABS IN ARTICLES SECTION
-   ============================================================ */
-.theme-filter-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.6rem;
-  margin: 0 auto 3rem;
-  max-width: 900px;
-}
-
-.theme-filter-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.55rem 1.15rem;
-  border-radius: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(14, 18, 30, 0.7);
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  backdrop-filter: blur(8px);
-}
-
-.theme-filter-tab:hover {
-  border-color: rgba(212, 175, 55, 0.4);
-  color: var(--accent-gold);
-  background: rgba(24, 30, 48, 0.9);
-  transform: translateY(-2px);
-}
-
-.theme-filter-tab.active {
+.pub-filter-btn.active {
   background: var(--accent-gold);
   color: #060a10;
   border-color: var(--accent-gold);
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
   font-weight: 700;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
 }
+
 
 
 

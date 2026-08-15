@@ -129,52 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // ── Theme Selector Modal Handler (Robust Event Delegation) ──
-    const themeModal = document.getElementById('theme-selector-modal');
-    const themeModalClose = document.getElementById('theme-modal-close-btn');
-
-    function openThemeModal() {
-        if (!themeModal) return;
-        themeModal.classList.add('active');
-        themeModal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeThemeModal() {
-        if (!themeModal) return;
-        themeModal.classList.remove('active');
-        themeModal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-    }
-
-    document.addEventListener('click', (e) => {
-        const exploreBtnTrigger = e.target.closest('#explore-articles-btn, .hero-btn-primary');
-        if (exploreBtnTrigger) {
-            e.preventDefault();
-            e.stopPropagation();
-            openThemeModal();
-        }
-    });
-
-    if (themeModalClose) {
-        themeModalClose.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeThemeModal();
-        });
-    }
-
-    if (themeModal) {
-        themeModal.addEventListener('click', (e) => {
-            if (e.target === themeModal) closeThemeModal();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && themeModal.classList.contains('active')) {
-                closeThemeModal();
-            }
-        });
-    }
 });
+
+// Paywall logic
 
 // Paywall logic
 
