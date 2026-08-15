@@ -363,6 +363,39 @@
     const bar = document.getElementById("admin-security-bar");
     if (bar) bar.style.display = "flex";
     resetIdleTimer();
+    injectCMSPublishHider();
+  }
+
+  /**
+   * Hide the per-entry "Publish" button inside Decap CMS.
+   * The editorial workflow shows a Publish button on every entry —
+   * we hide it so the admin must use the "Publish All" bar button.
+   * We also relabel the per-entry Save button to "Save Draft".
+   */
+  function injectCMSPublishHider() {
+    if (document.getElementById("seculex-cms-publish-hider")) return;
+    const style = document.createElement("style");
+    style.id = "seculex-cms-publish-hider";
+    style.textContent = [
+      /* Hide the CMS Publish Now button inside entry editor */
+      '[data-testid="publish-button"],',
+      'button[class*="PublishButton"],',
+      'span[class*="PublishButton"],',
+      /* Hide the top-level "Publish" option in workflow toolbar */
+      '[data-testid="workflow-publish-button"],',
+      'button[class*="WorkflowPublish"]',
+      '{ display: none !important; }',
+    ].join("\n");
+    document.head.appendChild(style);
+
+    /* Because Decap CMS renders its UI asynchronously via React,
+       we watch the DOM and re-inject the rules whenever its toolbar re-renders. */
+    const obs = new MutationObserver(() => {
+      if (!document.getElementById("seculex-cms-publish-hider")) {
+        document.head.appendChild(style.cloneNode(true));
+      }
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
   }
 
   function lockPortal() {
@@ -528,8 +561,49 @@
       const res  = await fetch("/.netlify/functions/sync-site", { method: "POST" });
       const data = await res.json();
       toast(data?.buildHookTriggered ? "✅ Rebuild triggered! Updates in ~1–2 mins." : "✅ Rebuild request sent.", "fa-check-double");
-    } catch { toast("⚠️ Could not reach sync function.", "fa-triangle-exclamation"); }
+    } catch { toast("⚠️ Could not reach rebuild function.", "fa-triangle-exclamation"); }
     finally { setTimeout(() => { if (btn) { btn.classList.remove("spinning"); btn.disabled = false; } }, 2000); }
+  }
+
+  /**
+   * Publish All — merges all pending Decap CMS draft PRs into main,
+   * then triggers a Netlify rebuild so changes go live in one step.
+   */
+  async function handlePublishAll() {
+    const btn = document.getElementById("bar-btn-publish-all");
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.add("spinning");
+      btn.innerHTML = '<i class="fas fa-globe"></i> Publishing...';
+    }
+    toast("Publishing all saved drafts...", "fa-globe");
+    try {
+      const res  = await fetch("/.netlify/functions/publish-all", { method: "POST" });
+      const data = await res.json();
+
+      if (data.needsSetup) {
+        toast("⚠️ Publish All needs setup — see admin guide.", "fa-triangle-exclamation");
+        console.warn("[SecuLex] Publish All:", data.message);
+        return;
+      }
+
+      if (data.success) {
+        audit("publish", `Published ${data.published} draft(s) via Publish All.`);
+        toast(data.message || `✅ ${data.published} draft(s) published! Live in ~1–2 mins.`, "fa-check-double");
+      } else {
+        toast(data.message || "⚠️ Some drafts could not be published.", "fa-triangle-exclamation");
+      }
+    } catch {
+      toast("⚠️ Could not reach Publish All function.", "fa-triangle-exclamation");
+    } finally {
+      setTimeout(() => {
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.remove("spinning");
+          btn.innerHTML = '<i class="fas fa-globe"></i> Publish All';
+        }
+      }, 3000);
+    }
   }
 
   /* ─── Init ───────────────────────────────────────────────────── */
@@ -565,6 +639,7 @@
       if (confirm("Clear all security audit logs?")) { localStorage.removeItem(KEY_AUDIT); renderAuditLogs(); }
     });
     document.getElementById("bar-btn-sync")?.addEventListener("click", handleSyncSite);
+    document.getElementById("bar-btn-publish-all")?.addEventListener("click", handlePublishAll);
     document.getElementById("bar-btn-change")?.addEventListener("click", () =>
       document.getElementById("admin-change-modal")?.classList.add("active"));
     document.getElementById("bar-btn-lock")?.addEventListener("click", () => {
