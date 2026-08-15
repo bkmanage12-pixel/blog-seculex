@@ -36,21 +36,14 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
             {% endfor %}
         </div>
 
-        <!-- Filter Row 2: Year of Publication -->
+        <!-- Filter Row 2: Year of Publication (Dynamically Generated from Articles) -->
         <div class="filter-row" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem;">
             <span class="filter-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); margin-right: 0.4rem; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="far fa-calendar-alt"></i> Year:</span>
-            <button type="button" class="pub-filter-btn pub-year-btn active" data-year="all">
-                All Years
-            </button>
-            <button type="button" class="pub-filter-btn pub-year-btn" data-year="2026">
-                2026
-            </button>
-            <button type="button" class="pub-filter-btn pub-year-btn" data-year="2025">
-                2025
-            </button>
-            <button type="button" class="pub-filter-btn pub-year-btn" data-year="2024">
-                2024
-            </button>
+            <div id="year-filter-buttons" style="display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+                <button type="button" class="pub-filter-btn pub-year-btn active" data-year="all">
+                    All Years
+                </button>
+            </div>
         </div>
 
         <!-- Active Filter Status Indicator -->
@@ -191,12 +184,39 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         const statusIndicator = document.getElementById("filter-status-indicator");
         const activeFilterText = document.getElementById("active-filter-text");
         const resetBtn = document.getElementById("reset-all-filters-btn");
+        const yearButtonsContainer = document.getElementById("year-filter-buttons");
 
         const themeBtns = document.querySelectorAll(".pub-theme-btn");
-        const yearBtns = document.querySelectorAll(".pub-year-btn");
 
         let currentTheme = "all";
         let currentYear = "all";
+
+        // Extract deduplicated years from all published articles
+        const uniqueYears = Array.from(
+            new Set(
+                ALL_POSTS
+                    .map(p => {
+                        if (p.year && p.year.length === 4 && !isNaN(p.year)) return p.year;
+                        const match = (p.date || '').match(/\b(20\d\d)\b/);
+                        return match ? match[1] : null;
+                    })
+                    .filter(Boolean)
+            )
+        ).sort((a, b) => Number(b) - Number(a));
+
+        // Dynamically inject unique year buttons
+        if (yearButtonsContainer && uniqueYears.length > 0) {
+            uniqueYears.forEach(yr => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "pub-filter-btn pub-year-btn";
+                btn.setAttribute("data-year", yr);
+                btn.textContent = yr;
+                yearButtonsContainer.appendChild(btn);
+            });
+        }
+
+        let yearBtns = document.querySelectorAll(".pub-year-btn");
 
         // Read URL params if present (e.g. ?theme=Cyber%20Law or ?year=2026)
         const urlParams = new URLSearchParams(window.location.search);
@@ -308,15 +328,18 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
             });
         });
 
-        // Year button click events
-        yearBtns.forEach(btn => {
-            btn.addEventListener("click", () => {
-                yearBtns.forEach(b => b.classList.remove("active"));
+        // Year button click events (delegated on container)
+        if (yearButtonsContainer) {
+            yearButtonsContainer.addEventListener("click", (e) => {
+                const btn = e.target.closest(".pub-year-btn");
+                if (!btn) return;
+                const allYrBtns = yearButtonsContainer.querySelectorAll(".pub-year-btn");
+                allYrBtns.forEach(b => b.classList.remove("active"));
                 btn.classList.add("active");
                 currentYear = btn.getAttribute("data-year");
                 applyAllFilters();
             });
-        });
+        }
 
         searchInput.addEventListener("input", applyAllFilters);
 
@@ -331,7 +354,8 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
             currentYear = "all";
             searchInput.value = "";
             themeBtns.forEach(b => b.classList.toggle("active", b.getAttribute("data-theme") === "all"));
-            yearBtns.forEach(b => b.classList.toggle("active", b.getAttribute("data-year") === "all"));
+            const allYrBtns = yearButtonsContainer.querySelectorAll(".pub-year-btn");
+            allYrBtns.forEach(b => b.classList.toggle("active", b.getAttribute("data-year") === "all"));
             applyAllFilters();
         });
 
