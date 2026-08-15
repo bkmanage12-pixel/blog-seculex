@@ -17,15 +17,8 @@ title: Home | SecuLex
     </div>
 
     <div class="hero-content fade-in">
-        <!-- Animated top tagline badge -->
-        <div class="hero-tagline-badge">
-            <span class="hero-badge-dot"></span>
-            {{ home.hero_tagline | default("Critical Legal Analysis") }}
-        </div>
-
         <h1 class="hero-title-split">
-            {{ home.hero_title | safe }}<br>
-            <span class="text-gold hero-accent-line">{{ home.hero_title_accent }}</span>
+            {{ home.hero_title | safe }} <span class="text-gold hero-accent-line">{{ home.hero_title_accent }}</span>
         </h1>
 
         <p class="hero-description">{{ home.hero_description }}</p>
