@@ -486,7 +486,7 @@ ul {
 
 .hero-title-split {
   font-family: var(--font-serif);
-  font-size: clamp(1.4rem, 3.2vw, 2.6rem);
+  font-size: clamp(1.2rem, 2.4vw, 2.1rem);
   line-height: 1.25;
   margin-bottom: 1.25rem;
   color: var(--text-primary);
@@ -3973,7 +3973,7 @@ html[data-screen-inches-cat="phone"] .blog-grid {
   grid-template-columns: 1fr;
 }
 html[data-screen-inches-cat="phone"] .hero-title-split {
-  font-size: 1.85rem !important;
+  font-size: 1.35rem !important;
 }
 html[data-screen-inches-cat="phone"] .post-header h1 {
   font-size: 2.2rem !important;
@@ -4055,7 +4055,7 @@ html[data-screen-inches-cat="desktop"] .hero-content {
   max-width: 1000px;
 }
 html[data-screen-inches-cat="desktop"] .hero-title-split {
-  font-size: 2.7rem;
+  font-size: 2.1rem;
   white-space: nowrap;
 }
 html[data-screen-inches-cat="desktop"] .post-content {
