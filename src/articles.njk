@@ -9,54 +9,76 @@ pagination:
 permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}index.html"
 ---
 
-<div class="page-header fade-in" style="padding: 32px 5% 24px; text-align: center; background: #0c0f18; border-bottom: 1px solid rgba(212, 175, 55, 0.15);">
-    <h1 style="color: var(--accent-gold); font-size: 2.2rem; margin-bottom: 0.5rem; font-family: var(--font-serif); font-weight: 700;">{{ articles_page.page_title | default("All Scholarly Publications") }}</h1>
-    <p style="color: var(--text-secondary); max-width: 650px; margin: 0 auto 1.5rem; font-size: 0.95rem;">{{ articles_page.page_description | default("Explore peer-reviewed legal analysis, commentary, and research categorized by legal discipline and year of publication.") }}</p>
-    
-    <!-- Search Bar Wrapper -->
-    <div class="search-wrapper" style="max-width: 580px; margin: 0 auto 1.5rem; position: relative;">
-        <i class="fas fa-search search-icon" style="position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--accent-gold); pointer-events: none; font-size: 0.95rem;"></i>
-        <input type="text" id="article-search" placeholder="{{ articles_page.search_placeholder | default('Search by title, topic, author or keyword...') }}" style="width: 100%; padding: 0.85rem 1.25rem 0.85rem 2.8rem; border-radius: 50px; border: 1px solid rgba(212, 175, 55, 0.3); background: #070910; color: #ffffff; font-size: 0.95rem; outline: none; transition: all 0.25s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);">
-        <button id="search-clear" class="search-clear-btn" style="position: absolute; right: 1.25rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer; display: none; font-size: 1.1rem; line-height: 1; padding: 0.2rem; transition: color 0.2s;"><i class="fas fa-times"></i></button>
-    </div>
-
-    <!-- Theme & Year Selection Toolbar (Solid, Non-Glassmorphic) -->
-    <div class="publications-filter-container" style="max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+<div class="articles-hub-header fade-in">
+    <div class="articles-hub-inner">
+        <div class="hub-tag-badge">
+            <i class="fas fa-balance-scale"></i>
+            <span>PEER-REVIEWED LEGAL REPOSITORY</span>
+        </div>
+        <h1 class="hub-title">{{ articles_page.page_title | default("All Scholarly Publications") }}</h1>
+        <p class="hub-description">{{ articles_page.page_description | default("Search and filter peer-reviewed commentaries, public law analyses, and legal scholarship across disciplines and publication years.") }}</p>
         
-        <!-- Filter Row 1: Themes -->
-        <div class="filter-row" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem;">
-            <span class="filter-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); margin-right: 0.4rem; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="fas fa-layer-group"></i> Theme:</span>
-            <button type="button" class="pub-filter-btn pub-theme-btn active" data-theme="all">
-                <i class="fas fa-globe"></i> All Themes
-            </button>
-            {% for key, cat in categories %}
-            <button type="button" class="pub-filter-btn pub-theme-btn" data-theme="{{ cat.title }}">
-                <i class="fas {{ cat.icon }}"></i> {{ cat.title }}
-            </button>
-            {% endfor %}
-        </div>
-
-        <!-- Filter Row 2: Year of Publication (Dynamically Generated from Articles) -->
-        <div class="filter-row" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem;">
-            <span class="filter-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); margin-right: 0.4rem; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="far fa-calendar-alt"></i> Year:</span>
-            <div id="year-filter-buttons" style="display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
-                <button type="button" class="pub-filter-btn pub-year-btn active" data-year="all">
-                    All Years
-                </button>
+        <!-- Central Research Control Panel -->
+        <div class="repo-control-panel">
+            <!-- Search Input -->
+            <div class="repo-search-box">
+                <i class="fas fa-search repo-search-icon"></i>
+                <input type="text" id="article-search" placeholder="{{ articles_page.search_placeholder | default('Search by title, topic, author or keyword...') }}" autocomplete="off">
+                <button type="button" id="search-clear" class="repo-search-clear" aria-label="Clear search"><i class="fas fa-times"></i></button>
             </div>
-        </div>
 
-        <!-- Active Filter Status Indicator -->
-        <div id="filter-status-indicator" style="font-size: 0.82rem; color: var(--text-secondary); display: none; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
-            <span>Filtering by:</span>
-            <span id="active-filter-text" style="color: var(--accent-gold); font-weight: 600;"></span>
-            <button type="button" id="reset-all-filters-btn" style="background: none; border: 1px solid rgba(255,255,255,0.2); color: #ffffff; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; cursor: pointer; margin-left: 0.5rem;">Reset All</button>
+            <!-- Filter Controls Matrix -->
+            <div class="repo-filter-matrix">
+                <!-- Theme / Discipline Filter Row -->
+                <div class="filter-control-group">
+                    <div class="filter-control-header">
+                        <i class="fas fa-layer-group"></i>
+                        <span>THEME / DISCIPLINE:</span>
+                    </div>
+                    <div class="filter-pills-row" id="theme-pills-row">
+                        <button type="button" class="repo-pill repo-theme-pill active" data-theme="all">
+                            <i class="fas fa-globe"></i> All Themes
+                        </button>
+                        {% for key, cat in categories %}
+                        <button type="button" class="repo-pill repo-theme-pill" data-theme="{{ cat.title }}">
+                            <i class="fas {{ cat.icon }}"></i> {{ cat.title }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Year of Publication Filter Row -->
+                <div class="filter-control-group">
+                    <div class="filter-control-header">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>PUBLICATION YEAR:</span>
+                    </div>
+                    <div class="filter-pills-row" id="year-filter-buttons">
+                        <button type="button" class="repo-pill repo-year-pill active" data-year="all">
+                            All Years
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Status Bar -->
+            <div class="repo-status-bar" id="repo-status-bar">
+                <div class="repo-count-wrapper">
+                    <span class="pulse-dot"></span>
+                    <span id="results-count-text">Showing all publications</span>
+                </div>
+                <div id="filter-status-indicator" class="active-filters-wrapper" style="display: none;">
+                    <span class="active-filters-label">Active:</span>
+                    <span id="active-filter-text" class="active-filters-tags"></span>
+                    <button type="button" id="reset-all-filters-btn" class="reset-filters-btn"><i class="fas fa-undo-alt"></i> Reset</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<main style="padding-top: 2.5rem; max-width: 1200px; margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem;">
-    <!-- Default Paginated View (shown before filtering/searching) -->
+<main class="articles-main-wrapper">
+    <!-- Default Paginated View (shown on load before filtering/searching) -->
     <div id="default-articles-section">
         <div class="blog-grid fade-in">
             {% for post in posts %}
@@ -65,18 +87,18 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
                     <a href="{{ post.url }}">
                         <img src="{{ post.data.thumbnail }}" alt="{{ post.data.title }}" loading="lazy">
                         <div class="card-overlay">
-                            <span>{{ articles_page.read_label | default("Read Analysis") }}</span>
+                            <span><i class="fas fa-book-open"></i> {{ articles_page.read_label | default("Read Analysis") }}</span>
                         </div>
                     </a>
                     <span class="card-category-badge">{{ post.data.category }}</span>
                 </div>
                 <div class="card-content">
                     <div class="meta">
-                        <span class="category" style="color: var(--accent-gold); font-weight: 600;">{{ post.data.category }}</span>
-                        <span class="date">{{ post.data.date | readableDate }}</span>
+                        <span class="category"><i class="fas fa-folder-open"></i> {{ post.data.category }}</span>
+                        <span class="date"><i class="far fa-calendar-alt"></i> {{ post.data.date | readableDate }}</span>
                     </div>
                     <h3><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
-                    <p>{{ post.data.description | truncate(130) }}</p>
+                    <p>{{ post.data.description | truncate(135) }}</p>
                     <div class="card-footer">
                         {% if post.data.read_time %}<span class="read-time"><i class="far fa-clock"></i> {{ post.data.read_time }} {{ articles_page.min_read_label | default("min read") }}</span>{% endif %}
                         <a href="{{ post.url }}" class="read-more">{{ articles_page.read_label | default("Read Analysis") }} <i class="fas fa-arrow-right"></i></a>
@@ -87,72 +109,337 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         </div>
 
         <!-- Pagination Controls -->
-        <div class="pagination-container" style="margin-top: 3.5rem; margin-bottom: 2rem; display: flex; justify-content: center; gap: 1rem; align-items: center;">
+        <div class="pagination-container">
             {% if pagination.href.previous %}
                 <a href="{{ pagination.href.previous }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> {{ articles_page.previous_label | default("Previous") }}</a>
             {% else %}
-                <span class="btn btn-disabled" style="opacity: 0.5; pointer-events: none;"><i class="fas fa-arrow-left"></i> {{ articles_page.previous_label | default("Previous") }}</span>
+                <span class="btn btn-disabled"><i class="fas fa-arrow-left"></i> {{ articles_page.previous_label | default("Previous") }}</span>
             {% endif %}
 
-            <span class="pagination-status" style="color: var(--text-secondary); font-weight: 500;">
+            <span class="pagination-status">
                 {{ articles_page.page_status_label | default("Page") }} {{ pagination.pageNumber + 1 }} {{ articles_page.page_status_connector | default("of") }} {{ pagination.pages.length }}
             </span>
 
             {% if pagination.href.next %}
                 <a href="{{ pagination.href.next }}" class="btn btn-outline">{{ articles_page.next_label | default("Next") }} <i class="fas fa-arrow-right"></i></a>
             {% else %}
-                <span class="btn btn-disabled" style="opacity: 0.5; pointer-events: none;">{{ articles_page.next_label | default("Next") }} <i class="fas fa-arrow-right"></i></span>
+                <span class="btn btn-disabled">{{ articles_page.next_label | default("Next") }} <i class="fas fa-arrow-right"></i></span>
             {% endif %}
         </div>
     </div>
 
-    <!-- Filter & Search Results Section (Rendered dynamically when filter/search active) -->
+    <!-- Filter & Search Results Section (Rendered dynamically when active) -->
     <div id="search-results-section" style="display: none;">
-        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem;">
-            <span id="results-count-badge" style="color: var(--accent-gold); font-weight: 600; font-size: 0.95rem;"></span>
-        </div>
         <div class="blog-grid" id="search-results-grid"></div>
-        <div id="search-no-results" style="display: none; justify-content: center; align-items: center; padding: 4rem 0; width: 100%;">
-            <p class="no-posts-msg" style="margin: 0; font-size: 1.05rem; color: var(--text-secondary);"><i class="fas fa-search-minus" style="color: var(--accent-gold); margin-right: 0.5rem;"></i> {{ articles_page.no_results_label | default("No articles found matching the selected theme and publication year.") }}</p>
+        <div id="search-no-results" class="repo-no-results" style="display: none;">
+            <div class="no-results-icon"><i class="fas fa-search"></i></div>
+            <h3>No Publications Found</h3>
+            <p>{{ articles_page.no_results_label | default("We could not find any publications matching your selected criteria. Try adjusting your theme, year, or search terms.") }}</p>
+            <button type="button" id="no-results-reset-btn" class="btn btn-pill-solid" style="margin-top: 1.25rem;">
+                <i class="fas fa-layer-group"></i> View All Publications
+            </button>
         </div>
     </div>
 </main>
 
 <style>
-.pub-filter-btn {
+.articles-hub-header {
+  padding: 3.5rem 1.5rem 2.5rem;
+  background: #080a12;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  position: relative;
+}
+
+.articles-hub-inner {
+  max-width: 1050px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hub-tag-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.95rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: #121622;
-  color: #cbd5e1;
-  font-size: 0.82rem;
-  font-weight: 600;
+  gap: 0.5rem;
+  padding: 0.35rem 0.95rem;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 50px;
+  color: var(--accent-gold);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.hub-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  color: #ffffff;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.3px;
+}
+
+.hub-description {
+  color: var(--text-secondary);
+  font-size: 0.98rem;
+  max-width: 720px;
+  margin: 0 auto 2.2rem;
+  line-height: 1.6;
+}
+
+/* Control Panel */
+.repo-control-panel {
+  background: #0e121f;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 20px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.05);
+  text-align: left;
+}
+
+.repo-search-box {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.repo-search-icon {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-gold);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.repo-search-box input {
+  width: 100%;
+  padding: 0.95rem 3rem 0.95rem 3rem;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: #070911;
+  color: #ffffff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.repo-search-box input:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.25), inset 0 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+.repo-search-clear {
+  position: absolute;
+  right: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: var(--text-secondary);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: none;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  font-size: 0.85rem;
   transition: all 0.2s ease;
 }
 
-.pub-filter-btn:hover {
-  background: #1c2234;
-  border-color: rgba(212, 175, 55, 0.5);
+.repo-search-clear:hover {
+  background: #ef4444;
   color: #ffffff;
 }
 
-.pub-filter-btn.active {
+/* Filter Matrix */
+.repo-filter-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.filter-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.filter-control-header {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.filter-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.repo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #141927;
+  color: #cbd5e1;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+}
+
+.repo-pill:hover {
+  background: #1e263c;
+  border-color: rgba(212, 175, 55, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.repo-pill.active {
   background: var(--accent-gold);
   color: #060a10;
   border-color: var(--accent-gold);
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Status Bar */
+.repo-status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.repo-count-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-gold);
+  box-shadow: 0 0 8px var(--accent-gold);
+}
+
+.active-filters-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.active-filters-label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.active-filters-tags {
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+.reset-filters-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.reset-filters-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* Main Articles Grid Layout */
+.articles-main-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.repo-no-results {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  background: #0e121f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  margin: 2rem 0;
+}
+
+.no-results-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--accent-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 1.25rem;
+}
+
+.repo-no-results h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.repo-no-results p {
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin: 0 auto;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .repo-control-panel {
+    padding: 1.25rem;
+  }
+  .repo-status-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 </style>
 
 <script>
     const readLabel = {{ articles_page.read_label | default("Read Analysis") | dump | safe }};
     const minReadLabel = {{ articles_page.min_read_label | default("min read") | dump | safe }};
-    const byLabel = {{ articles_page.by_label | default("by") | dump | safe }};
 
     const ALL_POSTS = [
         {% for post in collections.posts %}
@@ -180,18 +467,19 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         const resultsSection = document.getElementById("search-results-section");
         const resultsGrid = document.getElementById("search-results-grid");
         const noResultsMsg = document.getElementById("search-no-results");
-        const countBadge = document.getElementById("results-count-badge");
+        const countText = document.getElementById("results-count-text");
         const statusIndicator = document.getElementById("filter-status-indicator");
         const activeFilterText = document.getElementById("active-filter-text");
         const resetBtn = document.getElementById("reset-all-filters-btn");
+        const noResultsResetBtn = document.getElementById("no-results-reset-btn");
         const yearButtonsContainer = document.getElementById("year-filter-buttons");
 
-        const themeBtns = document.querySelectorAll(".pub-theme-btn");
+        const themeBtns = document.querySelectorAll(".repo-theme-pill");
 
         let currentTheme = "all";
         let currentYear = "all";
 
-        // Extract deduplicated years from all published articles
+        // Extract deduplicated publication years
         const uniqueYears = Array.from(
             new Set(
                 ALL_POSTS
@@ -204,21 +492,19 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
             )
         ).sort((a, b) => Number(b) - Number(a));
 
-        // Dynamically inject unique year buttons
+        // Inject unique year buttons
         if (yearButtonsContainer && uniqueYears.length > 0) {
             uniqueYears.forEach(yr => {
                 const btn = document.createElement("button");
                 btn.type = "button";
-                btn.className = "pub-filter-btn pub-year-btn";
+                btn.className = "repo-pill repo-year-pill";
                 btn.setAttribute("data-year", yr);
                 btn.textContent = yr;
                 yearButtonsContainer.appendChild(btn);
             });
         }
 
-        let yearBtns = document.querySelectorAll(".pub-year-btn");
-
-        // Read URL params if present (e.g. ?theme=Cyber%20Law or ?year=2026)
+        // Read URL params if present
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has("theme")) {
             currentTheme = urlParams.get("theme");
@@ -228,7 +514,8 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         }
         if (urlParams.has("year")) {
             currentYear = urlParams.get("year");
-            yearBtns.forEach(btn => {
+            const allYrBtns = yearButtonsContainer ? yearButtonsContainer.querySelectorAll(".repo-year-pill") : [];
+            allYrBtns.forEach(btn => {
                 btn.classList.toggle("active", btn.getAttribute("data-year") === currentYear);
             });
         }
@@ -236,12 +523,12 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
         const renderResults = (posts) => {
             resultsGrid.innerHTML = "";
             if (posts.length === 0) {
-                noResultsMsg.style.display = "flex";
-                countBadge.textContent = "0 publications found";
+                noResultsMsg.style.display = "block";
+                countText.textContent = "0 publications found";
                 return;
             }
             noResultsMsg.style.display = "none";
-            countBadge.textContent = `${posts.length} publication${posts.length === 1 ? '' : 's'} found`;
+            countText.textContent = `Showing ${posts.length} publication${posts.length === 1 ? '' : 's'}`;
 
             posts.forEach(post => {
                 const cardHtml = `
@@ -250,18 +537,18 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
                             <a href="${post.url}">
                                 <img src="${post.thumbnail}" alt="${post.title}" loading="lazy">
                                 <div class="card-overlay">
-                                    <span>${readLabel}</span>
+                                    <span><i class="fas fa-book-open"></i> ${readLabel}</span>
                                 </div>
                             </a>
                             <span class="card-category-badge">${post.category}</span>
                         </div>
                         <div class="card-content">
                             <div class="meta">
-                                <span class="category" style="color: var(--accent-gold); font-weight: 600;">${post.category}</span>
-                                <span class="date">${post.date}</span>
+                                <span class="category"><i class="fas fa-folder-open"></i> ${post.category}</span>
+                                <span class="date"><i class="far fa-calendar-alt"></i> ${post.date}</span>
                             </div>
                             <h3><a href="${post.url}">${post.title}</a></h3>
-                            <p>${post.description.length > 130 ? post.description.substring(0, 130) + '...' : post.description}</p>
+                            <p>${post.description.length > 135 ? post.description.substring(0, 135) + '...' : post.description}</p>
                             <div class="card-footer">
                                 <span class="read-time"><i class="far fa-clock"></i> ${post.readTime} ${minReadLabel}</span>
                                 <a href="${post.url}" class="read-more">${readLabel} <i class="fas fa-arrow-right"></i></a>
@@ -282,30 +569,28 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
                 defaultSection.style.display = "block";
                 resultsSection.style.display = "none";
                 statusIndicator.style.display = "none";
+                countText.textContent = `Showing all ${ALL_POSTS.length} publications`;
                 return;
             }
 
-            clearBtn.style.display = query !== "" ? "block" : "none";
+            clearBtn.style.display = query !== "" ? "flex" : "none";
             defaultSection.style.display = "none";
             resultsSection.style.display = "block";
             statusIndicator.style.display = "flex";
 
             let filterDescriptions = [];
-            if (currentTheme !== "all") filterDescriptions.push(`Theme: "${currentTheme}"`);
-            if (currentYear !== "all") filterDescriptions.push(`Year: "${currentYear}"`);
-            if (query !== "") filterDescriptions.push(`Keyword: "${query}"`);
-            activeFilterText.textContent = filterDescriptions.join(" + ");
+            if (currentTheme !== "all") filterDescriptions.push(`Theme: ${currentTheme}`);
+            if (currentYear !== "all") filterDescriptions.push(`Year: ${currentYear}`);
+            if (query !== "") filterDescriptions.push(`"${query}"`);
+            activeFilterText.textContent = filterDescriptions.join(" • ");
 
             const filtered = ALL_POSTS.filter(post => {
-                // Theme filter
                 const matchesTheme = currentTheme === "all" || 
                     post.category.toLowerCase() === currentTheme.toLowerCase();
                 
-                // Year filter
                 const matchesYear = currentYear === "all" || 
                     post.year === currentYear;
 
-                // Search query
                 const matchesQuery = query === "" || 
                     post.title.toLowerCase().includes(query) || 
                     post.author.toLowerCase().includes(query) ||
@@ -318,7 +603,7 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
             renderResults(filtered);
         };
 
-        // Theme button click events
+        // Theme filter buttons
         themeBtns.forEach(btn => {
             btn.addEventListener("click", () => {
                 themeBtns.forEach(b => b.classList.remove("active"));
@@ -328,12 +613,12 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
             });
         });
 
-        // Year button click events (delegated on container)
+        // Year filter buttons (event delegation)
         if (yearButtonsContainer) {
             yearButtonsContainer.addEventListener("click", (e) => {
-                const btn = e.target.closest(".pub-year-btn");
+                const btn = e.target.closest(".repo-year-pill");
                 if (!btn) return;
-                const allYrBtns = yearButtonsContainer.querySelectorAll(".pub-year-btn");
+                const allYrBtns = yearButtonsContainer.querySelectorAll(".repo-year-pill");
                 allYrBtns.forEach(b => b.classList.remove("active"));
                 btn.classList.add("active");
                 currentYear = btn.getAttribute("data-year");
@@ -349,17 +634,21 @@ permalink: "articles/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNu
             searchInput.focus();
         });
 
-        resetBtn.addEventListener("click", () => {
+        const resetAll = () => {
             currentTheme = "all";
             currentYear = "all";
             searchInput.value = "";
             themeBtns.forEach(b => b.classList.toggle("active", b.getAttribute("data-theme") === "all"));
-            const allYrBtns = yearButtonsContainer.querySelectorAll(".pub-year-btn");
-            allYrBtns.forEach(b => b.classList.toggle("active", b.getAttribute("data-year") === "all"));
+            if (yearButtonsContainer) {
+                const allYrBtns = yearButtonsContainer.querySelectorAll(".repo-year-pill");
+                allYrBtns.forEach(b => b.classList.toggle("active", b.getAttribute("data-year") === "all"));
+            }
             applyAllFilters();
-        });
+        };
 
-        // If page loaded with URL params, trigger initial filtering
+        if (resetBtn) resetBtn.addEventListener("click", resetAll);
+        if (noResultsResetBtn) noResultsResetBtn.addEventListener("click", resetAll);
+
         if (currentTheme !== "all" || currentYear !== "all") {
             applyAllFilters();
         }
