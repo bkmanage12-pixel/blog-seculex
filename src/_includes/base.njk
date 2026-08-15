@@ -189,6 +189,42 @@
         </nav>
     </header>
 
+    <!-- Live Published Articles Scroll Ticker -->
+    <div class="latest-articles-ticker" aria-label="Latest Publications Ticker">
+        <div class="ticker-inner">
+            <div class="ticker-badge">
+                <span class="ticker-pulse-dot"></span>
+                <i class="fas fa-bolt"></i>
+                <span class="ticker-badge-text">RECENT RESEARCH</span>
+            </div>
+            <div class="ticker-track-wrapper">
+                <div class="ticker-track">
+                    {% set recent_posts = collections.posts | reverse %}
+                    {% for post in recent_posts %}
+                    {% if loop.index0 < 5 %}
+                    <a href="{{ post.url }}" class="ticker-item">
+                        <span class="ticker-category">{{ post.data.category }}</span>
+                        <span class="ticker-title">{{ post.data.title }}</span>
+                        <span class="ticker-date"><i class="far fa-calendar-alt"></i> {{ post.data.date | readableDate }}</span>
+                    </a>
+                    <span class="ticker-sep">•</span>
+                    {% endif %}
+                    {% endfor %}
+                    {% for post in recent_posts %}
+                    {% if loop.index0 < 5 %}
+                    <a href="{{ post.url }}" class="ticker-item" aria-hidden="true">
+                        <span class="ticker-category">{{ post.data.category }}</span>
+                        <span class="ticker-title">{{ post.data.title }}</span>
+                        <span class="ticker-date"><i class="far fa-calendar-alt"></i> {{ post.data.date | readableDate }}</span>
+                    </a>
+                    <span class="ticker-sep" aria-hidden="true">•</span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{ content | safe }}
 
     <footer id="contact">
