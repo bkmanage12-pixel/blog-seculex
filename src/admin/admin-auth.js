@@ -453,7 +453,8 @@
     const pw  = document.getElementById("login-password").value;
     if (!pw) { feedback("login-feedback", "Please enter your password."); return; }
 
-    const btn = document.querySelector("#login-form button[type='submit']");
+    const btn = document.getElementById("login-submit-btn") ||
+                 document.querySelector("#login-form button[type='submit']");
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...'; }
 
     try {
@@ -477,7 +478,7 @@
       console.error("[SecuLex] Login error:", err);
       feedback("login-feedback", "Login failed — please try again.");
     } finally {
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-right-to-bracket"></i> Log In'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-right-to-bracket"></i> Sign In'; }
     }
   }
 
@@ -627,16 +628,26 @@
     document.getElementById("btn-goto-reset")?.addEventListener("click", () => showView("reset"));
     document.getElementById("btn-back-to-login")?.addEventListener("click", () => showView("login"));
     document.getElementById("change-password-form")?.addEventListener("submit", handleChangePassword);
-    document.getElementById("modal-btn-close-change")?.addEventListener("click", () =>
-      document.getElementById("admin-change-modal")?.classList.remove("active"));
+
+    // Change Password modal — two close buttons (X icon + Cancel)
+    const closeChangeModal = () => document.getElementById("admin-change-modal")?.classList.remove("active");
+    document.getElementById("modal-btn-close-change")?.addEventListener("click", closeChangeModal);
+    document.getElementById("modal-btn-close-change-2")?.addEventListener("click", closeChangeModal);
+
+    // Audit Log modal — two close buttons (X icon + Close)
+    const closeAuditModal = () => document.getElementById("admin-audit-modal")?.classList.remove("active");
+    document.getElementById("modal-btn-close-audit")?.addEventListener("click", closeAuditModal);
+    document.getElementById("modal-btn-close-audit-2")?.addEventListener("click", closeAuditModal);
+
     document.getElementById("bar-btn-audit")?.addEventListener("click", () => {
       renderAuditLogs();
       document.getElementById("admin-audit-modal")?.classList.add("active");
     });
-    document.getElementById("modal-btn-close-audit")?.addEventListener("click", () =>
-      document.getElementById("admin-audit-modal")?.classList.remove("active"));
     document.getElementById("btn-clear-audit-logs")?.addEventListener("click", () => {
-      if (confirm("Clear all security audit logs?")) { localStorage.removeItem(KEY_AUDIT); renderAuditLogs(); }
+      if (confirm("Clear all security audit logs? This cannot be undone.")) {
+        localStorage.removeItem(KEY_AUDIT);
+        renderAuditLogs();
+      }
     });
     document.getElementById("bar-btn-sync")?.addEventListener("click", handleSyncSite);
     document.getElementById("bar-btn-publish-all")?.addEventListener("click", handlePublishAll);
@@ -645,6 +656,14 @@
     document.getElementById("bar-btn-lock")?.addEventListener("click", () => {
       audit("logout", "Admin logged out manually.");
       lockPortal();
+    });
+
+    // Allow pressing Escape to dismiss any open modal
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeChangeModal();
+        closeAuditModal();
+      }
     });
 
     // ── Initial state: always show login. NEVER show setup/register ──

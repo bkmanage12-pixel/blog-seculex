@@ -3,168 +3,286 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SecuLex Admin Portal</title>
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <title>SecuLex — Admin Portal</title>
+
+    <!-- Domain guard: block access from the public custom domain -->
     <script>
-      (function() {
+      (function () {
         var h = window.location.hostname.toLowerCase();
-        if (h === 'seculex.org' || h === 'www.seculex.org') {
-          window.location.replace('/404.html');
+        if (h === "seculex.org" || h === "www.seculex.org") {
+          window.location.replace("/404.html");
         }
       })();
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="/admin/admin.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
   </head>
+
   <body>
 
-    <!-- Floating Security Controls (shown when unlocked) -->
-    <div id="admin-security-bar" style="display: none;">
-      <span style="font-weight: 600; color: var(--admin-accent-gold);"><i class="fas fa-shield-halved"></i> SecuLex Admin</span>
-      <button id="bar-btn-publish-all" class="admin-bar-btn admin-bar-btn-publish" title="Publish all saved drafts to the live site"><i class="fas fa-globe"></i> Publish All</button>
-      <button id="bar-btn-sync" class="admin-bar-btn admin-bar-btn-sync" title="Trigger a site rebuild without publishing new drafts"><i class="fas fa-rotate"></i> Rebuild Site</button>
-      <button id="bar-btn-audit" class="admin-bar-btn" title="View Security Audit Logs"><i class="fas fa-list-check"></i> Security Log</button>
-      <button id="bar-btn-change" class="admin-bar-btn" title="Change Admin Password"><i class="fas fa-key"></i> Change Password</button>
-      <button id="bar-btn-lock" class="admin-bar-btn" title="Log Out"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+    <!-- ═══════════════════════════════════════════════════════════════
+         FLOATING ADMIN SECURITY BAR  (shown only after login)
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="admin-security-bar" style="display: none;" role="toolbar" aria-label="Admin controls">
+      <div class="admin-bar-brand">
+        <i class="fas fa-shield-halved"></i>
+        <span>SecuLex Admin</span>
+      </div>
+      <div class="admin-bar-divider"></div>
+      <button id="bar-btn-publish-all" class="admin-bar-btn admin-bar-btn-publish" title="Merge all saved drafts and publish to the live site">
+        <i class="fas fa-rocket-launch"></i> Publish All
+      </button>
+      <button id="bar-btn-sync" class="admin-bar-btn admin-bar-btn-rebuild" title="Force a site rebuild without publishing new drafts">
+        <i class="fas fa-rotate"></i> Rebuild
+      </button>
+      <div class="admin-bar-divider"></div>
+      <button id="bar-btn-audit" class="admin-bar-btn" title="View Security Audit Logs">
+        <i class="fas fa-list-check"></i> Audit Log
+      </button>
+      <button id="bar-btn-change" class="admin-bar-btn" title="Change Admin Password">
+        <i class="fas fa-key"></i> Password
+      </button>
+      <button id="bar-btn-lock" class="admin-bar-btn admin-bar-btn-danger" title="Lock Portal &amp; Log Out">
+        <i class="fas fa-right-from-bracket"></i> Lock
+      </button>
     </div>
 
-    <!-- Toast Notification Container -->
-    <div id="admin-toast-container"></div>
+    <!-- Toast notification container -->
+    <div id="admin-toast-container" role="status" aria-live="polite"></div>
 
-    <!-- ===================================================
-         ADMIN SECURITY OVERLAY
-         Single Login Gate only — NO registration, NO setup.
-         Only one user can ever log in: the master admin.
-    =================================================== -->
-    <div id="admin-security-overlay">
+    <!-- ═══════════════════════════════════════════════════════════════
+         SECURITY OVERLAY  (always shown until authenticated)
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="admin-security-overlay" role="dialog" aria-modal="true" aria-label="Admin authentication">
 
-      <!-- LOGIN GATE (the ONLY entry point) -->
+      <!-- Animated background grid -->
+      <div class="admin-overlay-bg" aria-hidden="true">
+        <div class="admin-bg-glow admin-bg-glow-1"></div>
+        <div class="admin-bg-glow admin-bg-glow-2"></div>
+      </div>
+
+      <!-- ── LOGIN ───────────────────────────────────────────────── -->
       <div id="admin-view-login" class="admin-auth-card admin-auth-view" style="display: none;">
+
+        <div class="admin-card-accent-bar"></div>
+
         <div class="admin-auth-header">
-          <div class="admin-auth-icon"><i class="fas fa-lock"></i></div>
+          <div class="admin-auth-logo">
+            <i class="fas fa-shield-halved"></i>
+          </div>
           <h1 class="admin-auth-title">SecuLex Admin</h1>
+          <p class="admin-auth-subtitle">Authorised access only &mdash; single-owner portal</p>
         </div>
 
-        <div id="login-feedback" class="admin-feedback"></div>
+        <div id="login-feedback" class="admin-feedback" role="alert"></div>
 
-        <form id="login-form">
+        <form id="login-form" autocomplete="off" novalidate>
           <div class="admin-form-group">
-            <label class="admin-form-label" for="login-password">Password</label>
+            <label class="admin-form-label" for="login-password">
+              <i class="fas fa-lock"></i> Admin Password
+            </label>
             <div class="admin-input-wrapper">
-              <input type="password" id="login-password" class="admin-form-input" placeholder="Enter password..." required autocomplete="current-password" autofocus>
-              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+              <input
+                type="password"
+                id="login-password"
+                class="admin-form-input"
+                placeholder="Enter your password"
+                required
+                autocomplete="current-password"
+                autofocus
+              />
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility">
+                <i class="fas fa-eye"></i>
+              </button>
             </div>
-            <div id="login-caps-warning" class="admin-caps-warning"><i class="fas fa-exclamation-triangle"></i> Caps Lock is ON</div>
+            <div id="login-caps-warning" class="admin-caps-warning" role="alert">
+              <i class="fas fa-triangle-exclamation"></i> Caps Lock is ON
+            </div>
           </div>
 
-          <button type="submit" class="admin-btn-primary"><i class="fas fa-right-to-bracket"></i> Log In</button>
+          <button type="submit" class="admin-btn-primary" id="login-submit-btn">
+            <i class="fas fa-right-to-bracket"></i> Sign In
+          </button>
         </form>
 
-        <div class="admin-auth-footer" style="justify-content: center;">
-          <span id="btn-goto-reset" class="admin-link"><i class="fas fa-key"></i> Forgot Password / Reset</span>
+        <div class="admin-auth-footer">
+          <span id="btn-goto-reset" class="admin-link" role="button" tabindex="0">
+            <i class="fas fa-key"></i> Forgot password?
+          </span>
+          <span class="admin-secure-badge">
+            <i class="fas fa-shield-check"></i> PBKDF2 · SHA-256
+          </span>
         </div>
       </div>
 
-      <!-- PASSWORD RESET (Recovery Key or Email Code — no open registration) -->
+      <!-- ── PASSWORD RESET ──────────────────────────────────────── -->
       <div id="admin-view-reset" class="admin-auth-card admin-auth-view" style="display: none;">
+
+        <div class="admin-card-accent-bar"></div>
+
         <div class="admin-auth-header">
-          <div class="admin-auth-icon"><i class="fas fa-paper-plane"></i></div>
+          <div class="admin-auth-logo admin-auth-logo-secondary">
+            <i class="fas fa-paper-plane"></i>
+          </div>
           <h1 class="admin-auth-title">Reset Password</h1>
-          <p class="admin-auth-subtitle">Enter your Recovery Key, or request an email reset code.</p>
+          <p class="admin-auth-subtitle">Enter your Recovery Key or request an email code.</p>
         </div>
 
-        <div id="reset-feedback" class="admin-feedback"></div>
+        <div id="reset-feedback" class="admin-feedback" role="alert"></div>
 
-        <form id="reset-form">
+        <form id="reset-form" autocomplete="off" novalidate>
           <div class="admin-form-group">
-            <label class="admin-form-label" for="reset-email">Admin Email</label>
-            <div style="display: flex; gap: 8px;">
-              <input type="email" id="reset-email" class="admin-form-input" value="seculexpublications@gmail.com" readonly style="background: rgba(255,255,255,0.05); color: var(--admin-accent-gold); font-weight: 600;">
-              <button type="button" id="btn-send-reset-code" class="admin-btn-secondary" style="white-space: nowrap; font-size: 0.8rem; padding: 0.75rem 0.9rem;"><i class="fas fa-paper-plane"></i> Send Email</button>
+            <label class="admin-form-label" for="reset-email">
+              <i class="fas fa-envelope"></i> Admin Email
+            </label>
+            <div class="admin-email-row">
+              <input
+                type="email"
+                id="reset-email"
+                class="admin-form-input admin-form-input-readonly"
+                value="seculexpublications@gmail.com"
+                readonly
+              />
+              <button type="button" id="btn-send-reset-code" class="admin-btn-send">
+                <i class="fas fa-paper-plane"></i> Send
+              </button>
             </div>
           </div>
 
           <div class="admin-form-group">
-            <label class="admin-form-label" for="reset-key">Recovery Key / Security Code</label>
-            <input type="text" id="reset-key" class="admin-form-input" placeholder="Enter Recovery Key..." required style="font-family: monospace; letter-spacing: 1px;">
+            <label class="admin-form-label" for="reset-key">
+              <i class="fas fa-fingerprint"></i> Recovery Key / Security Code
+            </label>
+            <input
+              type="text"
+              id="reset-key"
+              class="admin-form-input admin-form-input-mono"
+              placeholder="XXXX-XXXX-XXXX-XXXX"
+              required
+              autocomplete="off"
+              spellcheck="false"
+            />
           </div>
 
           <div class="admin-form-group">
-            <label class="admin-form-label" for="reset-new-password">New Password</label>
+            <label class="admin-form-label" for="reset-new-password">
+              <i class="fas fa-lock"></i> New Password
+            </label>
             <div class="admin-input-wrapper">
-              <input type="password" id="reset-new-password" class="admin-form-input" placeholder="New password..." required autocomplete="new-password">
+              <input type="password" id="reset-new-password" class="admin-form-input" placeholder="New password (min. 8 characters)" required autocomplete="new-password" />
               <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
             </div>
           </div>
 
           <div class="admin-form-group">
-            <label class="admin-form-label" for="reset-confirm-password">Confirm Password</label>
+            <label class="admin-form-label" for="reset-confirm-password">
+              <i class="fas fa-lock-keyhole"></i> Confirm New Password
+            </label>
             <div class="admin-input-wrapper">
-              <input type="password" id="reset-confirm-password" class="admin-form-input" placeholder="Confirm password..." required autocomplete="new-password">
+              <input type="password" id="reset-confirm-password" class="admin-form-input" placeholder="Repeat new password" required autocomplete="new-password" />
               <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
             </div>
           </div>
 
-          <button type="submit" class="admin-btn-primary"><i class="fas fa-rotate"></i> Reset & Save Password</button>
+          <button type="submit" class="admin-btn-primary">
+            <i class="fas fa-floppy-disk"></i> Reset &amp; Save Password
+          </button>
         </form>
 
-        <div class="admin-auth-footer" style="justify-content: center;">
-          <span id="btn-back-to-login" class="admin-link"><i class="fas fa-arrow-left"></i> Back to Login</span>
+        <div class="admin-auth-footer admin-auth-footer-center">
+          <span id="btn-back-to-login" class="admin-link" role="button" tabindex="0">
+            <i class="fas fa-arrow-left"></i> Back to Login
+          </span>
         </div>
       </div>
 
-    </div>
-    <!-- END ADMIN SECURITY OVERLAY -->
+    </div><!-- /admin-security-overlay -->
 
-    <!-- Change Password Modal (inside CMS, for logged-in admin only) -->
-    <div id="admin-change-modal" class="admin-modal-backdrop">
-      <div class="admin-auth-card">
+    <!-- ═══════════════════════════════════════════════════════════════
+         CHANGE PASSWORD MODAL  (inside CMS, logged-in admin only)
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="admin-change-modal" class="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="change-modal-title">
+      <div class="admin-auth-card admin-modal-card">
+        <button type="button" class="admin-modal-close" id="modal-btn-close-change" aria-label="Close modal">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div class="admin-card-accent-bar"></div>
+
         <div class="admin-auth-header">
-          <div class="admin-auth-icon"><i class="fas fa-key"></i></div>
-          <h2 class="admin-auth-title">Change Password</h2>
+          <div class="admin-auth-logo admin-auth-logo-secondary">
+            <i class="fas fa-key"></i>
+          </div>
+          <h2 class="admin-auth-title" id="change-modal-title">Change Password</h2>
+          <p class="admin-auth-subtitle">Update your admin portal password.</p>
         </div>
 
-        <div id="change-feedback" class="admin-feedback"></div>
+        <div id="change-feedback" class="admin-feedback" role="alert"></div>
 
-        <form id="change-password-form">
+        <form id="change-password-form" autocomplete="off" novalidate>
           <div class="admin-form-group">
-            <label class="admin-form-label" for="change-current-password">Current Password</label>
+            <label class="admin-form-label" for="change-current-password">
+              <i class="fas fa-lock"></i> Current Password
+            </label>
             <div class="admin-input-wrapper">
-              <input type="password" id="change-current-password" class="admin-form-input" placeholder="Current password..." required autocomplete="current-password">
-              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+              <input type="password" id="change-current-password" class="admin-form-input" placeholder="Your current password" required autocomplete="current-password" />
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle visibility"><i class="fas fa-eye"></i></button>
             </div>
           </div>
 
           <div class="admin-form-group">
-            <label class="admin-form-label" for="change-new-password">New Password</label>
+            <label class="admin-form-label" for="change-new-password">
+              <i class="fas fa-lock"></i> New Password
+            </label>
             <div class="admin-input-wrapper">
-              <input type="password" id="change-new-password" class="admin-form-input" placeholder="New password..." required autocomplete="new-password">
-              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+              <input type="password" id="change-new-password" class="admin-form-input" placeholder="New password (min. 8 characters)" required autocomplete="new-password" />
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle visibility"><i class="fas fa-eye"></i></button>
             </div>
           </div>
 
           <div class="admin-form-group">
-            <label class="admin-form-label" for="change-confirm-password">Confirm New Password</label>
+            <label class="admin-form-label" for="change-confirm-password">
+              <i class="fas fa-lock-keyhole"></i> Confirm New Password
+            </label>
             <div class="admin-input-wrapper">
-              <input type="password" id="change-confirm-password" class="admin-form-input" placeholder="Repeat new password..." required autocomplete="new-password">
-              <button type="button" class="admin-toggle-eye" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+              <input type="password" id="change-confirm-password" class="admin-form-input" placeholder="Repeat new password" required autocomplete="new-password" />
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle visibility"><i class="fas fa-eye"></i></button>
             </div>
           </div>
 
-          <div style="display: flex; gap: 10px; margin-top: 1.5rem;">
-            <button type="button" id="modal-btn-close-change" class="admin-btn-secondary" style="flex: 1;">Cancel</button>
-            <button type="submit" class="admin-btn-primary" style="flex: 2;"><i class="fas fa-save"></i> Save</button>
+          <div class="admin-modal-actions">
+            <button type="button" id="modal-btn-close-change-2" class="admin-btn-secondary">Cancel</button>
+            <button type="submit" class="admin-btn-primary admin-btn-inline">
+              <i class="fas fa-floppy-disk"></i> Save Password
+            </button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- Security Audit Log Modal -->
-    <div id="admin-audit-modal" class="admin-modal-backdrop">
-      <div class="admin-auth-card" style="max-width: 580px;">
+    <!-- ═══════════════════════════════════════════════════════════════
+         SECURITY AUDIT LOG MODAL
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="admin-audit-modal" class="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="audit-modal-title">
+      <div class="admin-auth-card admin-modal-card admin-audit-modal-card">
+        <button type="button" class="admin-modal-close" id="modal-btn-close-audit" aria-label="Close modal">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div class="admin-card-accent-bar"></div>
+
         <div class="admin-auth-header">
-          <div class="admin-auth-icon"><i class="fas fa-shield-halved"></i></div>
-          <h2 class="admin-auth-title">Security Audit Log</h2>
-          <p class="admin-auth-subtitle">Access & authentication history</p>
+          <div class="admin-auth-logo">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+          <h2 class="admin-auth-title" id="audit-modal-title">Security Audit Log</h2>
+          <p class="admin-auth-subtitle">Access &amp; authentication history &mdash; last 30 events</p>
         </div>
 
         <div class="admin-audit-table-wrapper">
@@ -180,38 +298,44 @@
           </table>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem;">
-          <button type="button" id="btn-clear-audit-logs" class="admin-btn-secondary" style="font-size: 0.76rem; padding: 0.4rem 0.8rem; color: var(--admin-text-secondary);"><i class="fas fa-trash-can"></i> Clear Logs</button>
-          <button type="button" id="modal-btn-close-audit" class="admin-btn-secondary">Close</button>
+        <div class="admin-modal-actions admin-audit-footer">
+          <button type="button" id="btn-clear-audit-logs" class="admin-btn-danger-ghost">
+            <i class="fas fa-trash-can"></i> Clear Logs
+          </button>
+          <button type="button" id="modal-btn-close-audit-2" class="admin-btn-secondary">Close</button>
         </div>
       </div>
     </div>
 
-    <!-- Netlify CMS Engine -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         DECAP CMS ENGINE
+    ════════════════════════════════════════════════════════════════ -->
     <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
 
-    <!-- Admin Authentication Script -->
+    <!-- Admin Authentication & Publish-All Logic -->
     <script src="/admin/admin-auth.js"></script>
 
+    <!-- CMS Hooks: preview styles + rebuild triggers -->
     <script>
       if (typeof CMS !== "undefined") {
         CMS.registerPreviewStyle("/css/styles.css");
         if (CMS.registerEventListener) {
           CMS.registerEventListener({
             name: "postPublish",
-            handler: function() {
+            handler: function () {
               if (typeof handleSyncSite === "function") handleSyncSite();
-            }
+            },
           });
           CMS.registerEventListener({
             name: "postUnpublish",
-            handler: function() {
+            handler: function () {
               if (typeof handleSyncSite === "function") handleSyncSite();
-            }
+            },
           });
         }
       }
     </script>
+
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </body>
 </html>
