@@ -18,7 +18,7 @@ title: Home | SecuLex
 
     <div class="hero-content fade-in">
         <h1 class="hero-title-split">
-            {{ home.hero_title | safe }}{% if home.hero_title_accent %} <span class="text-gold hero-accent-line">{{ home.hero_title_accent }}</span>{% endif %}
+            <span class="hero-title-main">{{ home.hero_title | default("Principled Commentary") }}</span> <span class="text-gold hero-accent-line">{{ home.hero_title_accent | default("on Contemporary Law") }}</span>
         </h1>
 
         <p class="hero-description">{{ home.hero_description }}</p>
