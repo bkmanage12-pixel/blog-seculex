@@ -4,6 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SecuLex Admin Portal</title>
+    <script>
+      (function() {
+        var h = window.location.hostname.toLowerCase();
+        if (h === 'seculex.org' || h === 'www.seculex.org') {
+          window.location.replace('/404.html');
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/admin/admin.css">
   </head>

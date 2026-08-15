@@ -12,6 +12,30 @@
   ADMIN_PASSWORD_SALT = "cdfc6609f037b959358fec5f4976c74e"
 
 [[redirects]]
+  from = "https://seculex.org/admin/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://seculex.org/admin"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.seculex.org/admin/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.seculex.org/admin"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
   from = "https://www.seculex.org/*"
   to = "https://seculex.org/:splat"
   status = 301
