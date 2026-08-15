@@ -24,11 +24,32 @@ title: Home | SecuLex
         <p class="hero-description">{{ home.hero_description }}</p>
 
         <div class="hero-actions">
-            <button type="button" class="btn btn-pill-solid hero-btn-primary" id="explore-articles-btn" onclick="openThemeModal(event)" aria-haspopup="dialog">
-                <i class="fas fa-layer-group"></i>
-                {{ home.hero_button_text | default("Explore Articles") }}
-                <i class="fas fa-chevron-down hero-btn-chevron"></i>
-            </button>
+            <div class="hero-explore-dropdown-wrapper">
+                <button type="button" class="btn btn-pill-solid hero-btn-primary" id="explore-articles-btn" onclick="toggleHeroThemes(event)" aria-expanded="false">
+                    <i class="fas fa-layer-group"></i>
+                    {{ home.hero_button_text | default("Explore Articles") }}
+                    <i class="fas fa-chevron-down hero-btn-chevron"></i>
+                </button>
+                <div class="hero-theme-dropdown" id="hero-theme-dropdown">
+                    <div class="hero-theme-dropdown-header">
+                        <span><i class="fas fa-layer-group"></i> Select a Theme:</span>
+                    </div>
+                    <div class="hero-theme-dropdown-list">
+                        {% for key, cat in categories %}
+                        <a href="/categories/{{ key }}/" class="hero-theme-drop-item">
+                            <span class="drop-icon drop-icon--{{ cat.color_class }}"><i class="fas {{ cat.icon }}"></i></span>
+                            <span>{{ cat.title }}</span>
+                            <i class="fas fa-chevron-right hero-theme-drop-arrow"></i>
+                        </a>
+                        {% endfor %}
+                        <a href="#articles" onclick="scrollToArticles(event)" class="hero-theme-drop-item hero-theme-drop-item--all">
+                            <span class="drop-icon" style="background:rgba(212,175,55,0.2);color:var(--accent-gold);"><i class="fas fa-book-open"></i></span>
+                            <span>Browse All on Page</span>
+                            <i class="fas fa-arrow-down hero-theme-drop-arrow"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
             <a href="#about" class="btn hero-btn-ghost">
                 <i class="fas fa-info-circle"></i>
                 About the Journal
@@ -97,11 +118,22 @@ title: Home | SecuLex
         <div class="section-header-line"></div>
     </div>
 
-    <div class="blog-grid fade-in">
-        {% set recent_posts = collections.posts | reverse %}
-        {% for post in recent_posts %}
-        {% if loop.index0 < 3 %}
-        <article class="blog-card">
+    <!-- Interactive Theme Filter Tabs for Articles -->
+    <div class="theme-filter-tabs fade-in" id="theme-filter-tabs">
+        <button type="button" class="theme-filter-tab active" data-filter="all">
+            <i class="fas fa-globe"></i> All Themes
+        </button>
+        {% for key, cat in categories %}
+        <button type="button" class="theme-filter-tab" data-filter="{{ cat.title }}">
+            <i class="fas {{ cat.icon }}"></i> {{ cat.title }}
+        </button>
+        {% endfor %}
+    </div>
+
+    <div class="blog-grid fade-in" id="home-articles-grid">
+        {% set all_posts = collections.posts | reverse %}
+        {% for post in all_posts %}
+        <article class="blog-card" data-category="{{ post.data.category }}">
             <div class="card-img">
                 <a href="{{ post.url }}">
                     <img src="{{ post.data.thumbnail }}" alt="{{ post.data.title }}" loading="lazy">
@@ -124,7 +156,6 @@ title: Home | SecuLex
                 </div>
             </div>
         </article>
-        {% endif %}
         {% endfor %}
     </div>
 
@@ -136,3 +167,60 @@ title: Home | SecuLex
         </a>
     </div>
 </main>
+
+<script>
+function toggleHeroThemes(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    const menu = document.getElementById('hero-theme-dropdown');
+    const btn = document.getElementById('explore-articles-btn');
+    if (menu) {
+        menu.classList.toggle('open');
+        const isOpen = menu.classList.contains('open');
+        if (btn) btn.setAttribute('aria-expanded', String(isOpen));
+    }
+}
+
+function scrollToArticles(e) {
+    if (e) e.preventDefault();
+    const menu = document.getElementById('hero-theme-dropdown');
+    if (menu) menu.classList.remove('open');
+    const target = document.getElementById('articles');
+    if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+document.addEventListener('click', function(e) {
+    const wrapper = document.querySelector('.hero-explore-dropdown-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+        const menu = document.getElementById('hero-theme-dropdown');
+        if (menu) menu.classList.remove('open');
+    }
+});
+
+// Live in-place filter tabs
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.theme-filter-tab');
+    const cards = document.querySelectorAll('#home-articles-grid .blog-card');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            cards.forEach(card => {
+                const category = card.getAttribute('data-category');
+                if (filter === 'all' || category === filter) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
