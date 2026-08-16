@@ -53,6 +53,6 @@ peer_reviewed: true
 restrict_abstract_copy: true
 publication_type: Academic journal
 protected_attachment: ""
-paywall_enabled: true
+paywall_enabled: false
 price_override: 5
 ---
