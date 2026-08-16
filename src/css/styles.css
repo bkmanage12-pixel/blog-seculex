@@ -246,42 +246,42 @@ ul {
 
 .nav-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 5px);
   left: 0;
-  transform: translateY(-6px);
-  background: rgba(10, 13, 24, 0.97);
+  transform: translateY(-4px);
+  background: rgba(10, 13, 24, 0.98);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(212, 175, 55, 0.45);
-  border-radius: 14px;
-  padding: 0.6rem 0.5rem;
-  min-width: 250px;
+  border-radius: 12px;
+  padding: 0.35rem 0.35rem;
+  min-width: 235px;
   width: max-content;
   max-width: 90vw;
   list-style: none;
   margin: 0;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.75), 0 0 25px rgba(212, 175, 55, 0.15);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 20px rgba(212, 175, 55, 0.12);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              visibility 0.22s;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.2s;
   z-index: 99999;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 /* Top pointer arrow for dropdown aligned with left trigger */
 .nav-dropdown::before {
   content: '';
   position: absolute;
-  top: -6px;
-  left: 28px;
+  top: -5px;
+  left: 24px;
   transform: rotate(45deg);
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   background: #0a0d18;
   border-top: 1px solid rgba(212, 175, 55, 0.45);
   border-left: 1px solid rgba(212, 175, 55, 0.45);
@@ -306,14 +306,14 @@ ul {
 .pill-nav .nav-dropdown a {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0.9rem;
-  border-radius: 9px;
-  font-size: 0.88rem;
+  gap: 0.55rem;
+  padding: 0.38rem 0.65rem;
+  border-radius: 7px;
+  font-size: 0.84rem;
   font-weight: 500;
   color: var(--text-primary) !important;
   text-decoration: none;
-  transition: background 0.18s ease, color 0.18s ease, transform 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
   white-space: nowrap;
   background: transparent !important;
   box-shadow: none !important;
@@ -328,13 +328,13 @@ ul {
 
 /* Coloured icon blobs */
 .drop-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   flex-shrink: 0;
 }
 .drop-icon--security { background: rgba(212, 175, 55, 0.2); color: #fbbf24; }
