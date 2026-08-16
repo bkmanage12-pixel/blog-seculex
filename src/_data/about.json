@@ -7,6 +7,10 @@
   "body_text": "It advances doctrinal interpretation, comparative inquiry, and normative evaluation across public law, cyber regulation, state responsibility, human rights, and security policy — grounded in academic integrity and jurisprudential rigor.",
   "pillars": [
     {
+      "emoji": "🔒",
+      "text": "Security&Strategies"
+    },
+    {
       "emoji": "⚖️",
       "text": "Public Law"
     },
@@ -21,10 +25,6 @@
     {
       "emoji": "🤝",
       "text": "Human Rights"
-    },
-    {
-      "emoji": "🔒",
-      "text": "Security&Strategies"
     },
     {
       "emoji": "🧬",
