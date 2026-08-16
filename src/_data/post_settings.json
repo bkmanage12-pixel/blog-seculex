@@ -18,5 +18,7 @@
   "repository_footer_text": "SecuLex Scholarly Repository",
   "download_button_label": "Download PDF",
   "no_toc_label": "No table of contents outlined.",
-  "format_pdf_label": "Format: PDF (Full Text)"
-}
+  "format_pdf_label": "Format: PDF (Full Text)",
+  "author_bio_section_title": "About the Author",
+  "author_bio_fallback": "No biography provided for this author."
+}

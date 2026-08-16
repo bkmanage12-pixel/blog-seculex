@@ -71,7 +71,9 @@ collections:
       - {label: "Category", name: "category", widget: "relation", collection: "categories", search_fields: ["title"], value_field: "title", display_fields: ["title"]}
       - {label: "Abstract / Description", name: "description", widget: "text", hint: "Provide a summary (Abstract) of the article. For paid articles, this is the main text visible to non-paying visitors."}
       - {label: "Author", name: "author", widget: "string", default: "Prof.Dr. Thierry B. MURANGIRA"}
+      - {label: "Author Title / Position", name: "author_title", widget: "string", required: false, hint: "e.g. Associate Professor of International Law, University of Rwanda", default: ""}
       - {label: "Author Image", name: "author_image", widget: "image", required: false, hint: "Optional. Upload a circular portrait profile photo for this article."}
+      - {label: "Author Biography", name: "author_bio", widget: "text", required: false, hint: "Short biography of the author (2–4 sentences). Appears in a dedicated Author Bio card at the bottom of the article page."}
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Read Time (Minutes)", name: "read_time", widget: "number", value_type: "int", default: 5}
       - {label: "Featured Image", name: "thumbnail", widget: "image"}
@@ -268,6 +270,8 @@ collections:
           - {label: "Unlock Button Text", name: "unlock_button_label", widget: "string", default: "Unlock Full PDF"}
           - {label: "Download Button Text", name: "download_button_label", widget: "string", default: "Download PDF"}
           - {label: "Repository Footer Text", name: "repository_footer_text", widget: "string", default: "SecuLex Scholarly Repository"}
+          - {label: "Author Bio Section Title", name: "author_bio_section_title", widget: "string", default: "About the Author"}
+          - {label: "Author Bio Fallback Text", name: "author_bio_fallback", widget: "text", default: "No biography provided for this author."}
 
       - label: "404 Not Found Page"
         name: "not_found"

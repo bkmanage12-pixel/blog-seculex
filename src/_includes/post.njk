@@ -274,6 +274,35 @@ layout: base.njk
 
     </article>
 
+    <!-- ── Author Biography Card ── -->
+    {% if author or author_bio %}
+    <section class="author-bio-section fade-in" aria-label="Author Biography">
+        <div class="author-bio-inner">
+            <div class="author-bio-avatar">
+                {% if author_image %}
+                <img src="{{ author_image }}" alt="{{ author | default(post_settings.default_author_name) }}">
+                {% else %}
+                <span class="author-bio-initials">{{ author | default(post_settings.default_author_name) | truncate(2, true, "") | upper }}</span>
+                {% endif %}
+            </div>
+            <div class="author-bio-content">
+                <p class="author-bio-eyebrow">{{ post_settings.author_bio_section_title | default("About the Author") }}</p>
+                <h3 class="author-bio-name">{{ author | default(post_settings.default_author_name) }}</h3>
+                {% if author_title %}
+                <p class="author-bio-position">{{ author_title }}</p>
+                {% endif %}
+                <p class="author-bio-text">
+                    {% if author_bio %}
+                        {{ author_bio }}
+                    {% else %}
+                        {{ post_settings.author_bio_fallback | default("No biography provided for this author.") }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
     {% if site.disqus_shortname %}
     <!-- Disqus Comments Section -->
     <div id="disqus_thread" class="comments-section fade-in"></div>
