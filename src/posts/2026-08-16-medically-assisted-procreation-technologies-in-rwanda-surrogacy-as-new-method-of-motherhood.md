@@ -61,7 +61,7 @@ description: >-
 
   Artificial Reproductive Technologies.
 author: Ass. Prof. Dr MURANGIRA B. Thierry
-date: 2026-08-16T13:27:36.228Z
+date: 2020-03-27T13:27:36.228Z
 read_time: 5
 thumbnail: /assets/images/surrogacy.png
 toc:
