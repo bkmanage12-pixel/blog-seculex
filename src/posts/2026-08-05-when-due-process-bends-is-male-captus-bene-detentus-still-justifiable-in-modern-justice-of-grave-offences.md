@@ -52,7 +52,7 @@ toc:
 peer_reviewed: true
 restrict_abstract_copy: true
 publication_type: Academic journal
-protected_attachment: /protected_documents/wek.pdf
+protected_attachment: ""
 paywall_enabled: true
 price_override: 5
 ---
