@@ -1,5 +1,5 @@
 local_backend: true
-publish_mode: editorial_workflow
+# publish_mode: editorial_workflow (Disabled to ensure immediate direct deployment to main branch)
 backend:
   name: git-gateway
   branch: main # Branch to update (optional; defaults to master)
@@ -28,11 +28,13 @@ collections:
     slug: "{{title}}"
     fields:
       - {label: "Category Name", name: "title", widget: "string"}
+      - {label: "Display Order", name: "order", widget: "number", value_type: "int", default: 1, hint: "Lower numbers appear first (e.g., 1 for Security & Strategies, 2 for Cyber Law, etc.)"}
       - label: "Icon"
         name: "icon"
         widget: "select"
         hint: "Select a visual icon that represents this category theme."
         options:
+          - {label: "🛡️ Shield (Security & Strategies)", value: "fa-shield-halved"}
           - {label: "🔒 Lock (Cyber)", value: "fa-lock"}
           - {label: "🌐 Globe (International)", value: "fa-globe"}
           - {label: "🩺 Stethoscope (Medical)", value: "fa-stethoscope"}
@@ -47,6 +49,7 @@ collections:
         widget: "select"
         hint: "Select a color theme for the badge and layout decorations."
         options:
+          - {label: "Gold / Amber (Security)", value: "security"}
           - {label: "Green (Cyber)", value: "cyber"}
           - {label: "Blue (International)", value: "internationallaw"}
           - {label: "Teal (Medical)", value: "medicallaw"}

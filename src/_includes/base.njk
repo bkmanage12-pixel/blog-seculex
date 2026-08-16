@@ -173,9 +173,9 @@
                 <li class="has-dropdown">
                     <a href="/categories/" {% if '/categories/' in page.url %}class="active"{% endif %} id="nav-categories"><i class="fas fa-th-large"></i> {{ site.nav_categories | default("Categories") }} <i class="fas fa-chevron-down nav-chevron"></i></a>
                     <ul class="nav-dropdown">
-                        {% for key, cat in categories %}
+                        {% for cat in categories | sortCategories %}
                         <li>
-                            <a href="/categories/{{ key }}/">
+                            <a href="/categories/{{ cat.key }}/">
                                 <span class="drop-icon drop-icon--{{ cat.color_class }}"><i class="fas {{ cat.icon }}"></i></span>
                                 {{ cat.title }}
                             </a>

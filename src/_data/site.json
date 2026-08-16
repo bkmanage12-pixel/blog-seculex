@@ -18,6 +18,10 @@
   "linkedin_url": "https://linkedin.com/",
   "footer_themes": [
     {
+      "text": "Security & Strategies",
+      "url": "/categories/security-strategies/"
+    },
+    {
       "text": "Cyber Law",
       "url": "/categories/cyber-law/"
     },

@@ -13,7 +13,8 @@ permalink: /categories/index.html
 </div>
 
 <main class="categories-main fade-in">
-    {% for key, cat in categories %}
+    {% for cat in categories | sortCategories %}
+    {% set key = cat.key %}
     {% set catPosts = collections.posts | filterByCategory(cat.title) %}
     {% if catPosts.length > 0 %}
     <section class="category-section">

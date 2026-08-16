@@ -10,6 +10,18 @@ module.exports = function(eleventyConfig) {
     return (posts || []).filter(post => post.data && post.data.category === category);
   });
 
+  // Sort categories by numeric order property, then by title
+  eleventyConfig.addFilter("sortCategories", (categoriesObj) => {
+    if (!categoriesObj) return [];
+    const entries = Object.entries(categoriesObj).map(([key, value]) => ({
+      key,
+      ...value,
+      order: typeof value.order === 'number' ? value.order : 99
+    }));
+    entries.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+    return entries;
+  });
+
   eleventyConfig.addFilter("absoluteUrl", (url, base) => {
     if (!url) return base || "";
     if (/^https?:\/\//.test(url)) return url;

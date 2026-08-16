@@ -1,5 +1,6 @@
 {
   "title": "Human Rights",
   "icon": "fa-hands-helping",
-  "color_class": "humanrights"
+  "color_class": "humanrights",
+  "order": 4
 }

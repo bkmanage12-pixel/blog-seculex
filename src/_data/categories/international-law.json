@@ -1,5 +1,6 @@
 {
   "title": "International Law",
   "icon": "fa-globe",
-  "color_class": "internationallaw"
+  "color_class": "internationallaw",
+  "order": 3
 }

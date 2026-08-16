@@ -1,5 +1,6 @@
 {
   "title": "Medical Law",
   "icon": "fa-stethoscope",
-  "color_class": "medicallaw"
+  "color_class": "medicallaw",
+  "order": 5
 }

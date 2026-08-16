@@ -1,5 +1,6 @@
 {
   "title": "Forensic Law",
   "icon": "fa-fingerprint",
-  "color_class": "forensiclaw"
+  "color_class": "forensiclaw",
+  "order": 6
 }

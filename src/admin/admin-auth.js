@@ -363,39 +363,6 @@
     const bar = document.getElementById("admin-security-bar");
     if (bar) bar.style.display = "flex";
     resetIdleTimer();
-    injectCMSPublishHider();
-  }
-
-  /**
-   * Hide the per-entry "Publish" button inside Decap CMS.
-   * The editorial workflow shows a Publish button on every entry —
-   * we hide it so the admin must use the "Publish All" bar button.
-   * We also relabel the per-entry Save button to "Save Draft".
-   */
-  function injectCMSPublishHider() {
-    if (document.getElementById("seculex-cms-publish-hider")) return;
-    const style = document.createElement("style");
-    style.id = "seculex-cms-publish-hider";
-    style.textContent = [
-      /* Hide the CMS Publish Now button inside entry editor */
-      '[data-testid="publish-button"],',
-      'button[class*="PublishButton"],',
-      'span[class*="PublishButton"],',
-      /* Hide the top-level "Publish" option in workflow toolbar */
-      '[data-testid="workflow-publish-button"],',
-      'button[class*="WorkflowPublish"]',
-      '{ display: none !important; }',
-    ].join("\n");
-    document.head.appendChild(style);
-
-    /* Because Decap CMS renders its UI asynchronously via React,
-       we watch the DOM and re-inject the rules whenever its toolbar re-renders. */
-    const obs = new MutationObserver(() => {
-      if (!document.getElementById("seculex-cms-publish-hider")) {
-        document.head.appendChild(style.cloneNode(true));
-      }
-    });
-    obs.observe(document.body, { childList: true, subtree: true });
   }
 
   function lockPortal() {

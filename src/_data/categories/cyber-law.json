@@ -1,5 +1,6 @@
 {
   "title": "Cyber Law",
   "icon": "fa-lock",
-  "color_class": "cyber"
+  "color_class": "cyber",
+  "order": 2
 }
