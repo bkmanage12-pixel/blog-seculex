@@ -65,25 +65,31 @@ layout: base.njk
             <!-- Left Column: Academic Metadata & Document Outline -->
             <div class="scholarly-main-column">
                 
-                <!-- Authors Section -->
+                <!-- Authors Section with inline Bio -->
                 <div class="scholarly-section">
                     <h4 class="scholarly-section-title">{{ post_settings.authors_section_title | default("Authors") }}</h4>
-                    <div class="scholarly-authors-container">
-                        <div class="scholarly-author-avatar">
+                    <div class="scholarly-authors-bio-block">
+                        <div class="scholarly-author-avatar scholarly-author-avatar--lg">
                             {% if author_image %}
-                            <img src="{{ author_image }}" alt="{{ author }}">
+                            <img src="{{ author_image }}" alt="{{ author | default(post_settings.default_author_name) }}">
                             {% else %}
-                            <span>{{ author | truncate(1, true, "") }}</span>
+                            <span>{{ author | default(post_settings.default_author_name) | truncate(2, true, "") | upper }}</span>
                             {% endif %}
                         </div>
-                        <div class="scholarly-author-links">
-                            {% if author %}
-                              {% set author_list = author.split(";") %}
-                              {% for auth in author_list %}
-                                <a href="#" class="scholarly-link">{{ auth.trim() }}</a>{% if not loop.last %}, {% endif %}
-                              {% endfor %}
-                            {% else %}
-                              <a href="#" class="scholarly-link">Thierry, Murangira B.</a>
+                        <div class="scholarly-author-bio-text">
+                            <p class="scholarly-author-name">
+                                {% if author %}
+                                  {% set author_list = author.split(";") %}
+                                  {% for auth in author_list %}{{ auth.trim() }}{% if not loop.last %}, {% endif %}{% endfor %}
+                                {% else %}
+                                  {{ post_settings.default_author_name | default("Thierry, Murangira B.") }}
+                                {% endif %}
+                            </p>
+                            {% if author_title %}
+                            <p class="scholarly-author-position">{{ author_title }}</p>
+                            {% endif %}
+                            {% if author_bio %}
+                            <p class="scholarly-author-bio">{{ author_bio }}</p>
                             {% endif %}
                         </div>
                     </div>
@@ -273,35 +279,6 @@ layout: base.njk
         {% endif %}
 
     </article>
-
-    <!-- ── Author Biography Card ── -->
-    {% if author or author_bio %}
-    <section class="author-bio-section fade-in" aria-label="Author Biography">
-        <div class="author-bio-inner">
-            <div class="author-bio-avatar">
-                {% if author_image %}
-                <img src="{{ author_image }}" alt="{{ author | default(post_settings.default_author_name) }}">
-                {% else %}
-                <span class="author-bio-initials">{{ author | default(post_settings.default_author_name) | truncate(2, true, "") | upper }}</span>
-                {% endif %}
-            </div>
-            <div class="author-bio-content">
-                <p class="author-bio-eyebrow">{{ post_settings.author_bio_section_title | default("About the Author") }}</p>
-                <h3 class="author-bio-name">{{ author | default(post_settings.default_author_name) }}</h3>
-                {% if author_title %}
-                <p class="author-bio-position">{{ author_title }}</p>
-                {% endif %}
-                <p class="author-bio-text">
-                    {% if author_bio %}
-                        {{ author_bio }}
-                    {% else %}
-                        {{ post_settings.author_bio_fallback | default("No biography provided for this author.") }}
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-    </section>
-    {% endif %}
 
     {% if site.disqus_shortname %}
     <!-- Disqus Comments Section -->
