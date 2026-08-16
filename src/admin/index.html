@@ -35,21 +35,21 @@
         <span>SecuLex Admin</span>
       </div>
       <div class="admin-bar-divider"></div>
-      <button id="bar-btn-publish-all" class="admin-bar-btn admin-bar-btn-publish" title="Merge all saved drafts and publish to the live site">
-        <i class="fas fa-rocket-launch"></i> Publish All
-      </button>
-      <button id="bar-btn-sync" class="admin-bar-btn admin-bar-btn-rebuild" title="Force a site rebuild without publishing new drafts">
-        <i class="fas fa-rotate"></i> Rebuild
+      <a href="https://seculex.org" target="_blank" rel="noopener" class="admin-bar-btn admin-bar-btn-viewsite" title="View live site in a new tab">
+        <i class="fas fa-arrow-up-right-from-square"></i> <span>View Site</span>
+      </a>
+      <button id="bar-btn-sync" class="admin-bar-btn admin-bar-btn-rebuild" title="Trigger site rebuild and refresh cache">
+        <i class="fas fa-rotate"></i> <span>Rebuild Site</span>
       </button>
       <div class="admin-bar-divider"></div>
       <button id="bar-btn-audit" class="admin-bar-btn" title="View Security Audit Logs">
-        <i class="fas fa-list-check"></i> Audit Log
+        <i class="fas fa-list-check"></i> <span>Audit Log</span>
       </button>
       <button id="bar-btn-change" class="admin-bar-btn" title="Change Admin Password">
-        <i class="fas fa-key"></i> Password
+        <i class="fas fa-key"></i> <span>Password</span>
       </button>
       <button id="bar-btn-lock" class="admin-bar-btn admin-bar-btn-danger" title="Lock Portal &amp; Log Out">
-        <i class="fas fa-right-from-bracket"></i> Lock
+        <i class="fas fa-right-from-bracket"></i> <span>Lock</span>
       </button>
     </div>
 
@@ -312,24 +312,32 @@
     ════════════════════════════════════════════════════════════════ -->
     <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
 
-    <!-- Admin Authentication & Publish-All Logic -->
+    <!-- Admin Authentication & Event Handlers -->
     <script src="/admin/admin-auth.js"></script>
 
-    <!-- CMS Hooks: preview styles + rebuild triggers -->
+    <!-- CMS Hooks: preview styles + publish event feedback -->
     <script>
       if (typeof CMS !== "undefined") {
         CMS.registerPreviewStyle("/css/styles.css");
         if (CMS.registerEventListener) {
           CMS.registerEventListener({
             name: "postPublish",
-            handler: function () {
-              if (typeof handleSyncSite === "function") handleSyncSite();
+            handler: function (data) {
+              var title = data && data.entry && data.entry.getIn ? data.entry.getIn(["data", "title"]) : "Content";
+              if (typeof window.seculexToast === "function") {
+                window.seculexToast("✅ Saved & published to live site! Netlify rebuilding...", "fa-check-double");
+              }
+              if (typeof window.seculexAudit === "function") {
+                window.seculexAudit("publish", 'Published entry: "' + (title || "Document") + '" to main branch.');
+              }
             },
           });
           CMS.registerEventListener({
             name: "postUnpublish",
             handler: function () {
-              if (typeof handleSyncSite === "function") handleSyncSite();
+              if (typeof window.seculexToast === "function") {
+                window.seculexToast("ℹ️ Entry unpublished from live site.", "fa-info-circle");
+              }
             },
           });
         }

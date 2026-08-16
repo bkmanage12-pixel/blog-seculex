@@ -574,6 +574,10 @@
     }
   }
 
+  // Expose toast and audit helpers globally for CMS lifecycle events
+  window.seculexToast = toast;
+  window.seculexAudit = audit;
+
   /* ─── Init ───────────────────────────────────────────────────── */
 
   async function init() {
@@ -617,7 +621,6 @@
       }
     });
     document.getElementById("bar-btn-sync")?.addEventListener("click", handleSyncSite);
-    document.getElementById("bar-btn-publish-all")?.addEventListener("click", handlePublishAll);
     document.getElementById("bar-btn-change")?.addEventListener("click", () =>
       document.getElementById("admin-change-modal")?.classList.add("active"));
     document.getElementById("bar-btn-lock")?.addEventListener("click", () => {

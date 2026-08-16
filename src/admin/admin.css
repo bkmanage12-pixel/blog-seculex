@@ -537,36 +537,31 @@ body {
 
 .admin-bar-btn:active { transform: translateY(0); }
 
-/* Publish All — primary gold CTA */
-.admin-bar-btn-publish {
+/* View Site — gold accented link */
+.admin-bar-btn-viewsite {
+  background: rgba(212, 175, 55, 0.14);
+  color: var(--admin-accent-gold);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-bar-btn-viewsite:hover {
   background: var(--admin-accent-gradient);
   color: #000;
-  border: 1px solid rgba(212,175,55,0.6);
-  font-weight: 700;
-  padding: 5px 14px;
-  box-shadow: 0 2px 12px rgba(212,175,55,0.3);
-  letter-spacing: 0.01em;
+  border-color: rgba(212, 175, 55, 0.8);
+  box-shadow: 0 2px 12px rgba(212, 175, 55, 0.35);
 }
 
-.admin-bar-btn-publish:hover {
-  background: linear-gradient(135deg, #e8c84a 0%, #b8921e 100%);
-  color: #000;
-  box-shadow: 0 4px 20px rgba(212,175,55,0.5);
-  border-color: rgba(212,175,55,0.8);
-}
-
-.admin-bar-btn-publish.spinning i {
-  animation: adminSpin 0.75s linear infinite;
-}
-
-/* Rebuild — subdued secondary */
+/* Rebuild — sync site cache button */
 .admin-bar-btn-rebuild {
   color: var(--admin-text-secondary);
-  border-color: rgba(255,255,255,0.07);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .admin-bar-btn-rebuild:hover {
   color: var(--admin-text-primary);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .admin-bar-btn-rebuild.spinning i {
@@ -576,12 +571,12 @@ body {
 /* Lock / danger */
 .admin-bar-btn-danger {
   color: #fca5a5;
-  border-color: rgba(239,68,68,0.2);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
 .admin-bar-btn-danger:hover {
   background: var(--admin-danger-dim);
-  border-color: rgba(239,68,68,0.4);
+  border-color: rgba(239, 68, 68, 0.4);
   color: #fca5a5;
 }
 
@@ -809,6 +804,5 @@ body {
   .admin-bar-brand { flex: 1; }
   .admin-bar-divider { display: none; }
 
-  .admin-bar-btn span,
-  .admin-bar-btn-publish span { display: none; }
+  .admin-bar-btn span { display: none; }
 }
