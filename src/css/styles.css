@@ -214,12 +214,10 @@ ul {
 .has-dropdown {
   position: relative;
   overflow: visible !important;
-  display: inline-flex;
-  align-items: center;
 }
 
 .nav-chevron {
-  font-size: 0.68em;
+  font-size: 0.65em;
   margin-left: 0.35rem;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
@@ -231,46 +229,45 @@ ul {
   transform: rotate(180deg);
 }
 
-/* Invisible bridge fills the gap between trigger and dropdown
-   so the mouse never leaves the hover zone */
+/* Invisible bridge fills the gap between trigger and dropdown */
 .has-dropdown::after {
   content: '';
   position: absolute;
   top: 100%;
-  left: -20px;
-  right: -20px;
-  height: 20px;
+  left: 0;
+  right: 0;
+  height: 14px;
   background: transparent;
   z-index: 99998;
 }
 
 .nav-dropdown {
   position: absolute;
-  top: calc(100% + 5px);
+  top: calc(100% + 4px);
   left: 0;
   transform: translateY(-4px);
-  background: rgba(10, 13, 24, 0.98);
+  background: rgba(11, 14, 25, 0.98);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  border-radius: 12px;
-  padding: 0.35rem 0.35rem;
-  min-width: 235px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 10px;
+  padding: 4px;
+  min-width: 220px;
   width: max-content;
   max-width: 90vw;
   list-style: none;
   margin: 0;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 20px rgba(212, 175, 55, 0.12);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.8), 0 0 16px rgba(212, 175, 55, 0.12);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              visibility 0.2s;
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.18s;
   z-index: 99999;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 /* Top pointer arrow for dropdown aligned with left trigger */
@@ -278,13 +275,13 @@ ul {
   content: '';
   position: absolute;
   top: -5px;
-  left: 24px;
+  left: 20px;
   transform: rotate(45deg);
   width: 9px;
   height: 9px;
-  background: #0a0d18;
-  border-top: 1px solid rgba(212, 175, 55, 0.45);
-  border-left: 1px solid rgba(212, 175, 55, 0.45);
+  background: #0b0e19;
+  border-top: 1px solid rgba(212, 175, 55, 0.4);
+  border-left: 1px solid rgba(212, 175, 55, 0.4);
 }
 
 .has-dropdown:hover .nav-dropdown,
@@ -306,11 +303,14 @@ ul {
 .pill-nav .nav-dropdown a {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.38rem 0.65rem;
-  border-radius: 7px;
-  font-size: 0.84rem;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 0.82rem;
   font-weight: 500;
+  line-height: 1.25;
   color: var(--text-primary) !important;
   text-decoration: none;
   transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
@@ -323,18 +323,18 @@ ul {
 .pill-nav .nav-dropdown a:hover {
   background: rgba(212, 175, 55, 0.14) !important;
   color: var(--accent-gold) !important;
-  transform: translateX(3px);
+  transform: translateX(2px);
 }
 
 /* Coloured icon blobs */
 .drop-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   flex-shrink: 0;
 }
 .drop-icon--security { background: rgba(212, 175, 55, 0.2); color: #fbbf24; }
