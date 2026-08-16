@@ -18,10 +18,6 @@
   "linkedin_url": "https://linkedin.com/",
   "footer_themes": [
     {
-      "text": "Security & Strategies",
-      "url": "/categories/security-strategies/"
-    },
-    {
       "text": "Cyber Law",
       "url": "/categories/cyber-law/"
     },
@@ -44,6 +40,10 @@
     {
       "text": "PhD Thesis",
       "url": "/categories/phd-thesis/"
+    },
+    {
+      "text": "Security and Strategies",
+      "url": "/categories/security-strategies"
     }
   ],
   "legal_academic_integrity_label": "Academic Integrity",
