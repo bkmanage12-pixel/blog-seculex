@@ -4,7 +4,7 @@ tags:
   - posts
 title: "When Due Process Bends: Is Male Captus, Bene Detentus Still Justifiable
   in Modern Justice of Grave Offences?"
-category: International Law
+category: Human Rights
 description: "The doctrine of male captus, bene detentus translated as “wrongly
   captured, lawfully detained” raises legal questions among legal scholar and
   practitioners about the balance between administration of justice and
