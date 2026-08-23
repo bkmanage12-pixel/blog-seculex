@@ -45,6 +45,9 @@
       <button id="bar-btn-audit" class="admin-bar-btn" title="View Security Audit Logs">
         <i class="fas fa-list-check"></i> <span>Audit Log</span>
       </button>
+      <button id="bar-btn-stats" class="admin-bar-btn" title="View Site Analytics & Statistics">
+        <i class="fas fa-chart-line"></i> <span>Statistics</span>
+      </button>
       <button id="bar-btn-change" class="admin-bar-btn" title="Change Admin Password">
         <i class="fas fa-key"></i> <span>Password</span>
       </button>
@@ -303,6 +306,134 @@
             <i class="fas fa-trash-can"></i> Clear Logs
           </button>
           <button type="button" id="modal-btn-close-audit-2" class="admin-btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SITE ANALYTICS & STATISTICS MODAL
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="admin-stats-modal" class="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="stats-modal-title">
+      <div class="admin-auth-card admin-stats-modal-card">
+        <button type="button" class="admin-modal-close" id="modal-btn-close-stats" aria-label="Close statistics">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div class="admin-card-accent-bar"></div>
+
+        <!-- Header -->
+        <div class="admin-stats-header">
+          <div class="admin-auth-logo">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h2 class="admin-auth-title" id="stats-modal-title">Site Analytics</h2>
+          <p class="admin-auth-subtitle">Powered by Google Analytics 4</p>
+
+          <!-- Range selector -->
+          <div class="admin-stats-range-row">
+            <span class="admin-stats-range-label">Period:</span>
+            <button class="admin-stats-range-btn active" data-range="7">Last 7 days</button>
+            <button class="admin-stats-range-btn" data-range="30">Last 30 days</button>
+            <button class="admin-stats-range-btn" data-range="90">Last 90 days</button>
+            <button id="btn-refresh-stats" class="admin-stats-refresh-btn" title="Refresh data">
+              <i class="fas fa-rotate"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading state -->
+        <div id="stats-loading" class="admin-stats-loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <span>Loading analytics data…</span>
+        </div>
+
+        <!-- Not configured notice -->
+        <div id="stats-not-configured" class="admin-stats-notice" style="display:none;">
+          <i class="fas fa-circle-info"></i>
+          <div>
+            <strong>Google Analytics 4 not configured yet.</strong>
+            <p>To activate statistics, follow these steps:</p>
+            <ol>
+              <li>Go to <a href="https://analytics.google.com" target="_blank" rel="noopener">analytics.google.com</a> and create a GA4 property for <strong>seculex.org</strong>.</li>
+              <li>Copy your <strong>Measurement ID</strong> (looks like <code>G-XXXXXXXXXX</code>) and add it to your Netlify CMS → Site Settings → GA4 Measurement ID.</li>
+              <li>In your Google Cloud Console, create a <strong>Service Account</strong>, grant it <em>Viewer</em> access on the GA4 property, and download its <strong>JSON key file</strong>.</li>
+              <li>In Netlify → Site → Environment Variables, add:
+                <ul>
+                  <li><code>GA4_PROPERTY_ID</code> = your numeric property ID</li>
+                  <li><code>GA4_SERVICE_ACCOUNT_JSON</code> = paste the full JSON key content</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Error state -->
+        <div id="stats-error" class="admin-stats-error" style="display:none;">
+          <i class="fas fa-triangle-exclamation"></i>
+          <span id="stats-error-msg">Could not load analytics data.</span>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="stats-dashboard" style="display:none;">
+
+          <!-- Summary Cards -->
+          <div class="admin-stats-cards">
+            <div class="admin-stat-card">
+              <div class="admin-stat-icon admin-stat-icon-blue"><i class="fas fa-users"></i></div>
+              <div class="admin-stat-value" id="stat-users">—</div>
+              <div class="admin-stat-label">Unique Visitors</div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-icon admin-stat-icon-gold"><i class="fas fa-eye"></i></div>
+              <div class="admin-stat-value" id="stat-pageviews">—</div>
+              <div class="admin-stat-label">Page Views</div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-icon admin-stat-icon-green"><i class="fas fa-arrows-spin"></i></div>
+              <div class="admin-stat-value" id="stat-sessions">—</div>
+              <div class="admin-stat-label">Sessions</div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="admin-stat-icon admin-stat-icon-red"><i class="fas fa-right-from-bracket"></i></div>
+              <div class="admin-stat-value" id="stat-bounce">—</div>
+              <div class="admin-stat-label">Bounce Rate</div>
+            </div>
+          </div>
+
+          <!-- Trend Chart -->
+          <div class="admin-stats-section">
+            <div class="admin-stats-section-title"><i class="fas fa-chart-area"></i> Visitor Trend</div>
+            <div id="stats-trend-chart" class="admin-trend-chart"></div>
+          </div>
+
+          <!-- Two columns: Countries + Devices -->
+          <div class="admin-stats-two-col">
+            <div class="admin-stats-section">
+              <div class="admin-stats-section-title"><i class="fas fa-globe"></i> Visitors by Country</div>
+              <table class="admin-stats-table">
+                <thead><tr><th>Country</th><th>Visitors</th><th>Share</th></tr></thead>
+                <tbody id="stats-countries-rows"></tbody>
+              </table>
+            </div>
+            <div class="admin-stats-section">
+              <div class="admin-stats-section-title"><i class="fas fa-desktop"></i> Devices</div>
+              <div id="stats-devices-bars"></div>
+            </div>
+          </div>
+
+          <!-- Top Articles Table -->
+          <div class="admin-stats-section">
+            <div class="admin-stats-section-title"><i class="fas fa-newspaper"></i> Most Visited Articles</div>
+            <table class="admin-stats-table">
+              <thead><tr><th>#</th><th>Article Title</th><th>Views</th><th>Readers</th></tr></thead>
+              <tbody id="stats-pages-rows"></tbody>
+            </table>
+          </div>
+
+        </div><!-- /stats-dashboard -->
+
+        <div class="admin-modal-actions admin-audit-footer">
+          <button type="button" id="modal-btn-close-stats-2" class="admin-btn-secondary">Close</button>
         </div>
       </div>
     </div>

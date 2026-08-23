@@ -209,6 +209,22 @@ collections:
           - {label: "Footer Contact — X (Twitter) Label", name: "footer_contact_x_label", widget: "string", default: "X (Twitter)"}
           - {label: "Footer Copyright Text", name: "footer_copyright", widget: "string"}
           - {label: "Footer Bottom Tagline", name: "footer_powered_label", widget: "string", default: "Scholarly Publishing Platform"}
+          - label: "── Google Analytics 4 (Statistics Dashboard) ──"
+            name: "ga4_section_label"
+            widget: "hidden"
+            default: ""
+          - label: "GA4 Measurement ID"
+            name: "ga4_measurement_id"
+            widget: "string"
+            required: false
+            default: ""
+            hint: "Your Google Analytics 4 Measurement ID (e.g. G-XXXXXXXXXX). Create a free GA4 property at analytics.google.com, then find this under Admin → Data Streams → Web Stream Details."
+          - label: "GA4 Property ID (Numeric)"
+            name: "ga4_property_id"
+            widget: "string"
+            required: false
+            default: ""
+            hint: "Numeric-only GA4 Property ID (e.g. 123456789). Found under GA4 Admin → Property Settings. Required to display statistics in the Admin Portal Statistics panel."
 
       - label: "Articles & Repository Page"
         name: "articles_page"

@@ -1,4 +1,4 @@
-{
+﻿{
   "site_title": "SecuLex",
   "whatsapp_url": "https://wa.me/250788509986",
   "header_brand_subtitle": "Where Law, Security and Innovation Meet",
@@ -17,34 +17,13 @@
   "footer_legal_title": "Legal",
   "linkedin_url": "https://linkedin.com/",
   "footer_themes": [
-    {
-      "text": "Security & Strategies",
-      "url": "/categories/security-strategies/"
-    },
-    {
-      "text": "Cyber Law",
-      "url": "/categories/cyber-law/"
-    },
-    {
-      "text": "International Law",
-      "url": "/categories/international-law/"
-    },
-    {
-      "text": "Medical Law",
-      "url": "/categories/medical-law/"
-    },
-    {
-      "text": "Human Rights",
-      "url": "/categories/human-rights/"
-    },
-    {
-      "text": "Forensic Law",
-      "url": "/categories/forensic-law/"
-    },
-    {
-      "text": "PhD Thesis",
-      "url": "/categories/phd-thesis/"
-    }
+    { "text": "Security & Strategies", "url": "/categories/security-strategies/" },
+    { "text": "Cyber Law", "url": "/categories/cyber-law/" },
+    { "text": "International Law", "url": "/categories/international-law/" },
+    { "text": "Medical Law", "url": "/categories/medical-law/" },
+    { "text": "Human Rights", "url": "/categories/human-rights/" },
+    { "text": "Forensic Law", "url": "/categories/forensic-law/" },
+    { "text": "PhD Thesis", "url": "/categories/phd-thesis/" }
   ],
   "legal_academic_integrity_label": "Academic Integrity",
   "nav_about": "About",
@@ -64,5 +43,7 @@
   "logo_tagline": "LAW. STRATEGY & SECURITY",
   "nav_home": "Home",
   "email": "seculexpublications@gmail.com",
-  "ticker_badge_text": "Recent Publications"
+  "ticker_badge_text": "Recent Publications",
+  "ga4_measurement_id": "",
+  "ga4_property_id": ""
 }

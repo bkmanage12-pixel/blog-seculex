@@ -578,6 +578,158 @@
   window.seculexToast = toast;
   window.seculexAudit = audit;
 
+  /* ─── Analytics Dashboard ────────────────────────────────────── */
+
+  let statsCurrentRange = 7;
+  let statsLoaded = false;
+
+  function closeStatsModal() {
+    document.getElementById("admin-stats-modal")?.classList.remove("active");
+  }
+
+  function openStatsModal() {
+    document.getElementById("admin-stats-modal")?.classList.add("active");
+    loadAnalyticsDashboard(statsCurrentRange);
+  }
+
+  function statsShowState(state) {
+    ["stats-loading", "stats-not-configured", "stats-error", "stats-dashboard"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = id === state ? "" : "none";
+    });
+  }
+
+  function fmtNum(n) {
+    if (n === null || n === undefined) return "—";
+    return Number(n).toLocaleString();
+  }
+
+  function renderTrend(rows) {
+    const chart = document.getElementById("stats-trend-chart");
+    if (!chart || !rows.length) return;
+    chart.innerHTML = "";
+    const maxVal = Math.max(...rows.map((r) => r.totalUsers || 0), 1);
+    rows.forEach((row) => {
+      const val = row.totalUsers || 0;
+      const pct = Math.max((val / maxVal) * 100, 3);
+      // Format date: YYYYMMDD -> MM/DD
+      const d = String(row.date || "");
+      const label = d.length === 8 ? `${d.slice(4, 6)}/${d.slice(6, 8)}` : d;
+
+      const wrap = document.createElement("div");
+      wrap.className = "admin-trend-bar-wrap";
+      wrap.title = `${label}: ${fmtNum(val)} visitors`;
+
+      const bar = document.createElement("div");
+      bar.className = "admin-trend-bar";
+      bar.style.height = `${pct}%`;
+
+      const lbl = document.createElement("div");
+      lbl.className = "admin-trend-label";
+      lbl.textContent = label;
+
+      wrap.appendChild(bar);
+      wrap.appendChild(lbl);
+      chart.appendChild(wrap);
+    });
+  }
+
+  function renderCountries(rows) {
+    const tbody = document.getElementById("stats-countries-rows");
+    if (!tbody) return;
+    const total = rows.reduce((s, r) => s + (r.totalUsers || 0), 0) || 1;
+    tbody.innerHTML = rows.slice(0, 10).map((r) => {
+      const pct = ((r.totalUsers / total) * 100).toFixed(1);
+      return `<tr>
+        <td>${r.country || "(Unknown)"}</td>
+        <td class="stat-num">${fmtNum(r.totalUsers)}</td>
+        <td class="stat-share">${pct}%</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function renderPages(rows) {
+    const tbody = document.getElementById("stats-pages-rows");
+    if (!tbody) return;
+    tbody.innerHTML = rows.slice(0, 10).map((r, i) => {
+      const title = (r.pageTitle || r.pagePath || "Untitled").replace(" | SecuLex", "").replace(" - SecuLex", "");
+      return `<tr>
+        <td class="stat-rank">${i + 1}</td>
+        <td title="${r.pagePath || ""}">${title}</td>
+        <td class="stat-num">${fmtNum(r.screenPageViews)}</td>
+        <td class="stat-num" style="color:var(--admin-text-secondary)">${fmtNum(r.totalUsers)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function renderDevices(rows) {
+    const container = document.getElementById("stats-devices-bars");
+    if (!container) return;
+    const total = rows.reduce((s, r) => s + (r.totalUsers || 0), 0) || 1;
+    const icons = { desktop: "🖥️", mobile: "📱", tablet: "📟" };
+    container.innerHTML = rows.map((r) => {
+      const pct = ((r.totalUsers / total) * 100).toFixed(1);
+      const device = (r.deviceCategory || "other").toLowerCase();
+      return `<div class="admin-device-row">
+        <div class="admin-device-label">${icons[device] || "💻"} ${device}</div>
+        <div class="admin-device-track">
+          <div class="admin-device-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="admin-device-pct">${pct}%</div>
+      </div>`;
+    }).join("");
+  }
+
+  async function loadAnalyticsDashboard(range) {
+    statsCurrentRange = range;
+    statsLoaded = false;
+    statsShowState("stats-loading");
+
+    // Get session token for auth
+    let adminToken = "";
+    try {
+      const sess = JSON.parse(sessionStorage.getItem("seculex_admin_session_v1") || "{}");
+      adminToken = sess.token || "";
+    } catch {}
+
+    try {
+      const res = await fetch(`/.netlify/functions/analytics-stats?range=${range}`, {
+        headers: { "X-Admin-Token": adminToken },
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        statsShowState("stats-error");
+        const errEl = document.getElementById("stats-error-msg");
+        if (errEl) errEl.textContent = data.error || "Failed to load analytics.";
+        return;
+      }
+
+      if (!data.configured) {
+        statsShowState("stats-not-configured");
+        return;
+      }
+
+      // Render summary cards
+      document.getElementById("stat-users").textContent    = fmtNum(data.summary?.users);
+      document.getElementById("stat-pageviews").textContent = fmtNum(data.summary?.pageViews);
+      document.getElementById("stat-sessions").textContent  = fmtNum(data.summary?.sessions);
+      document.getElementById("stat-bounce").textContent    = data.summary?.bounceRate != null ? `${data.summary.bounceRate}%` : "—";
+
+      renderTrend(data.trend || []);
+      renderCountries(data.countries || []);
+      renderPages(data.topPages || []);
+      renderDevices(data.devices || []);
+
+      statsShowState("stats-dashboard");
+      statsLoaded = true;
+    } catch (err) {
+      statsShowState("stats-error");
+      const errEl = document.getElementById("stats-error-msg");
+      if (errEl) errEl.textContent = `Network error: ${err.message}`;
+    }
+  }
+
   /* ─── Init ───────────────────────────────────────────────────── */
 
   async function init() {
@@ -614,6 +766,26 @@
       renderAuditLogs();
       document.getElementById("admin-audit-modal")?.classList.add("active");
     });
+    document.getElementById("bar-btn-stats")?.addEventListener("click", () => {
+      openStatsModal();
+    });
+
+    // Statistics modal close buttons
+    document.getElementById("modal-btn-close-stats")?.addEventListener("click", closeStatsModal);
+    document.getElementById("modal-btn-close-stats-2")?.addEventListener("click", closeStatsModal);
+
+    // Date range buttons
+    document.querySelectorAll(".admin-stats-range-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".admin-stats-range-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        loadAnalyticsDashboard(parseInt(btn.dataset.range));
+      });
+    });
+    document.getElementById("btn-refresh-stats")?.addEventListener("click", () => {
+      loadAnalyticsDashboard(statsCurrentRange);
+    });
+
     document.getElementById("btn-clear-audit-logs")?.addEventListener("click", () => {
       if (confirm("Clear all security audit logs? This cannot be undone.")) {
         localStorage.removeItem(KEY_AUDIT);
@@ -633,6 +805,7 @@
       if (e.key === "Escape") {
         closeChangeModal();
         closeAuditModal();
+        closeStatsModal();
       }
     });
 
