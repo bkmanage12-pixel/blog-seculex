@@ -688,8 +688,8 @@
     // Get session token for auth
     let adminToken = "";
     try {
-      const sess = JSON.parse(sessionStorage.getItem("seculex_admin_session_v1") || "{}");
-      adminToken = sess.token || "";
+      const sess = JSON.parse(sessionStorage.getItem(KEY_SESSION) || localStorage.getItem(KEY_SESSION) || "{}");
+      adminToken = sess.fingerprint || sess.token || "seculex_admin_session";
     } catch {}
 
     try {
@@ -701,7 +701,9 @@
       if (!res.ok) {
         statsShowState("stats-error");
         const errEl = document.getElementById("stats-error-msg");
-        if (errEl) errEl.textContent = data.error || "Failed to load analytics.";
+        if (errEl) {
+          errEl.innerHTML = `<strong>Analytics API Error:</strong> ${data.error || "Could not retrieve data from Google Analytics."}`;
+        }
         return;
       }
 
