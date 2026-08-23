@@ -71,5 +71,5 @@ restrict_abstract_copy: true
 publication_type: Academic journal
 protected_attachment: /protected_documents/wek.pdf
 paywall_enabled: true
-price_override: 5000
+price_override: 5
 ---

@@ -111,9 +111,9 @@ function getServicesCatalog() {
  * Server-side price resolution and validation
  * NEVER trust client-submitted prices.
  */
-function resolveServicePrice(serviceId, currency = "RWF", customAmount = null, articlePrice = null) {
-  const allowedCurrencies = ["RWF", "USD", "EUR"];
-  const curr = String(currency || "RWF").trim().toUpperCase();
+function resolveServicePrice(serviceId, currency = "USD", customAmount = null, articlePrice = null) {
+  const allowedCurrencies = ["USD", "RWF", "EUR"];
+  const curr = String(currency || "USD").trim().toUpperCase();
   if (!allowedCurrencies.includes(curr)) {
     throw new Error(`Unsupported currency: '${currency}'. Allowed: ${allowedCurrencies.join(", ")}`);
   }
@@ -130,13 +130,13 @@ function resolveServicePrice(serviceId, currency = "RWF", customAmount = null, a
     if (!Number.isFinite(num) || num <= 0) {
       throw new Error("Invalid article download price provided.");
     }
-    // Allow article prices between 100 RWF and 10,000,000 RWF
-    const minAmount = curr === "RWF" ? 100 : 0.1;
-    const maxAmount = curr === "RWF" ? 10000000 : 10000;
+    // Allow article prices between 0.50 USD (or 100 RWF) and 10,000 USD
+    const minAmount = curr === "USD" ? 0.5 : (curr === "EUR" ? 0.5 : 100);
+    const maxAmount = curr === "USD" ? 10000 : (curr === "EUR" ? 10000 : 10000000);
     if (num < minAmount || num > maxAmount) {
       throw new Error(`Article price must be between ${minAmount.toLocaleString()} and ${maxAmount.toLocaleString()} ${curr}.`);
     }
-    finalAmount = curr === "RWF" ? Math.round(num) : Number(num.toFixed(2));
+    finalAmount = (curr === "USD" || curr === "EUR") ? Number(num.toFixed(2)) : Math.round(num);
   } else if (service.is_custom) {
     const num = Number(customAmount);
     if (!Number.isFinite(num) || num <= 0) {

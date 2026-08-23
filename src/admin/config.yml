@@ -111,15 +111,15 @@ collections:
         default: false
         required: false
         hint: "When enabled, visitors must pay to download this article's full PDF. The abstract and table of contents remain freely readable."
-      - label: "Article PDF Download Price (RWF)"
+      - label: "Article PDF Download Price (USD $)"
         name: "price_override"
         widget: "number"
-        value_type: "int"
-        min: 500
-        step: 500
-        default: 2000
+        value_type: "float"
+        min: 0.5
+        step: 0.5
+        default: 2
         required: false
-        hint: "Set the specific price (in RWF) to download this article's PDF according to your appraisal/evaluation of this work. If left empty, the site default of RWF 2,000 applies."
+        hint: "Set the price in USD ($) to download this article's PDF according to your appreciation/evaluation. Default is $2 USD."
 
   - name: "pages"
     label: "Pages & Site Sections"
@@ -186,7 +186,6 @@ collections:
           - {label: "Nav About Label", name: "nav_about", widget: "string", default: "About"}
           - {label: "Nav Articles Label", name: "nav_articles", widget: "string", default: "Articles"}
           - {label: "Nav Categories Label", name: "nav_categories", widget: "string", default: "Categories"}
-          - {label: "Nav Pay Online Label", name: "nav_pay", widget: "string", default: "Pay Online"}
           - {label: "Nav Contact Label", name: "nav_contact", widget: "string", default: "Contact"}
           - {label: "Mobile Menu Button Label", name: "mobile_menu_label", widget: "string", default: "Open navigation"}
           - {label: "Enable Live Publications Ticker", name: "ticker_enabled", widget: "boolean", default: true}
@@ -204,7 +203,6 @@ collections:
           - {label: "Terms Link Label", name: "legal_terms_label", widget: "string", default: "Terms of Use"}
           - {label: "Privacy Link Label", name: "legal_privacy_label", widget: "string", default: "Privacy Policy"}
           - {label: "Refund Policy Link Label", name: "legal_refund_label", widget: "string", default: "Refund Policy"}
-          - {label: "Client Payment Portal Link Label", name: "footer_pay_label", widget: "string", default: "Client Payment Portal"}
           - {label: "Footer Contact Column Title", name: "footer_contact_title", widget: "string", default: "Contact"}
           - {label: "Footer Contact — WhatsApp Label", name: "footer_contact_whatsapp_label", widget: "string", default: "WhatsApp"}
           - {label: "Footer Contact — LinkedIn Label", name: "footer_contact_linkedin_label", widget: "string", default: "LinkedIn"}
@@ -337,13 +335,13 @@ collections:
           - {label: "Home Overlay Left Strength", name: "hero_overlay_left_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.58, hint: "Controls overlay strength behind the main home title."}
           - {label: "Home Overlay Right Strength", name: "hero_overlay_right_opacity", widget: "number", value_type: "float", min: 0, max: 1, step: 0.05, default: 0.12, hint: "Controls overlay strength on the open image side."}
 
-      - label: "Paywall Settings"
+      - label: "PDF Paywall Settings"
         name: "paywall"
         file: "src/_data/paywall.json"
         fields:
-          - {label: "Enable Paywall", name: "enabled", widget: "boolean", default: true, hint: "Turn the download paywall on or off globally"}
-          - {label: "Default Download Price", name: "price", widget: "number", value_type: "float", min: 0.5, step: 0.01, default: 5, hint: "Default amount visitors must pay to download protected documents."}
-          - {label: "Currency", name: "currency", widget: "string", default: "USD", hint: "Currency code e.g. USD, EUR, XAF"}
+          - {label: "Enable Paywall Globally", name: "enabled", widget: "boolean", default: true, hint: "Master switch for article PDF paywalls"}
+          - {label: "Default Download Price (USD $)", name: "price", widget: "number", value_type: "float", min: 0.5, step: 0.5, default: 2, hint: "Default price in USD when an article does not specify its own custom price."}
+          - {label: "Currency", name: "currency", widget: "string", default: "USD", hint: "Default currency code: USD"}
           - {label: "Payment Modal Message", name: "payment_note", widget: "text", hint: "Message shown to visitors in the payment popup"}
           - {label: "Modal Badge", name: "modal_badge", widget: "string"}
           - {label: "Modal Title", name: "modal_title", widget: "string"}
@@ -352,50 +350,10 @@ collections:
           - {label: "Verified Required Label", name: "verified_required_label", widget: "string"}
           - {label: "Redirect Hint", name: "redirect_hint", widget: "text"}
           - {label: "Secure Notice", name: "secure_notice", widget: "string"}
+          - {label: "Payment Button Label", name: "pay_now_dpo_label", widget: "string", default: "Pay via DPO / Cards / Mobile Money"}
           - {label: "Checkout Loading Message", name: "checkout_loading_message", widget: "string"}
           - {label: "Checkout Error Message", name: "checkout_error_message", widget: "string"}
           - {label: "Verification Loading Message", name: "verification_loading_message", widget: "string"}
           - {label: "Verification Error Message", name: "verification_error_message", widget: "string"}
           - {label: "Verification Success Message", name: "verification_success_message", widget: "string"}
           - {label: "Download Again Label", name: "download_again_label", widget: "string"}
-          - {label: "PayPal Button Label", name: "pay_now_paypal_label", widget: "string", default: "Pay with Cards", hint: "Text shown on the PayPal payment button inside the paywall modal."}
-          - {label: "Mobile Money Button Label", name: "pay_now_flutterwave_label", widget: "string", default: "Pay with Mobile Money", hint: "Text shown on the Flutterwave / Mobile Money payment button inside the paywall modal."}
-
-      - label: "Client Payment Portal Settings"
-        name: "payment_settings"
-        file: "src/_data/payment_settings.json"
-        fields:
-          - {label: "Company Legal Name", name: "company_name", widget: "string", default: "Forensic, Law-Tech Consulting Company Ltd"}
-          - {label: "Brand Name", name: "brand_name", widget: "string", default: "SecuLex"}
-          - {label: "Payment Page Title", name: "page_title", widget: "string", default: "Secure Client Payment Portal"}
-          - {label: "Payment Page Tagline", name: "page_tagline", widget: "string", default: "Professional Consulting, Forensic Law & Legal-Tech Services"}
-          - {label: "Payment Page Description", name: "page_description", widget: "text"}
-          - {label: "Default Currency", name: "default_currency", widget: "select", options: ["RWF", "USD", "EUR"], default: "RWF"}
-          - {label: "Pay Button Text", name: "pay_button_text", widget: "string", default: "Proceed to Secure Payment"}
-          - {label: "Security Badge Text", name: "security_badge_text", widget: "string", default: "256-Bit SSL Encrypted & DPO-Ready Gateway"}
-          - {label: "Billing Support Email", name: "support_email", widget: "string", default: "info@seculex.org"}
-          - {label: "Billing Support Phone", name: "support_phone", widget: "string", default: "+250 788 888 888"}
-
-      - label: "Services & Retainers Pricing"
-        name: "services"
-        file: "src/_data/services.json"
-        fields:
-          - label: "Services Catalog"
-            name: "services"
-            widget: "list"
-            fields:
-              - {label: "Service ID (unique slug)", name: "id", widget: "string"}
-              - {label: "Service Name", name: "name", widget: "string"}
-              - {label: "Category", name: "category", widget: "string"}
-              - {label: "Badge Label", name: "badge", widget: "string", required: false}
-              - {label: "FontAwesome Icon", name: "icon", widget: "string", default: "fa-scale-balanced"}
-              - {label: "Description", name: "description", widget: "text"}
-              - {label: "Duration / Engagement Scope", name: "duration", widget: "string", required: false}
-              - {label: "Is Custom Quote / Variable Amount", name: "is_custom", widget: "boolean", default: false}
-              - label: "Standard Prices"
-                name: "prices"
-                widget: "object"
-                fields:
-                  - {label: "Price in RWF", name: "RWF", widget: "number", value_type: "int", default: 50000}
-                  - {label: "Price in USD", name: "USD", widget: "number", value_type: "float", default: 40}
-                  - {label: "Price in EUR", name: "EUR", widget: "number", value_type: "float", default: 38}

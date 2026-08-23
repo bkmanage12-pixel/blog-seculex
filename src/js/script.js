@@ -198,7 +198,7 @@ async function startDpoPaywallPayment() {
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({
                 serviceId: 'article-download',
-                currency: block.dataset.paywallCurrency || 'RWF',
+                currency: block.dataset.paywallCurrency || 'USD',
                 articlePrice: (!isNaN(articlePrice) && articlePrice > 0) ? articlePrice : undefined,
                 // Guest placeholder — no extra form shown for article downloads
                 name: 'Guest',
