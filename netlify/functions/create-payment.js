@@ -34,7 +34,7 @@ exports.handler = async (event) => {
       return json(400, { error: "Invalid JSON request payload." });
     }
 
-    const { serviceId, currency, customAmount, articlePrice, articleUrl, articleTitle } = body;
+    const { serviceId, currency, customAmount, articlePrice, articleUrl, articleTitle, documentId } = body;
 
     // 1. Validate customer information
     const customer = validateCustomerInput(body);
@@ -78,6 +78,7 @@ exports.handler = async (event) => {
       customerPhone: customer.phone,
       notes: customer.notes,
       articleTitle: articleTitle || null,
+      documentId: documentId || null,
       created_at: new Date().toISOString(),
       status: "PENDING",
     });

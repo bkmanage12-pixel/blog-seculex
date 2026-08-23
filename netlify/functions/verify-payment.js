@@ -6,6 +6,7 @@
  */
 
 const { json, verifyPaymentState } = require("./payment-utils");
+const { signDownloadToken } = require("./paywall-utils");
 const dpoAdapter = require("./dpo-adapter");
 
 exports.handler = async (event) => {
@@ -68,14 +69,15 @@ exports.handler = async (event) => {
     const transactionData = {
       reference,
       status: finalStatus,
-      serviceName: verifiedState ? verifiedState.serviceName : "SecuLex Professional Advisory",
-      serviceId: verifiedState ? verifiedState.serviceId : "consulting",
+      serviceName: verifiedState ? verifiedState.serviceName : "SecuLex Scholarly Publication",
+      serviceId: verifiedState ? verifiedState.serviceId : "article-download",
       amount: verifiedState ? verifiedState.amount : null,
-      currency: verifiedState ? verifiedState.currency : "RWF",
+      currency: verifiedState ? verifiedState.currency : "USD",
       customerName: verifiedState ? verifiedState.customerName : null,
       customerEmail: verifiedState ? verifiedState.customerEmail : null,
       customerPhone: verifiedState ? verifiedState.customerPhone : null,
       notes: verifiedState ? verifiedState.notes : null,
+      documentId: verifiedState ? verifiedState.documentId : null,
       created_at: verifiedState ? verifiedState.created_at : nowIso,
       updated_at: nowIso,
       paid_at: finalStatus === "PAID" ? (dpoVerification.verified_at || nowIso) : null,
@@ -83,11 +85,28 @@ exports.handler = async (event) => {
       environment: dpoVerification.environment || "TEST",
     };
 
+    // Generate secure download URL allowing up to 2 downloads per purchase
+    let downloadUrl = null;
+    let downloadToken = null;
+    const documentId = verifiedState ? verifiedState.documentId : (params.doc || body.doc || null);
+    if (finalStatus === "PAID" && documentId) {
+      downloadToken = signDownloadToken({
+        documentId,
+        reference,
+        maxDownloads: 2,
+        exp: Date.now() + 48 * 60 * 60 * 1000, // Valid for 48 hours
+      });
+      downloadUrl = `/.netlify/functions/download-document?token=${encodeURIComponent(downloadToken)}`;
+    }
+
     return json(200, {
       success: true,
       verified: dpoVerification.verified && finalStatus === "PAID",
       status: finalStatus,
       reference,
+      downloadUrl,
+      downloadToken,
+      maxDownloads: 2,
       transaction: transactionData,
     });
   } catch (err) {

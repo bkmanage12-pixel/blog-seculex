@@ -200,6 +200,7 @@ async function startDpoPaywallPayment() {
                 serviceId: 'article-download',
                 currency: block.dataset.paywallCurrency || 'USD',
                 articlePrice: (!isNaN(articlePrice) && articlePrice > 0) ? articlePrice : undefined,
+                documentId: block.dataset.documentId || '',
                 // Guest placeholder — no extra form shown for article downloads
                 name: 'Guest',
                 email: 'download@seculex.org',
@@ -244,24 +245,62 @@ function _triggerSecureDownload(url) {
     document.body.removeChild(a);
 }
 
-function _convertButtonToLink(url) {
-    const btn = document.getElementById('download-trigger-btn');
-    if (!btn || !url) return;
-    const link = document.createElement('a');
-    link.href = url;
-    link.className = 'btn-access-action unlocked-btn';
-    link.download = '';
-    link.target = '_blank';
-    const label = _paywallMessage('downloadAgainLabel', 'Download Again');
-    link.innerHTML = `<i class="fas fa-download"></i> ${label} <i class="fas fa-check-circle" style="margin-left:0.4rem;color:#4ade80;"></i>`;
-    btn.replaceWith(link);
+/**
+ * Renders the download button state according to downloads used (max 2 downloads per payment)
+ */
+function _renderDownloadButtonState(documentId, downloadUrl, usedCount) {
+    const btn = document.getElementById('download-trigger-btn') || document.querySelector('.unlocked-btn');
+    if (!btn || !downloadUrl) return;
+
+    const count = parseInt(usedCount, 10) || 1;
+
+    if (count < 2) {
+        const newBtn = document.createElement('button');
+        newBtn.type = 'button';
+        newBtn.className = 'btn-access-action unlocked-btn';
+        newBtn.id = 'download-trigger-btn';
+        newBtn.innerHTML = `<i class="fas fa-download"></i> Download Again (1 of 2 left) <i class="fas fa-check-circle" style="margin-left:0.4rem;color:#4ade80;"></i>`;
+        newBtn.onclick = () => _handleSecondDownload(documentId, downloadUrl);
+        btn.replaceWith(newBtn);
+    } else {
+        const completedBtn = document.createElement('button');
+        completedBtn.type = 'button';
+        completedBtn.className = 'btn-access-action';
+        completedBtn.id = 'download-trigger-btn';
+        completedBtn.disabled = true;
+        completedBtn.style.opacity = '0.75';
+        completedBtn.style.cursor = 'default';
+        completedBtn.style.background = 'rgba(255, 255, 255, 0.08)';
+        completedBtn.style.color = 'var(--text-secondary)';
+        completedBtn.innerHTML = `<i class="fas fa-check-circle" style="color:#4ade80;margin-right:0.4rem;"></i> Download Limit Reached (2/2 Used)`;
+        btn.replaceWith(completedBtn);
+    }
+}
+
+/**
+ * Handles the 2nd (final) download for a purchased article
+ */
+function _handleSecondDownload(documentId, downloadUrl) {
+    if (!downloadUrl) return;
+
+    _triggerSecureDownload(downloadUrl);
+
+    // Record that second download was used (2 of 2)
+    const storageKey = `seculex_paid_doc_${documentId}`;
+    try {
+        const record = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        record.usedCount = 2;
+        localStorage.setItem(storageKey, JSON.stringify(record));
+    } catch (e) {}
+
+    _renderDownloadButtonState(documentId, downloadUrl, 2);
 }
 
 /**
  * Called on DOMContentLoaded when DPO redirects back to the article page
  * with ?ref=SLX-...&dpo=return in the URL.
  * Reads the stateToken from sessionStorage, calls verify-payment, and
- * if PAID — triggers the PDF download and converts the button to a link.
+ * if PAID — triggers the 1st PDF download and configures the button for 2nd download.
  */
 async function captureReturnedDpoOrder() {
     const block = document.getElementById('attachment-block');
@@ -277,7 +316,7 @@ async function captureReturnedDpoOrder() {
     const cleanUrl = `${window.location.origin}${window.location.pathname}`;
     window.history.replaceState({}, document.title, cleanUrl);
 
-    // Clear stored tokens
+    // Clear stored temporary tokens
     sessionStorage.removeItem('dpo_state_token');
     sessionStorage.removeItem('dpo_ref');
 
@@ -310,21 +349,32 @@ async function captureReturnedDpoOrder() {
         const card = document.querySelector('.paywall-card');
         if (card) card.classList.add('unlocked');
         if (hint) {
-            hint.textContent = _paywallMessage('verificationSuccessMessage', 'Payment verified. Your download is starting now.');
+            hint.textContent = _paywallMessage('verificationSuccessMessage', 'Payment verified. Your download is starting now (1 of 2 downloads).');
             hint.style.color = '#4ade80';
         }
 
-        // Construct the secure download URL from the document ID
-        const documentId = block.dataset.documentId;
-        const downloadUrl = documentId
+        const documentId = block.dataset.documentId || '';
+        const downloadUrl = data.downloadUrl || (documentId
             ? `/.netlify/functions/download-document?file=${encodeURIComponent(documentId)}`
-            : block.dataset.attachment;
+            : block.dataset.attachment);
+
+        // Store persistent record in localStorage (1 of 2 downloads used)
+        if (documentId && downloadUrl) {
+            try {
+                localStorage.setItem(`seculex_paid_doc_${documentId}`, JSON.stringify({
+                    downloadUrl,
+                    ref,
+                    usedCount: 1,
+                    paid_at: new Date().toISOString()
+                }));
+            } catch (e) {}
+        }
 
         setTimeout(() => {
             closePaywall();
             if (downloadUrl) {
                 _triggerSecureDownload(downloadUrl);
-                _convertButtonToLink(downloadUrl);
+                _renderDownloadButtonState(documentId, downloadUrl, 1);
             }
         }, 800);
 
@@ -345,6 +395,21 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closePaywall();
         });
+    }
+
+    // Check if this article was previously purchased on this device
+    const block = document.getElementById('attachment-block');
+    if (block && block.dataset.documentId) {
+        const documentId = block.dataset.documentId;
+        try {
+            const saved = localStorage.getItem(`seculex_paid_doc_${documentId}`);
+            if (saved) {
+                const record = JSON.parse(saved);
+                if (record.downloadUrl) {
+                    _renderDownloadButtonState(documentId, record.downloadUrl, record.usedCount || 1);
+                }
+            }
+        } catch (e) {}
     }
 
     // Handle DPO Pay return or cancellation
