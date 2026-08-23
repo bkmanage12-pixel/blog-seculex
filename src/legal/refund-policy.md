@@ -66,7 +66,7 @@ To request a refund under the eligible conditions stated above, please submit a 
 
 ### How to Submit a Request:
 
-1. Send an email to eculexpublications@gmail.com with the subject line: Refund Request - \[Order / Transaction ID].
+1. Send an email to seculexpublications@gmail.com with the subject line: Refund Request - \[Order / Transaction ID].
 2. Include the following details in your message:
 
    * Your full name and email address used for the purchase.
@@ -96,6 +96,6 @@ We encourage readers and institutional purchasers to contact us directly at secu
 
 If you have any questions, concerns, or requests regarding this Refund & Cancellation Policy, please contact:
 
-* **Email:** ﻿eculexpublications@gmail.com
+* **Email:** ﻿seculexpublications@gmail.com
 * **Website:** <https://seculex.org>
 * **Legal Inquiries:** SecuLex Editorial & Publishing Team
