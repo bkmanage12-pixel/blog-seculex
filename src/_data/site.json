@@ -1,70 +1,70 @@
-{
-  "ga4_property_id": "15488233702",
-  "site_title": "SecuLex",
-  "whatsapp_url": "https://wa.me/250788509986",
-  "header_brand_subtitle": "Where Law, Security and Innovation Meet",
-  "ga4_measurement_id": "G-89KZW61528",
-  "display_widget_enabled": true,
-  "twitter_url": "https://twitter.com/",
-  "footer_copyright": "2026 SecuLex. All scholarly rights reserved.",
-  "nav_contact": "Contact",
-  "site_description": "A scholarly platform dedicated to critical legal analysis and principled commentary on contemporary issues in law, governance, strategy, and security.",
-  "logo_image": "/assets/images/chatgpt-image-jun-5-2026-08_21_51-pm.png",
-  "footer_themes_title": "Themes",
-  "logo_text_accent": "Lex",
-  "disqus_shortname": "seculex",
-  "footer_contact_x_label": "X (Twitter)",
-  "footer_contact_whatsapp_label": "WhatsApp",
-  "ticker_enabled": true,
-  "footer_legal_title": "Legal",
-  "linkedin_url": "https://linkedin.com/",
-  "footer_themes": [
-    {
-      "text": "Security & Strategies",
-      "url": "/categories/security-strategies/"
-    },
-    {
-      "text": "Cyber Law",
-      "url": "/categories/cyber-law/"
-    },
-    {
-      "text": "International Law",
-      "url": "/categories/international-law/"
-    },
-    {
-      "text": "Medical Law",
-      "url": "/categories/medical-law/"
-    },
-    {
-      "text": "Human Rights",
-      "url": "/categories/human-rights/"
-    },
-    {
-      "text": "Forensic Law",
-      "url": "/categories/forensic-law/"
-    },
-    {
-      "text": "PhD Thesis",
-      "url": "/categories/phd-thesis/"
-    }
-  ],
-  "legal_academic_integrity_label": "Academic Integrity",
-  "nav_about": "About",
-  "mobile_menu_label": "Open navigation",
-  "legal_refund_label": "Refund Policy",
-  "comments_noscript_text": "Please enable JavaScript to view the comments powered by Disqus.",
-  "logo_alt": "SecuLex Shield",
-  "footer_contact_title": "Contact",
-  "footer_powered_label": "Scholarly Publishing Platform",
-  "footer_contact_linkedin_label": "LinkedIn",
-  "legal_terms_label": "Terms of Use",
-  "legal_privacy_label": "Privacy Policy",
-  "site_url": "https://seculex.org",
-  "logo_text_main": "Secu",
-  "nav_categories": "Categories",
-  "nav_articles": "Articles",
-  "logo_tagline": "LAW. STRATEGY & SECURITY",
-  "nav_home": "Home",
-  "email": "seculexpublications@gmail.com",
-  "ticker_badge_text": "Recent Publications"
+﻿{
+    "ga4_property_id":  "551204044",
+    "site_title":  "SecuLex",
+    "whatsapp_url":  "https://wa.me/250788509986",
+    "header_brand_subtitle":  "Where Law, Security and Innovation Meet",
+    "ga4_measurement_id":  "G-89KZW61528",
+    "display_widget_enabled":  true,
+    "twitter_url":  "https://twitter.com/",
+    "footer_copyright":  "2026 SecuLex. All scholarly rights reserved.",
+    "nav_contact":  "Contact",
+    "site_description":  "A scholarly platform dedicated to critical legal analysis and principled commentary on contemporary issues in law, governance, strategy, and security.",
+    "logo_image":  "/assets/images/chatgpt-image-jun-5-2026-08_21_51-pm.png",
+    "footer_themes_title":  "Themes",
+    "logo_text_accent":  "Lex",
+    "disqus_shortname":  "seculex",
+    "footer_contact_x_label":  "X (Twitter)",
+    "footer_contact_whatsapp_label":  "WhatsApp",
+    "ticker_enabled":  true,
+    "footer_legal_title":  "Legal",
+    "linkedin_url":  "https://linkedin.com/",
+    "footer_themes":  [
+                          {
+                              "text":  "Security \u0026 Strategies",
+                              "url":  "/categories/security-strategies/"
+                          },
+                          {
+                              "text":  "Cyber Law",
+                              "url":  "/categories/cyber-law/"
+                          },
+                          {
+                              "text":  "International Law",
+                              "url":  "/categories/international-law/"
+                          },
+                          {
+                              "text":  "Medical Law",
+                              "url":  "/categories/medical-law/"
+                          },
+                          {
+                              "text":  "Human Rights",
+                              "url":  "/categories/human-rights/"
+                          },
+                          {
+                              "text":  "Forensic Law",
+                              "url":  "/categories/forensic-law/"
+                          },
+                          {
+                              "text":  "PhD Thesis",
+                              "url":  "/categories/phd-thesis/"
+                          }
+                      ],
+    "legal_academic_integrity_label":  "Academic Integrity",
+    "nav_about":  "About",
+    "mobile_menu_label":  "Open navigation",
+    "legal_refund_label":  "Refund Policy",
+    "comments_noscript_text":  "Please enable JavaScript to view the comments powered by Disqus.",
+    "logo_alt":  "SecuLex Shield",
+    "footer_contact_title":  "Contact",
+    "footer_powered_label":  "Scholarly Publishing Platform",
+    "footer_contact_linkedin_label":  "LinkedIn",
+    "legal_terms_label":  "Terms of Use",
+    "legal_privacy_label":  "Privacy Policy",
+    "site_url":  "https://seculex.org",
+    "logo_text_main":  "Secu",
+    "nav_categories":  "Categories",
+    "nav_articles":  "Articles",
+    "logo_tagline":  "LAW. STRATEGY \u0026 SECURITY",
+    "nav_home":  "Home",
+    "email":  "seculexpublications@gmail.com",
+    "ticker_badge_text":  "Recent Publications"
 }
