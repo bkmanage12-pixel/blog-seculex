@@ -183,6 +183,7 @@
                         {% endfor %}
                     </ul>
                 </li>
+                <li><a href="/pay/" {% if '/pay/' in page.url %}class="active"{% endif %} id="nav-pay"><i class="fas fa-credit-card"></i> {{ site.nav_pay | default("Pay Online") }}</a></li>
                 <li><a href="/#contact" id="nav-contact"><i class="far fa-envelope"></i> {{ site.nav_contact | default("Contact") }}</a></li>
             </ul>
             <button class="mobile-toggle" type="button" aria-label="{{ site.mobile_menu_label | default('Open navigation') }}" aria-expanded="false"><i class="fas fa-bars"></i></button>
@@ -269,6 +270,7 @@
                         <li><a href="/legal/terms/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_terms_label | default("Terms of Use") }}</a></li>
                         <li><a href="/legal/privacy/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_privacy_label | default("Privacy Policy") }}</a></li>
                         <li><a href="/legal/refund-policy/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_refund_label | default("Refund Policy") }}</a></li>
+                        <li><a href="/pay/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.footer_pay_label | default("Client Payment Portal") }}</a></li>
                     </ul>
                 </div>
 

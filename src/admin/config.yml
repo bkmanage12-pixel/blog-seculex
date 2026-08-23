@@ -185,6 +185,7 @@ collections:
           - {label: "Nav About Label", name: "nav_about", widget: "string", default: "About"}
           - {label: "Nav Articles Label", name: "nav_articles", widget: "string", default: "Articles"}
           - {label: "Nav Categories Label", name: "nav_categories", widget: "string", default: "Categories"}
+          - {label: "Nav Pay Online Label", name: "nav_pay", widget: "string", default: "Pay Online"}
           - {label: "Nav Contact Label", name: "nav_contact", widget: "string", default: "Contact"}
           - {label: "Mobile Menu Button Label", name: "mobile_menu_label", widget: "string", default: "Open navigation"}
           - {label: "Enable Live Publications Ticker", name: "ticker_enabled", widget: "boolean", default: true}
@@ -202,6 +203,7 @@ collections:
           - {label: "Terms Link Label", name: "legal_terms_label", widget: "string", default: "Terms of Use"}
           - {label: "Privacy Link Label", name: "legal_privacy_label", widget: "string", default: "Privacy Policy"}
           - {label: "Refund Policy Link Label", name: "legal_refund_label", widget: "string", default: "Refund Policy"}
+          - {label: "Client Payment Portal Link Label", name: "footer_pay_label", widget: "string", default: "Client Payment Portal"}
           - {label: "Footer Contact Column Title", name: "footer_contact_title", widget: "string", default: "Contact"}
           - {label: "Footer Contact — WhatsApp Label", name: "footer_contact_whatsapp_label", widget: "string", default: "WhatsApp"}
           - {label: "Footer Contact — LinkedIn Label", name: "footer_contact_linkedin_label", widget: "string", default: "LinkedIn"}
@@ -357,3 +359,42 @@ collections:
           - {label: "Download Again Label", name: "download_again_label", widget: "string"}
           - {label: "PayPal Button Label", name: "pay_now_paypal_label", widget: "string", default: "Pay with Cards", hint: "Text shown on the PayPal payment button inside the paywall modal."}
           - {label: "Mobile Money Button Label", name: "pay_now_flutterwave_label", widget: "string", default: "Pay with Mobile Money", hint: "Text shown on the Flutterwave / Mobile Money payment button inside the paywall modal."}
+
+      - label: "Client Payment Portal Settings"
+        name: "payment_settings"
+        file: "src/_data/payment_settings.json"
+        fields:
+          - {label: "Company Legal Name", name: "company_name", widget: "string", default: "Forensic, Law-Tech Consulting Company Ltd"}
+          - {label: "Brand Name", name: "brand_name", widget: "string", default: "SecuLex"}
+          - {label: "Payment Page Title", name: "page_title", widget: "string", default: "Secure Client Payment Portal"}
+          - {label: "Payment Page Tagline", name: "page_tagline", widget: "string", default: "Professional Consulting, Forensic Law & Legal-Tech Services"}
+          - {label: "Payment Page Description", name: "page_description", widget: "text"}
+          - {label: "Default Currency", name: "default_currency", widget: "select", options: ["RWF", "USD", "EUR"], default: "RWF"}
+          - {label: "Pay Button Text", name: "pay_button_text", widget: "string", default: "Proceed to Secure Payment"}
+          - {label: "Security Badge Text", name: "security_badge_text", widget: "string", default: "256-Bit SSL Encrypted & DPO-Ready Gateway"}
+          - {label: "Billing Support Email", name: "support_email", widget: "string", default: "info@seculex.org"}
+          - {label: "Billing Support Phone", name: "support_phone", widget: "string", default: "+250 788 888 888"}
+
+      - label: "Services & Retainers Pricing"
+        name: "services"
+        file: "src/_data/services.json"
+        fields:
+          - label: "Services Catalog"
+            name: "services"
+            widget: "list"
+            fields:
+              - {label: "Service ID (unique slug)", name: "id", widget: "string"}
+              - {label: "Service Name", name: "name", widget: "string"}
+              - {label: "Category", name: "category", widget: "string"}
+              - {label: "Badge Label", name: "badge", widget: "string", required: false}
+              - {label: "FontAwesome Icon", name: "icon", widget: "string", default: "fa-scale-balanced"}
+              - {label: "Description", name: "description", widget: "text"}
+              - {label: "Duration / Engagement Scope", name: "duration", widget: "string", required: false}
+              - {label: "Is Custom Quote / Variable Amount", name: "is_custom", widget: "boolean", default: false}
+              - label: "Standard Prices"
+                name: "prices"
+                widget: "object"
+                fields:
+                  - {label: "Price in RWF", name: "RWF", widget: "number", value_type: "int", default: 50000}
+                  - {label: "Price in USD", name: "USD", widget: "number", value_type: "float", default: 40}
+                  - {label: "Price in EUR", name: "EUR", widget: "number", value_type: "float", default: 38}

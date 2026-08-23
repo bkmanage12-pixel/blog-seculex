@@ -1,0 +1,241 @@
+---
+layout: base.njk
+title: Payment Status Verification | SecuLex
+permalink: /payment-status/index.html
+---
+
+<div class="articles-hub-header fade-in">
+    <div class="articles-hub-inner">
+        <div class="hub-topbar" style="flex-direction: column; align-items: flex-start; gap: 0.4rem;">
+            <span class="cat-badge cat-badge--security" style="font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;">
+                <i class="fas fa-shield-halved"></i> Transaction Verification
+            </span>
+            <h1 class="hub-title" style="margin-top: 0.2rem;">Payment Verification & Receipt</h1>
+        </div>
+    </div>
+</div>
+
+<main class="scholarly-layout-container fade-in" style="padding-top: 2rem; padding-bottom: 5rem; min-height: 60vh;">
+    <div style="max-width: 760px; margin: 0 auto;">
+        
+        <!-- Loading Verification State -->
+        <div id="status-card-loading" class="scholarly-section" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 3rem 2rem; text-align: center;">
+            <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent-gold); margin-bottom: 1.2rem;"></i>
+            <h2 style="font-size: 1.4rem; color: var(--text-primary); margin-bottom: 0.5rem;">Verifying Transaction with Gateway...</h2>
+            <p style="color: var(--text-secondary); font-size: 0.92rem; max-width: 500px; margin: 0 auto;">
+                Please wait while we securely confirm your payment status directly with the payment provider. Do not close or refresh this window.
+            </p>
+        </div>
+
+        <!-- Success (PAID) Card -->
+        <div id="status-card-paid" class="scholarly-section" style="display: none; background: var(--glass-bg); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 14px; padding: 2.5rem; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);">
+            
+            <div style="text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; margin-bottom: 1.8rem;">
+                <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(74, 222, 128, 0.15); border: 2px solid #4ade80; color: #4ade80; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1rem;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span style="display: block; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: #4ade80; font-weight: 700; margin-bottom: 0.3rem;">
+                    Payment Verified & Approved
+                </span>
+                <h2 style="font-size: 1.7rem; color: var(--text-primary); margin: 0;">Official SecuLex Receipt</h2>
+                <p style="color: var(--text-secondary); font-size: 0.88rem; margin-top: 0.4rem;">
+                    Thank you for your payment. Your transaction has been confirmed and registered with SecuLex.
+                </p>
+            </div>
+
+            <!-- Receipt Details Table -->
+            <div style="background: rgba(0, 0, 0, 0.35); border-radius: 10px; border: 1px solid var(--border-color); padding: 1.4rem; margin-bottom: 1.8rem;" id="receipt-print-area">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Transaction Reference:</span>
+                    <span id="paid-ref" style="font-family: monospace; font-weight: 700; color: var(--accent-gold); font-size: 1rem; letter-spacing: 0.05em;">-</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Service Rendered:</span>
+                    <span id="paid-service" style="font-weight: 600; color: var(--text-primary); text-align: right;">-</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Client Name:</span>
+                    <span id="paid-client-name" style="font-weight: 600; color: var(--text-primary);">-</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Client Email:</span>
+                    <span id="paid-client-email" style="font-weight: 500; color: var(--text-secondary);">-</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Date & Timestamp:</span>
+                    <span id="paid-timestamp" style="font-size: 0.85rem; color: var(--text-secondary);">-</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.8rem; margin-bottom: 0.8rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Payment Provider:</span>
+                    <span id="paid-gateway" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">DPO Pay / Mobile Money</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 0.6rem;">
+                    <span style="font-weight: 700; color: var(--text-primary); font-size: 1rem;">Total Amount Paid:</span>
+                    <span id="paid-amount" style="font-size: 1.5rem; font-weight: 800; color: #4ade80; font-family: var(--font-serif);">-</span>
+                </div>
+            </div>
+
+            <!-- Receipt Actions -->
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button type="button" onclick="window.print()" class="btn-access-action" style="padding: 0.8rem 1.6rem; font-size: 0.92rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-print"></i> Print Official Receipt
+                </button>
+                <a href="/" class="btn-access-action btn-access-action--free" style="padding: 0.8rem 1.6rem; font-size: 0.92rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-home"></i> Return to Homepage
+                </a>
+            </div>
+
+            <div style="margin-top: 1.8rem; text-align: center; font-size: 0.78rem; color: var(--text-secondary); border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                Forensic, Law-Tech Consulting Company Ltd • Kigali, Rwanda • <a href="mailto:info@seculex.org" style="color: var(--accent-gold);">info@seculex.org</a>
+            </div>
+        </div>
+
+        <!-- Pending / Processing Card -->
+        <div id="status-card-pending" class="scholarly-section" style="display: none; background: var(--glass-bg); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 14px; padding: 2.5rem; text-align: center;">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(212, 175, 55, 0.15); border: 2px solid var(--accent-gold); color: var(--accent-gold); display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1rem;">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <h2 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 0.5rem;">Payment Awaiting Confirmation</h2>
+            <p style="color: var(--text-secondary); font-size: 0.92rem; max-width: 520px; margin: 0 auto 1.5rem;">
+                Your transaction (<code id="pending-ref" style="color: var(--accent-gold); font-weight: 700;">-</code>) has been initiated. If paying with Mobile Money, please enter your PIN on your mobile handset.
+            </p>
+            <button type="button" id="btn-recheck-status" class="btn-access-action" style="padding: 0.8rem 1.8rem; font-size: 0.95rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.2rem;">
+                <i class="fas fa-rotate"></i> Refresh / Check Status Now
+            </button>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                Need assistance? Contact SecuLex billing at <a href="mailto:info@seculex.org" style="color: var(--accent-gold);">info@seculex.org</a>
+            </div>
+        </div>
+
+        <!-- Failed / Cancelled / Error Card -->
+        <div id="status-card-failed" class="scholarly-section" style="display: none; background: var(--glass-bg); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 14px; padding: 2.5rem; text-align: center;">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px solid #ef4444; color: #ef4444; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1rem;">
+                <i class="fas fa-times"></i>
+            </div>
+            <h2 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 0.5rem;">Payment Not Completed</h2>
+            <p id="failed-error-msg" style="color: #fca5a5; font-size: 0.92rem; max-width: 520px; margin: 0 auto 1.5rem;">
+                Your payment was not completed or authorization was declined. No funds were debited.
+            </p>
+            <div style="background: rgba(0, 0, 0, 0.3); padding: 0.8rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem; display: inline-block;">
+                Reference: <span id="failed-ref" style="color: var(--accent-gold); font-weight: 700;">-</span>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/pay/" class="btn-access-action" style="padding: 0.8rem 1.6rem; font-size: 0.92rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-rotate-left"></i> Try Again / Choose Service
+                </a>
+                <a href="/#contact" class="btn-access-action btn-access-action--free" style="padding: 0.8rem 1.6rem; font-size: 0.92rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-envelope"></i> Contact Support
+                </a>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const ref = urlParams.get("ref") || urlParams.get("reference") || "";
+  const token = urlParams.get("token") || "";
+  const outcome = urlParams.get("outcome") || "";
+
+  const cardLoading = document.getElementById("status-card-loading");
+  const cardPaid = document.getElementById("status-card-paid");
+  const cardPending = document.getElementById("status-card-pending");
+  const cardFailed = document.getElementById("status-card-failed");
+
+  const btnRecheck = document.getElementById("btn-recheck-status");
+
+  function hideAllCards() {
+    cardLoading.style.display = "none";
+    cardPaid.style.display = "none";
+    cardPending.style.display = "none";
+    cardFailed.style.display = "none";
+  }
+
+  function formatPrice(amount, curr) {
+    if (!amount) return "N/A";
+    if (curr === "RWF") {
+      return Number(amount).toLocaleString("en-US") + " RWF";
+    }
+    return (curr || "USD") + " " + Number(amount).toFixed(2);
+  }
+
+  async function verifyPayment() {
+    hideAllCards();
+    cardLoading.style.display = "block";
+
+    if (!ref) {
+      hideAllCards();
+      cardFailed.style.display = "block";
+      document.getElementById("failed-error-msg").textContent = "No transaction reference was provided in the URL.";
+      document.getElementById("failed-ref").textContent = "N/A";
+      return;
+    }
+
+    // Retrieve saved stateToken from session storage if available
+    const savedState = sessionStorage.getItem("seculex_payment_token_" + ref) || "";
+
+    try {
+      const queryUrl = "/.netlify/functions/verify-payment?ref=" + encodeURIComponent(ref) +
+        (token ? "&token=" + encodeURIComponent(token) : "") +
+        (savedState ? "&state=" + encodeURIComponent(savedState) : "") +
+        (outcome ? "&outcome=" + encodeURIComponent(outcome) : "");
+
+      const res = await fetch(queryUrl);
+      const data = await res.json();
+
+      hideAllCards();
+
+      if (!res.ok || !data.success) {
+        cardFailed.style.display = "block";
+        document.getElementById("failed-error-msg").textContent = data.error || "Transaction verification failed.";
+        document.getElementById("failed-ref").textContent = ref;
+        return;
+      }
+
+      const tx = data.transaction || {};
+
+      if (data.status === "PAID" || tx.status === "PAID") {
+        cardPaid.style.display = "block";
+        document.getElementById("paid-ref").textContent = tx.reference || ref;
+        document.getElementById("paid-service").textContent = tx.serviceName || "SecuLex Professional Consultation";
+        document.getElementById("paid-client-name").textContent = tx.customerName || "Verified Client";
+        document.getElementById("paid-client-email").textContent = tx.customerEmail || "N/A";
+        document.getElementById("paid-timestamp").textContent = tx.paid_at ? new Date(tx.paid_at).toLocaleString() : new Date().toLocaleString();
+        document.getElementById("paid-gateway").textContent = tx.gateway || "DPO Pay / Network";
+        document.getElementById("paid-amount").textContent = formatPrice(tx.amount, tx.currency);
+      } else if (data.status === "PENDING" || tx.status === "PENDING" || tx.status === "PROCESSING") {
+        cardPending.style.display = "block";
+        document.getElementById("pending-ref").textContent = ref;
+      } else {
+        cardFailed.style.display = "block";
+        document.getElementById("failed-error-msg").textContent = "Transaction status: " + (data.status || "FAILED") + ". Please try again or contact support.";
+        document.getElementById("failed-ref").textContent = ref;
+      }
+
+    } catch (err) {
+      console.error("Verification error:", err);
+      hideAllCards();
+      cardFailed.style.display = "block";
+      document.getElementById("failed-error-msg").textContent = "Unable to connect to the verification server. Please try refreshing.";
+      document.getElementById("failed-ref").textContent = ref;
+    }
+  }
+
+  if (btnRecheck) {
+    btnRecheck.addEventListener("click", () => {
+      verifyPayment();
+    });
+  }
+
+  // Execute verification
+  verifyPayment();
+});
+</script>

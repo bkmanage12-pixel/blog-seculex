@@ -1,0 +1,639 @@
+---
+layout: base.njk
+title: Client Payment Portal | SecuLex
+permalink: /pay/index.html
+---
+
+<div class="articles-hub-header fade-in">
+    <div class="articles-hub-inner">
+        <div class="hub-topbar" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                <span class="cat-badge cat-badge--security" style="font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase;">
+                    <i class="fas fa-shield-halved"></i> {{ payment_settings.brand_name | default("SecuLex") }} Official Portal
+                </span>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">
+                    • {{ payment_settings.company_name | default("Forensic, Law-Tech Consulting Company Ltd") }}
+                </span>
+            </div>
+            <h1 class="hub-title" style="margin-top: 0.2rem;">{{ payment_settings.page_title | default("Secure Client Payment Portal") }}</h1>
+            <p style="color: var(--text-secondary); max-width: 800px; font-size: 0.98rem; margin-top: 0.2rem;">
+                {{ payment_settings.page_description | default("Pay securely for legal advisory, forensic analysis, document reviews, and specialized research services.") }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<main class="scholarly-layout-container fade-in" style="padding-top: 2rem; padding-bottom: 4rem;">
+    <div style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 2.5rem; width: 100%; align-items: start;" class="payment-grid-layout">
+        
+        <!-- Left Column: Service & Customer Form -->
+        <div class="scholarly-main-column" style="display: flex; flex-direction: column; gap: 2rem;">
+            
+            <!-- Step 1: Currency & Service Selection -->
+            <section class="scholarly-section" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.8rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem;">
+                    <h2 style="font-size: 1.25rem; display: flex; align-items: center; gap: 0.6rem; margin: 0;">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-gradient); color: var(--bg-primary); font-size: 0.85rem; font-weight: 800;">1</span>
+                        Select Service & Currency
+                    </h2>
+
+                    <!-- Currency Switcher -->
+                    <div style="display: flex; align-items: center; gap: 0.4rem; background: rgba(0, 0, 0, 0.3); padding: 0.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <span style="font-size: 0.75rem; color: var(--text-secondary); margin-left: 0.4rem; font-weight: 600; text-transform: uppercase;">Currency:</span>
+                        {% for curr in payment_settings.supported_currencies | default(["RWF", "USD", "EUR"]) %}
+                        <button type="button" class="currency-toggle-btn {% if curr == (payment_settings.default_currency | default('RWF')) %}active{% endif %}" data-currency="{{ curr }}">
+                            {{ curr }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Services List -->
+                <div class="services-radio-group" id="services-radio-group" style="display: flex; flex-direction: column; gap: 0.9rem;">
+                    {% for s in services.services %}
+                    <label class="service-card-option {% if loop.first %}selected{% endif %}" for="service-{{ s.id }}">
+                        <input type="radio" name="selected_service" id="service-{{ s.id }}" value="{{ s.id }}" {% if loop.first %}checked{% endif %} data-name="{{ s.name }}" data-custom="{{ s.is_custom }}" data-prices='{{ s.prices | dump | safe }}' style="position: absolute; opacity: 0;">
+                        
+                        <div class="service-card-inner">
+                            <div class="service-card-header">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="service-icon-box">
+                                        <i class="fas {{ s.icon | default('fa-scale-balanced') }}"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="service-title">{{ s.name }}</h3>
+                                        <span class="service-category-badge">{{ s.category }}</span>
+                                    </div>
+                                </div>
+                                <div class="service-price-badge" data-service-id="{{ s.id }}">
+                                    <span class="service-price-val">...</span>
+                                </div>
+                            </div>
+                            
+                            <p class="service-desc">{{ s.description }}</p>
+                            
+                            {% if s.duration %}
+                            <div class="service-meta">
+                                <i class="far fa-clock"></i> {{ s.duration }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <!-- Custom Amount Input (shown only if custom service is selected) -->
+                <div id="custom-amount-container" style="display: none; margin-top: 1.2rem; padding: 1.2rem; background: rgba(212, 175, 55, 0.05); border: 1px dashed var(--accent-gold); border-radius: 8px;">
+                    <label for="custom_amount_input" style="display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; color: var(--accent-gold);">
+                        <i class="fas fa-edit"></i> Enter Invoice / Agreed Amount (<span class="current-currency-label">RWF</span>):
+                    </label>
+                    <div style="position: relative;">
+                        <input type="number" id="custom_amount_input" min="1" step="any" placeholder="Enter agreed amount" class="payment-form-input" style="padding-left: 2rem; font-size: 1.1rem; font-weight: 700;">
+                        <span style="position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-weight: 700;" class="current-currency-symbol">RWF</span>
+                    </div>
+                    <small style="display: block; margin-top: 0.35rem; color: var(--text-secondary); font-size: 0.78rem;">
+                        Reference or quotation amount as agreed with SecuLex management.
+                    </small>
+                </div>
+            </section>
+
+            <!-- Step 2: Customer Information Form -->
+            <section class="scholarly-section" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.8rem;">
+                <h2 style="font-size: 1.25rem; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-gradient); color: var(--bg-primary); font-size: 0.85rem; font-weight: 800;">2</span>
+                    Client & Engagement Details
+                </h2>
+
+                <form id="seculex-payment-form" novalidate>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" class="form-two-col">
+                        <div class="payment-form-group">
+                            <label for="client_name" class="payment-form-label"><i class="fas fa-user"></i> Full Name <span style="color: #ef4444;">*</span></label>
+                            <input type="text" id="client_name" name="client_name" class="payment-form-input" placeholder="e.g. Dr. John Doe" required autocomplete="name">
+                            <div class="field-error-msg" id="error-client_name"></div>
+                        </div>
+
+                        <div class="payment-form-group">
+                            <label for="client_email" class="payment-form-label"><i class="fas fa-envelope"></i> Email Address <span style="color: #ef4444;">*</span></label>
+                            <input type="email" id="client_email" name="client_email" class="payment-form-input" placeholder="e.g. client@example.com" required autocomplete="email">
+                            <div class="field-error-msg" id="error-client_email"></div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;" class="form-two-col">
+                        <div class="payment-form-group">
+                            <label for="client_phone" class="payment-form-label"><i class="fas fa-phone"></i> Phone Number <span style="color: #ef4444;">*</span></label>
+                            <input type="tel" id="client_phone" name="client_phone" class="payment-form-input" placeholder="+250 788 000 000" required autocomplete="tel">
+                            <small style="color: var(--text-secondary); font-size: 0.72rem;">Required for Mobile Money & transaction verification</small>
+                            <div class="field-error-msg" id="error-client_phone"></div>
+                        </div>
+
+                        <div class="payment-form-group">
+                            <label for="client_matter_ref" class="payment-form-label"><i class="fas fa-bookmark"></i> Case / Invoice Reference (Optional)</label>
+                            <input type="text" id="client_matter_ref" name="client_matter_ref" class="payment-form-input" placeholder="e.g. CASE-2026-04 or Inv #108">
+                        </div>
+                    </div>
+
+                    <div class="payment-form-group" style="margin-top: 1rem;">
+                        <label for="client_notes" class="payment-form-label"><i class="fas fa-comment-dots"></i> Brief Matter Description / Additional Notes (Optional)</label>
+                        <textarea id="client_notes" name="client_notes" rows="3" class="payment-form-input" placeholder="Describe the matter, preferred consultation timeline, or specific questions..."></textarea>
+                    </div>
+
+                    <div style="margin-top: 1.2rem; padding: 0.8rem; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid var(--border-color); display: flex; align-items: flex-start; gap: 0.6rem;">
+                        <input type="checkbox" id="terms_agree" name="terms_agree" style="margin-top: 0.25rem; accent-color: var(--accent-gold);" required>
+                        <label for="terms_agree" style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; cursor: pointer;">
+                            I agree to the SecuLex <a href="/legal/terms/" target="_blank" style="color: var(--accent-gold); text-decoration: underline;">Terms of Use</a> and acknowledge the <a href="/legal/refund-policy/" target="_blank" style="color: var(--accent-gold); text-decoration: underline;">Refund & Cancellation Policy</a> for professional services.
+                        </label>
+                    </div>
+                    <div class="field-error-msg" id="error-terms_agree"></div>
+
+                    <!-- Global Form Notification Box -->
+                    <div id="payment-notification" style="display: none; margin-top: 1.2rem; padding: 1rem; border-radius: 8px;" role="alert"></div>
+                </form>
+            </section>
+        </div>
+
+        <!-- Right Column: Order Summary & Pay Action (Sticky) -->
+        <aside class="scholarly-sidebar-column" style="position: sticky; top: calc(var(--site-header-height) + 1.5rem);">
+            <div class="scholarly-sidebar-card" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.8rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                    <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-gold); font-weight: 700;">
+                        <i class="fas fa-receipt"></i> Payment Summary
+                    </span>
+                    <span style="font-size: 0.75rem; color: #4ade80; background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.25); padding: 0.15rem 0.5rem; border-radius: 20px; font-weight: 600;">
+                        <i class="fas fa-lock"></i> SSL Secured
+                    </span>
+                </div>
+
+                <h3 id="summary-service-name" style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.5rem;">
+                    Legal Consultation & Advisory
+                </h3>
+                <p id="summary-service-desc" style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 1.2rem;">
+                    One-on-one professional consultation on cyber law, regulatory compliance, or legal frameworks.
+                </p>
+
+                <!-- Pricing Breakdown -->
+                <div style="background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 1rem; border: 1px solid var(--border-color); margin-bottom: 1.4rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.4rem;">
+                        <span>Service Fee:</span>
+                        <span id="summary-subtotal-val">50,000 RWF</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.4rem;">
+                        <span>Gateway Fee:</span>
+                        <span style="color: #4ade80;">Included (0.00)</span>
+                    </div>
+                    <div style="height: 1px; background: var(--border-color); margin: 0.6rem 0;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <span style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Total Payable:</span>
+                        <span id="summary-total-val" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-gold); font-family: var(--font-serif);">
+                            50,000 RWF
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Pay Button -->
+                <button type="button" id="btn-submit-payment" class="btn-access-action" style="width: 100%; padding: 0.95rem; font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; display: flex; align-items: center; justify-content: center; gap: 0.6rem; cursor: pointer; border: none;">
+                    <i class="fas fa-shield-alt"></i>
+                    <span id="btn-submit-text">{{ payment_settings.pay_button_text | default("Proceed to Secure Payment") }}</span>
+                    <i class="fas fa-spinner fa-spin" id="btn-submit-spinner" style="display: none;"></i>
+                </button>
+
+                <!-- Accepted Methods Badges -->
+                <div style="margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid var(--border-color);">
+                    <span style="display: block; font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem; text-align: center;">
+                        Accepted Payment Channels
+                    </span>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 0.8rem; flex-wrap: wrap; opacity: 0.85;">
+                        <span class="payment-method-chip" title="MTN Mobile Money & Airtel Money"><i class="fas fa-mobile-screen-button"></i> Mobile Money</span>
+                        <span class="payment-method-chip" title="Visa, Mastercard, Cards"><i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i> Cards</span>
+                        <span class="payment-method-chip" title="DPO Pay & Bank Transfer"><i class="fas fa-building-columns"></i> Bank / DPO</span>
+                    </div>
+                </div>
+
+                <!-- Footer Support Note -->
+                <div style="margin-top: 1.2rem; background: rgba(255, 255, 255, 0.02); padding: 0.75rem; border-radius: 6px; font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4; text-align: center;">
+                    <i class="fas fa-headset" style="color: var(--accent-gold);"></i> Invoicing or payment assistance:<br>
+                    <a href="mailto:{{ payment_settings.support_email | default('info@seculex.org') }}" style="color: var(--accent-gold);">{{ payment_settings.support_email | default('info@seculex.org') }}</a>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</main>
+
+<style>
+  .currency-toggle-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .currency-toggle-btn.active {
+    background: var(--accent-gradient);
+    color: var(--bg-primary);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+  }
+  .service-card-option {
+    display: block;
+    cursor: pointer;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.02);
+    transition: all 0.25s ease;
+    overflow: hidden;
+  }
+  .service-card-option:hover {
+    border-color: rgba(212, 175, 55, 0.4);
+    background: rgba(255, 255, 255, 0.04);
+    transform: translateY(-1px);
+  }
+  .service-card-option.selected {
+    border-color: var(--accent-gold);
+    background: rgba(212, 175, 55, 0.07);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.12);
+  }
+  .service-card-inner {
+    padding: 1.1rem 1.2rem;
+  }
+  .service-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  .service-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--accent-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .service-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .service-category-badge {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .service-price-badge {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.25rem 0.7rem;
+    border-radius: 6px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    white-space: nowrap;
+  }
+  .service-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin: 0.3rem 0;
+  }
+  .service-meta {
+    font-size: 0.75rem;
+    color: var(--accent-gold);
+    opacity: 0.9;
+    margin-top: 0.4rem;
+  }
+  .payment-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .payment-form-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .payment-form-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+  }
+  .payment-form-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    background: rgba(0, 0, 0, 0.6);
+  }
+  .payment-form-input.invalid {
+    border-color: #ef4444;
+  }
+  .field-error-msg {
+    color: #ef4444;
+    font-size: 0.75rem;
+    min-height: 1rem;
+    margin-top: 0.15rem;
+  }
+  .payment-method-chip {
+    font-size: 0.72rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    color: var(--text-secondary);
+  }
+  @media (max-width: 900px) {
+    .payment-grid-layout {
+      grid-template-columns: 1fr !important;
+    }
+    .form-two-col {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  let selectedCurrency = "RWF";
+  const currencySymbols = { RWF: "RWF", USD: "$", EUR: "€" };
+
+  const currencyButtons = document.querySelectorAll(".currency-toggle-btn");
+  const serviceOptions = document.querySelectorAll(".service-card-option");
+  const customAmountContainer = document.getElementById("custom-amount-container");
+  const customAmountInput = document.getElementById("custom_amount_input");
+  const currentCurrencyLabels = document.querySelectorAll(".current-currency-label");
+  const currentCurrencySymbols = document.querySelectorAll(".current-currency-symbol");
+
+  const summaryServiceName = document.getElementById("summary-service-name");
+  const summaryServiceDesc = document.getElementById("summary-service-desc");
+  const summarySubtotalVal = document.getElementById("summary-subtotal-val");
+  const summaryTotalVal = document.getElementById("summary-total-val");
+
+  const btnSubmit = document.getElementById("btn-submit-payment");
+  const btnSubmitText = document.getElementById("btn-submit-text");
+  const btnSubmitSpinner = document.getElementById("btn-submit-spinner");
+  const notificationBox = document.getElementById("payment-notification");
+
+  function formatPrice(amount, curr) {
+    if (curr === "RWF") {
+      return Number(amount).toLocaleString("en-US") + " RWF";
+    }
+    return curr + " " + Number(amount).toFixed(2);
+  }
+
+  function getSelectedServiceData() {
+    const checkedRadio = document.querySelector('input[name="selected_service"]:checked');
+    if (!checkedRadio) return null;
+
+    const id = checkedRadio.value;
+    const name = checkedRadio.dataset.name;
+    const isCustom = checkedRadio.dataset.custom === "true";
+    let prices = {};
+    try {
+      prices = JSON.parse(checkedRadio.dataset.prices || "{}");
+    } catch (e) {}
+
+    let amount = prices[selectedCurrency] || 0;
+    if (isCustom) {
+      amount = parseFloat(customAmountInput.value) || 0;
+    }
+
+    return {
+      id,
+      name,
+      isCustom,
+      amount,
+      prices,
+      desc: checkedRadio.closest(".service-card-inner").querySelector(".service-desc").textContent.trim(),
+    };
+  }
+
+  function updatePricesUI() {
+    // Update currency labels
+    currentCurrencyLabels.forEach(el => el.textContent = selectedCurrency);
+    currentCurrencySymbols.forEach(el => el.textContent = currencySymbols[selectedCurrency] || selectedCurrency);
+
+    // Update prices on cards
+    serviceOptions.forEach(opt => {
+      const radio = opt.querySelector('input[type="radio"]');
+      const badge = opt.querySelector(".service-price-val");
+      const isCustom = radio.dataset.custom === "true";
+      let prices = {};
+      try {
+        prices = JSON.parse(radio.dataset.prices || "{}");
+      } catch (e) {}
+
+      if (isCustom) {
+        badge.textContent = "Custom Quote";
+      } else {
+        const val = prices[selectedCurrency] || 0;
+        badge.textContent = formatPrice(val, selectedCurrency);
+      }
+    });
+
+    // Update Summary Sidebar
+    const selected = getSelectedServiceData();
+    if (selected) {
+      summaryServiceName.textContent = selected.name;
+      summaryServiceDesc.textContent = selected.desc;
+
+      if (selected.isCustom) {
+        customAmountContainer.style.display = "block";
+        const val = parseFloat(customAmountInput.value) || 0;
+        if (val > 0) {
+          summarySubtotalVal.textContent = formatPrice(val, selectedCurrency);
+          summaryTotalVal.textContent = formatPrice(val, selectedCurrency);
+        } else {
+          summarySubtotalVal.textContent = "Enter amount";
+          summaryTotalVal.textContent = "... " + selectedCurrency;
+        }
+      } else {
+        customAmountContainer.style.display = "none";
+        summarySubtotalVal.textContent = formatPrice(selected.amount, selectedCurrency);
+        summaryTotalVal.textContent = formatPrice(selected.amount, selectedCurrency);
+      }
+    }
+  }
+
+  // Currency click handler
+  currencyButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      currencyButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedCurrency = btn.dataset.currency;
+      updatePricesUI();
+    });
+  });
+
+  // Service selection click handler
+  serviceOptions.forEach(opt => {
+    opt.addEventListener("click", () => {
+      serviceOptions.forEach(o => o.classList.remove("selected"));
+      opt.classList.add("selected");
+      const radio = opt.querySelector('input[type="radio"]');
+      if (radio) {
+        radio.checked = true;
+      }
+      updatePricesUI();
+    });
+  });
+
+  // Custom amount typing handler
+  customAmountInput.addEventListener("input", () => {
+    updatePricesUI();
+  });
+
+  // Clear errors helper
+  function clearErrors() {
+    document.querySelectorAll(".field-error-msg").forEach(el => el.textContent = "");
+    document.querySelectorAll(".payment-form-input").forEach(el => el.classList.remove("invalid"));
+    notificationBox.style.display = "none";
+    notificationBox.className = "";
+  }
+
+  function showError(fieldId, msg) {
+    const errorEl = document.getElementById("error-" + fieldId);
+    const inputEl = document.getElementById(fieldId);
+    if (errorEl) errorEl.textContent = msg;
+    if (inputEl) inputEl.classList.add("invalid");
+  }
+
+  function showNotification(msg, type = "error") {
+    notificationBox.style.display = "block";
+    notificationBox.style.background = type === "error" ? "rgba(239, 68, 68, 0.15)" : "rgba(74, 222, 128, 0.15)";
+    notificationBox.style.border = type === "error" ? "1px solid #ef4444" : "1px solid #4ade80";
+    notificationBox.style.color = type === "error" ? "#fca5a5" : "#86efac";
+    notificationBox.innerHTML = '<i class="fas ' + (type === "error" ? 'fa-circle-exclamation' : 'fa-check-circle') + '"></i> ' + msg;
+    notificationBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  // Form submission & payment initialization
+  btnSubmit.addEventListener("click", async (e) => {
+    e.preventDefault();
+    clearErrors();
+
+    const selected = getSelectedServiceData();
+    if (!selected) {
+      showNotification("Please select a service to proceed.", "error");
+      return;
+    }
+
+    const name = document.getElementById("client_name").value.trim();
+    const email = document.getElementById("client_email").value.trim();
+    const phone = document.getElementById("client_phone").value.trim();
+    const matterRef = document.getElementById("client_matter_ref").value.trim();
+    const notes = document.getElementById("client_notes").value.trim();
+    const termsAgree = document.getElementById("terms_agree").checked;
+
+    let hasErrors = false;
+
+    if (!name || name.length < 2) {
+      showError("client_name", "Please enter your full name.");
+      hasErrors = true;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      showError("client_email", "Please enter a valid email address.");
+      hasErrors = true;
+    }
+
+    if (!phone || phone.length < 8) {
+      showError("client_phone", "Please enter a valid phone number with country code.");
+      hasErrors = true;
+    }
+
+    if (selected.isCustom) {
+      const customVal = parseFloat(customAmountInput.value);
+      if (!customVal || customVal <= 0) {
+        showError("custom_amount_input", "Please enter an agreed amount greater than 0.");
+        hasErrors = true;
+      }
+    }
+
+    if (!termsAgree) {
+      showError("terms_agree", "You must agree to the Terms of Use and Refund Policy to proceed.");
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      return;
+    }
+
+    // Set Loading State & Prevent Duplicate Submissions
+    btnSubmit.disabled = true;
+    btnSubmitText.textContent = "Connecting to Secure Gateway...";
+    btnSubmitSpinner.style.display = "inline-block";
+
+    try {
+      const combinedNotes = (matterRef ? "[Ref: " + matterRef + "] " : "") + notes;
+
+      const payload = {
+        name,
+        email,
+        phone,
+        serviceId: selected.id,
+        currency: selectedCurrency,
+        customAmount: selected.isCustom ? parseFloat(customAmountInput.value) : undefined,
+        notes: combinedNotes.trim(),
+      };
+
+      const res = await fetch("/.netlify/functions/create-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Could not initiate payment session.");
+      }
+
+      // Save stateToken in session for seamless verification handover
+      if (data.stateToken) {
+        sessionStorage.setItem("seculex_payment_token_" + data.transactionReference, data.stateToken);
+      }
+
+      showNotification("Payment session initialized. Redirecting to payment authorization...", "success");
+
+      // Redirect customer to the gateway checkout or test handover
+      setTimeout(() => {
+        if (data.paymentUrl) {
+          window.location.href = data.paymentUrl;
+        } else {
+          window.location.href = "/payment-status/?ref=" + encodeURIComponent(data.transactionReference);
+        }
+      }, 700);
+
+    } catch (err) {
+      console.error(err);
+      showNotification(err.message || "An unexpected error occurred. Please try again.", "error");
+      btnSubmit.disabled = false;
+      btnSubmitText.textContent = "Proceed to Secure Payment";
+      btnSubmitSpinner.style.display = "none";
+    }
+  });
+
+  // Initialize UI on load
+  updatePricesUI();
+});
+</script>

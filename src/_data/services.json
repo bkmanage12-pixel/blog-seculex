@@ -1,0 +1,94 @@
+{
+  "services": [
+    {
+      "id": "legal-consultation",
+      "name": "Legal Consultation & Advisory",
+      "category": "Legal Practice",
+      "badge": "Popular",
+      "icon": "fa-scale-balanced",
+      "description": "One-on-one professional consultation on cyber law, regulatory compliance, intellectual property, or international legal frameworks.",
+      "prices": {
+        "RWF": 50000,
+        "USD": 40,
+        "EUR": 38
+      },
+      "duration": "Up to 60 minutes",
+      "is_custom": false
+    },
+    {
+      "id": "forensic-consultation",
+      "name": "Forensic & Digital Evidence Advisory",
+      "category": "Forensics",
+      "badge": "Specialized",
+      "icon": "fa-fingerprint",
+      "description": "Expert technical evaluation of electronic evidence, digital chain of custody, genetic/DNA legal protocols, or cyber forensic reporting.",
+      "prices": {
+        "RWF": 75000,
+        "USD": 60,
+        "EUR": 55
+      },
+      "duration": "Detailed evaluation & session",
+      "is_custom": false
+    },
+    {
+      "id": "document-review",
+      "name": "Contract & Document Legal Review",
+      "category": "Compliance",
+      "badge": "Standard",
+      "icon": "fa-file-shield",
+      "description": "Comprehensive legal appraisal, risk evaluation, and clause review for technology agreements, corporate policies, or regulatory filings.",
+      "prices": {
+        "RWF": 45000,
+        "USD": 35,
+        "EUR": 32
+      },
+      "duration": "Standard document (up to 15 pages)",
+      "is_custom": false
+    },
+    {
+      "id": "research-services",
+      "name": "Specialized Legal & Policy Research",
+      "category": "Academic & Research",
+      "badge": "In-Depth",
+      "icon": "fa-book-bookmark",
+      "description": "Custom doctrinal and comparative legal research, jurisprudence reviews, and strategic position papers authored by doctoral-level experts.",
+      "prices": {
+        "RWF": 100000,
+        "USD": 80,
+        "EUR": 75
+      },
+      "duration": "Custom deliverables & brief",
+      "is_custom": false
+    },
+    {
+      "id": "professional-consulting",
+      "name": "Law-Tech & Security Retainer",
+      "category": "Strategy & Consulting",
+      "badge": "Enterprise",
+      "icon": "fa-shield-halved",
+      "description": "Strategic advisory on institutional cybersecurity policies, data protection compliance (GDPR/Rwanda DPA), and tech governance.",
+      "prices": {
+        "RWF": 150000,
+        "USD": 120,
+        "EUR": 110
+      },
+      "duration": "Executive consultation & roadmap",
+      "is_custom": false
+    },
+    {
+      "id": "custom-invoice",
+      "name": "Custom Invoice / Retainer Fee",
+      "category": "Custom Retainer",
+      "badge": "Flexible",
+      "icon": "fa-receipt",
+      "description": "Direct payment for an agreed consulting retainer, custom research project, or formally issued SecuLex invoice.",
+      "prices": {
+        "RWF": 0,
+        "USD": 0,
+        "EUR": 0
+      },
+      "duration": "As specified in engagement",
+      "is_custom": true
+    }
+  ]
+}

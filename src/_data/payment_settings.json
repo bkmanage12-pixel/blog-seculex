@@ -1,0 +1,24 @@
+{
+  "company_name": "Forensic, Law-Tech Consulting Company Ltd",
+  "brand_name": "SecuLex",
+  "page_title": "Secure Client Payment Portal",
+  "page_tagline": "Professional Consulting, Forensic Law & Legal-Tech Services",
+  "page_description": "Pay securely for legal advisory, forensic analysis, document reviews, and specialized research services provided by SecuLex.",
+  "default_currency": "RWF",
+  "supported_currencies": ["RWF", "USD", "EUR"],
+  "currency_symbols": {
+    "RWF": "RWF",
+    "USD": "$",
+    "EUR": "€"
+  },
+  "pay_button_text": "Proceed to Secure Payment",
+  "security_badge_text": "256-Bit SSL Encrypted & DPO-Ready Gateway",
+  "notice_text": "Transactions are securely processed through authorized payment channels. Upon confirmation, an official SecuLex receipt and booking reference will be generated.",
+  "support_email": "info@seculex.org",
+  "support_phone": "+250 788 888 888",
+  "accepted_methods": [
+    { "name": "Mobile Money", "desc": "MTN Mobile Money & Airtel Money", "icon": "fa-mobile-screen-button" },
+    { "name": "Credit / Debit Cards", "desc": "Visa, Mastercard, UnionPay & Amex", "icon": "fa-credit-card" },
+    { "name": "Bank Transfer", "desc": "Direct Electronic Settlement", "icon": "fa-building-columns" }
+  ]
+}
