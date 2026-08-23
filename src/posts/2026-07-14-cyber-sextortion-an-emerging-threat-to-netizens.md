@@ -71,5 +71,5 @@ restrict_abstract_copy: true
 publication_type: Academic journal
 protected_attachment: ""
 paywall_enabled: false
-price_override: 10
+price_override: 2500
 ---

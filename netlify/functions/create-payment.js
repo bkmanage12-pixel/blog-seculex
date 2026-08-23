@@ -34,13 +34,13 @@ exports.handler = async (event) => {
       return json(400, { error: "Invalid JSON request payload." });
     }
 
-    const { serviceId, currency, customAmount, articleUrl, articleTitle } = body;
+    const { serviceId, currency, customAmount, articlePrice, articleUrl, articleTitle } = body;
 
     // 1. Validate customer information
     const customer = validateCustomerInput(body);
 
-    // 2. Authoritatively resolve service price server-side (NEVER trust frontend amounts)
-    const resolvedPrice = resolveServicePrice(serviceId, currency, customAmount);
+    // 2. Authoritatively resolve service price server-side
+    const resolvedPrice = resolveServicePrice(serviceId, currency, customAmount, articlePrice);
 
     // 3. Generate unique transaction reference
     const transactionReference = generateTransactionReference();

@@ -30,6 +30,12 @@ module.exports = function(eleventyConfig) {
     return `${cleanBase}${cleanUrl}`;
   });
 
+  eleventyConfig.addFilter("thousands", (value) => {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return value || "";
+    return num.toLocaleString('en-US');
+  });
+
   eleventyConfig.addFilter("fileName", (url) => {
     if (!url) return "";
     return String(url).split(/[\\/]/).filter(Boolean).pop() || "";

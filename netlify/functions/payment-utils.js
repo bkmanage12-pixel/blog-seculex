@@ -111,7 +111,7 @@ function getServicesCatalog() {
  * Server-side price resolution and validation
  * NEVER trust client-submitted prices.
  */
-function resolveServicePrice(serviceId, currency = "RWF", customAmount = null) {
+function resolveServicePrice(serviceId, currency = "RWF", customAmount = null, articlePrice = null) {
   const allowedCurrencies = ["RWF", "USD", "EUR"];
   const curr = String(currency || "RWF").trim().toUpperCase();
   if (!allowedCurrencies.includes(curr)) {
@@ -125,7 +125,19 @@ function resolveServicePrice(serviceId, currency = "RWF", customAmount = null) {
   }
 
   let finalAmount = 0;
-  if (service.is_custom) {
+  if (service.id === "article-download" && articlePrice !== null && articlePrice !== undefined) {
+    const num = Number(articlePrice);
+    if (!Number.isFinite(num) || num <= 0) {
+      throw new Error("Invalid article download price provided.");
+    }
+    // Allow article prices between 100 RWF and 10,000,000 RWF
+    const minAmount = curr === "RWF" ? 100 : 0.1;
+    const maxAmount = curr === "RWF" ? 10000000 : 10000;
+    if (num < minAmount || num > maxAmount) {
+      throw new Error(`Article price must be between ${minAmount.toLocaleString()} and ${maxAmount.toLocaleString()} ${curr}.`);
+    }
+    finalAmount = curr === "RWF" ? Math.round(num) : Number(num.toFixed(2));
+  } else if (service.is_custom) {
     const num = Number(customAmount);
     if (!Number.isFinite(num) || num <= 0) {
       throw new Error("A valid custom amount greater than 0 is required for this service.");
@@ -150,7 +162,7 @@ function resolveServicePrice(serviceId, currency = "RWF", customAmount = null) {
     serviceName: service.name,
     amount: finalAmount,
     currency: curr,
-    isCustom: Boolean(service.is_custom),
+    isCustom: Boolean(service.is_custom || (service.id === "article-download" && articlePrice !== null)),
   };
 }
 

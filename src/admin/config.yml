@@ -105,20 +105,21 @@ collections:
         required: false
         pattern: ["^(|[A-Za-z0-9._-]+\\.pdf|/assets/.+|https?://.+)$", "Use a protected PDF filename such as report.pdf, a public /assets/... URL, or a full https:// URL."]
         hint: "Paid article: enter only the protected PDF filename from protected_documents, e.g. report.pdf. Free article: enter a public URL such as /assets/images/report.pdf."
-      - label: "Enable Real Paywall"
+      - label: "Enable PDF Paywall (Require Payment to Download)"
         name: "paywall_enabled"
         widget: "boolean"
         default: false
         required: false
-        hint: "When enabled, the page will only show the Abstract and a dynamic Table of Contents to non-paying visitors. The full text is locked, and the visitor must pay to download the protected PDF."
-      - label: "Custom Price (optional)"
+        hint: "When enabled, visitors must pay to download this article's full PDF. The abstract and table of contents remain freely readable."
+      - label: "Article PDF Download Price (RWF)"
         name: "price_override"
         widget: "number"
-        value_type: "float"
-        min: 0.5
-        step: 0.01
+        value_type: "int"
+        min: 500
+        step: 500
+        default: 2000
         required: false
-        hint: "Leave empty to use the global default price. Set a number here to charge a different amount for this specific article."
+        hint: "Set the specific price (in RWF) to download this article's PDF according to your appraisal/evaluation of this work. If left empty, the site default of RWF 2,000 applies."
 
   - name: "pages"
     label: "Pages & Site Sections"

@@ -191,12 +191,15 @@ async function startDpoPaywallPayment() {
     }
 
     try {
+        const articlePrice = parseFloat(block.dataset.paywallPrice);
+
         const response = await fetch('/.netlify/functions/create-payment', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({
                 serviceId: 'article-download',
                 currency: block.dataset.paywallCurrency || 'RWF',
+                articlePrice: (!isNaN(articlePrice) && articlePrice > 0) ? articlePrice : undefined,
                 // Guest placeholder — no extra form shown for article downloads
                 name: 'Guest',
                 email: 'download@seculex.org',

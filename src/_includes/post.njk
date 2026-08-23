@@ -212,7 +212,7 @@ layout: base.njk
                              
                              <button class="btn-access-action" id="download-trigger-btn" type="button" onclick="openPaywall()">
                                  <i class="fas fa-lock"></i> {{ post_settings.unlock_button_label | default("Unlock Full PDF") }}
-                                 <span class="access-price-badge">{{ paywall.currency }} {{ effective_price }}</span>
+                                 <span class="access-price-badge">{{ paywall.currency }} {{ effective_price | thousands }}</span>
                              </button>
                          {% else %}
                              <p class="sidebar-card-text">{{ post_settings.sidebar_free_description | default("This is an open-access publication. You can download the full text PDF below.") }}</p>
