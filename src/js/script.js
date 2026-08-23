@@ -131,14 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Paywall logic
-
-// Paywall logic
+// ── Paywall — DPO Pay Integration ────────────────────────────────────────────
 
 function openPaywall() {
     const modal = document.getElementById('paywall-modal');
     if (!modal) return;
-
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -152,14 +149,12 @@ function closePaywall() {
 
 function tocPaywallNotify(event) {
     event?.preventDefault();
-
     const hint = document.getElementById('paywall-hint');
     if (hint) {
         hint.textContent = 'This section is available after purchase. Complete payment to access the full article.';
     }
-
     openPaywall();
-    document.getElementById('btn-pay-now-paypal')?.focus();
+    document.getElementById('btn-pay-dpo')?.focus();
 }
 
 function _paywallMessage(name, fallback) {
@@ -168,21 +163,21 @@ function _paywallMessage(name, fallback) {
     return block.dataset[name] || fallback;
 }
 
-async function startPaywallPayment(gateway = 'paypal') {
+/**
+ * Initiate DPO Pay payment for an article PDF download.
+ * Calls /.netlify/functions/create-payment with article context,
+ * then redirects to the DPO gateway URL returned by the backend.
+ */
+async function startDpoPaywallPayment() {
     const block = document.getElementById('attachment-block');
-    const payButton = gateway === 'flutterwave' 
-        ? document.getElementById('btn-pay-now-flutterwave')
-        : document.getElementById('btn-pay-now-paypal');
-    const otherButton = gateway === 'flutterwave'
-        ? document.getElementById('btn-pay-now-paypal')
-        : document.getElementById('btn-pay-now-flutterwave');
+    const payButton = document.getElementById('btn-pay-dpo');
     const hint = document.getElementById('paywall-hint');
+
     if (!block || !payButton) return;
 
     payButton.disabled = true;
-    if (otherButton) otherButton.disabled = true;
     payButton.classList.add('loading');
-    
+
     const icon = payButton.querySelector('i');
     let originalIconClass = '';
     if (icon) {
@@ -191,40 +186,44 @@ async function startPaywallPayment(gateway = 'paypal') {
     }
 
     if (hint) {
-        hint.textContent = gateway === 'flutterwave'
-            ? 'Preparing secure Mobile Money / Card checkout...'
-            : _paywallMessage('checkoutLoadingMessage', 'Preparing secure PayPal checkout...');
+        hint.textContent = _paywallMessage('checkoutLoadingMessage', 'Preparing secure DPO payment checkout...');
         hint.style.color = 'var(--accent-gold)';
     }
 
     try {
-        const endpoint = gateway === 'flutterwave' 
-            ? '/.netlify/functions/paywall-flutterwave-order'
-            : '/.netlify/functions/paywall-order';
-
-        const response = await fetch(endpoint, {
+        const response = await fetch('/.netlify/functions/create-payment', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({
-                documentId: block.dataset.documentId,
-                amount: block.dataset.paywallPrice,
-                currency: block.dataset.paywallCurrency,
-                articlePath: window.location.pathname
+                serviceId: 'article-download',
+                currency: block.dataset.paywallCurrency || 'RWF',
+                // Guest placeholder — no extra form shown for article downloads
+                name: 'Guest',
+                email: 'download@seculex.org',
+                phone: '+250000000000',
+                notes: `Article PDF: ${block.dataset.articleTitle || document.title}`,
+                articleUrl: window.location.href,
+                articleTitle: block.dataset.articleTitle || document.title
             })
         });
+
         const data = await response.json();
-        if (!response.ok || !data.approveUrl) {
-            throw new Error(data.error || _paywallMessage('checkoutErrorMessage', 'Could not start payment.'));
+
+        if (!response.ok || !data.success || !data.paymentUrl) {
+            throw new Error(data.error || _paywallMessage('checkoutErrorMessage', 'Could not initiate payment. Please try again.'));
         }
 
-        window.location.href = data.approveUrl;
+        // Store stateToken in sessionStorage so captureReturnedDpoOrder can use it on return
+        sessionStorage.setItem('dpo_state_token', data.stateToken);
+        sessionStorage.setItem('dpo_ref', data.transactionReference);
+
+        // Redirect to DPO Pay gateway
+        window.location.href = data.paymentUrl;
+
     } catch (error) {
         payButton.disabled = false;
-        if (otherButton) otherButton.disabled = false;
         payButton.classList.remove('loading');
-        if (icon && originalIconClass) {
-            icon.className = originalIconClass;
-        }
+        if (icon && originalIconClass) icon.className = originalIconClass;
         if (hint) {
             hint.textContent = error.message;
             hint.style.color = '#f87171';
@@ -232,11 +231,7 @@ async function startPaywallPayment(gateway = 'paypal') {
     }
 }
 
-function _triggerDownload() {
-    const block = document.getElementById('attachment-block');
-    if (!block) return;
-    const url = block.dataset.attachment;
-    if (!url) return;
+function _triggerSecureDownload(url) {
     const a = document.createElement('a');
     a.href = url;
     a.download = '';
@@ -259,98 +254,83 @@ function _convertButtonToLink(url) {
     btn.replaceWith(link);
 }
 
-async function captureReturnedPaywallOrder() {
+/**
+ * Called on DOMContentLoaded when DPO redirects back to the article page
+ * with ?ref=SLX-...&dpo=return in the URL.
+ * Reads the stateToken from sessionStorage, calls verify-payment, and
+ * if PAID — triggers the PDF download and converts the button to a link.
+ */
+async function captureReturnedDpoOrder() {
     const block = document.getElementById('attachment-block');
     if (!block) return;
 
     const params = new URLSearchParams(window.location.search);
-    if (params.get('paywall') !== 'return') return;
+    if (params.get('dpo') !== 'return') return;
 
-    const gateway = params.get('gateway') || 'paypal';
-    const hint = document.getElementById('paywall-hint');
+    const ref = params.get('ref') || sessionStorage.getItem('dpo_ref');
+    const stateToken = sessionStorage.getItem('dpo_state_token');
 
-    // Clean URL query parameters immediately from address bar to prevent double capture attempts on refresh
+    // Clean URL immediately — prevents double-capture on refresh
     const cleanUrl = `${window.location.origin}${window.location.pathname}`;
     window.history.replaceState({}, document.title, cleanUrl);
 
+    // Clear stored tokens
+    sessionStorage.removeItem('dpo_state_token');
+    sessionStorage.removeItem('dpo_ref');
+
+    if (!ref) return;
+
     openPaywall();
+    const hint = document.getElementById('paywall-hint');
     if (hint) {
-        hint.textContent = gateway === 'flutterwave'
-            ? 'Verifying payment with Flutterwave...'
-            : _paywallMessage('verificationLoadingMessage', 'Verifying payment with PayPal...');
+        hint.textContent = _paywallMessage('verificationLoadingMessage', 'Verifying payment with DPO Pay...');
         hint.style.color = 'var(--accent-gold)';
     }
 
     try {
-        let endpoint, requestBody;
+        const queryParams = stateToken
+            ? `ref=${encodeURIComponent(ref)}&state=${encodeURIComponent(stateToken)}`
+            : `ref=${encodeURIComponent(ref)}`;
 
-        if (gateway === 'flutterwave') {
-            const status = params.get('status');
-            const transactionId = params.get('transaction_id') || params.get('tx_ref');
-            const documentId = params.get('doc') || block.dataset.documentId;
-            
-            if (status !== 'successful' || !transactionId) {
-                throw new Error('Payment was not successful or missing reference.');
-            }
-
-            endpoint = '/.netlify/functions/paywall-flutterwave-capture';
-            requestBody = {
-                transactionId,
-                documentId,
-                amount: block.dataset.paywallPrice,
-                currency: block.dataset.paywallCurrency
-            };
-        } else {
-            const orderId = params.get('token');
-            const documentId = params.get('doc') || block.dataset.documentId;
-            
-            endpoint = '/.netlify/functions/paywall-capture';
-            requestBody = {
-                orderId,
-                documentId,
-                amount: block.dataset.paywallPrice,
-                currency: block.dataset.paywallCurrency
-            };
-        }
-
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(requestBody)
-        });
+        const response = await fetch(`/.netlify/functions/verify-payment?${queryParams}`);
         const data = await response.json();
-        if (!response.ok || !data.downloadUrl) {
-            throw new Error(data.error || _paywallMessage('verificationErrorMessage', 'Payment verification failed.'));
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || _paywallMessage('verificationErrorMessage', 'Payment verification failed. Contact support if charged.'));
         }
 
+        if (data.status !== 'PAID') {
+            throw new Error(`Payment status: ${data.status}. If you completed payment, please contact support at info@seculex.org.`);
+        }
+
+        // Payment verified — unlock the document
         const card = document.querySelector('.paywall-card');
         if (card) card.classList.add('unlocked');
         if (hint) {
             hint.textContent = _paywallMessage('verificationSuccessMessage', 'Payment verified. Your download is starting now.');
-            hint.style.color = 'var(--accent-gold)';
+            hint.style.color = '#4ade80';
         }
+
+        // Construct the secure download URL from the document ID
+        const documentId = block.dataset.documentId;
+        const downloadUrl = documentId
+            ? `/.netlify/functions/download-document?file=${encodeURIComponent(documentId)}`
+            : block.dataset.attachment;
 
         setTimeout(() => {
             closePaywall();
-            _triggerSecureDownload(data.downloadUrl);
-            _convertButtonToLink(data.downloadUrl);
-        }, 700);
+            if (downloadUrl) {
+                _triggerSecureDownload(downloadUrl);
+                _convertButtonToLink(downloadUrl);
+            }
+        }, 800);
+
     } catch (error) {
         if (hint) {
             hint.textContent = error.message;
             hint.style.color = '#f87171';
         }
     }
-}
-
-function _triggerSecureDownload(url) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = '';
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -364,23 +344,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Handle payment cancellation or return parameters
+    // Handle DPO Pay return or cancellation
     const params = new URLSearchParams(window.location.search);
-    const paywallAction = params.get('paywall');
-    const flwStatus = params.get('status');
+    const dpoAction = params.get('dpo');
 
-    if (paywallAction === 'cancel' || flwStatus === 'cancelled' || flwStatus === 'failed') {
+    if (dpoAction === 'cancel') {
         openPaywall();
         const hint = document.getElementById('paywall-hint');
         if (hint) {
             hint.textContent = 'Payment was cancelled. You can try again when you are ready.';
             hint.style.color = '#f87171';
         }
-        // Clean URL immediately
         const cleanUrl = `${window.location.origin}${window.location.pathname}`;
         window.history.replaceState({}, document.title, cleanUrl);
-    } else {
-        captureReturnedPaywallOrder();
+    } else if (dpoAction === 'return') {
+        captureReturnedDpoOrder();
     }
 });
 

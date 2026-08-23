@@ -34,7 +34,7 @@ exports.handler = async (event) => {
       return json(400, { error: "Invalid JSON request payload." });
     }
 
-    const { serviceId, currency, customAmount } = body;
+    const { serviceId, currency, customAmount, articleUrl, articleTitle } = body;
 
     // 1. Validate customer information
     const customer = validateCustomerInput(body);
@@ -46,8 +46,13 @@ exports.handler = async (event) => {
     const transactionReference = generateTransactionReference();
 
     // 4. Construct callback and redirect URLs
+    //    If articleUrl is provided (article paywall flow), redirect back to the
+    //    same article page so the inline paywall JS can verify and unlock the PDF.
+    //    Otherwise fall back to the central /payment-status/ page.
     const siteUrl = getSiteUrl(event);
-    const redirectUrl = `${siteUrl}/payment-status/`;
+    const redirectUrl = articleUrl
+      ? `${articleUrl}${articleUrl.includes('?') ? '&' : '?'}ref=${transactionReference}&dpo=return`
+      : `${siteUrl}/payment-status/`;
     const callbackUrl = `${siteUrl}/.netlify/functions/payment-callback`;
 
     // 5. Initiate payment via DPO Pay Adapter
@@ -72,6 +77,7 @@ exports.handler = async (event) => {
       customerEmail: customer.email,
       customerPhone: customer.phone,
       notes: customer.notes,
+      articleTitle: articleTitle || null,
       created_at: new Date().toISOString(),
       status: "PENDING",
     });

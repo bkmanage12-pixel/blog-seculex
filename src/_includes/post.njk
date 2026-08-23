@@ -189,10 +189,12 @@ layout: base.njk
                      data-paywall-price="{{ effective_price }}"
                      data-paywall-currency="{{ paywall.currency }}"
                      data-paywall-note="{{ paywall.payment_note }}"
-                     data-checkout-loading-message="{{ paywall.checkout_loading_message | default('Preparing secure PayPal checkout...') }}"
-                     data-checkout-error-message="{{ paywall.checkout_error_message | default('Could not start payment.') }}"
-                     data-verification-loading-message="{{ paywall.verification_loading_message | default('Verifying payment with PayPal...') }}"
-                     data-verification-error-message="{{ paywall.verification_error_message | default('Payment verification failed.') }}"
+                     data-article-title="{{ title | escape }}"
+                     data-article-url="{{ page.url | absoluteUrl(site.site_url) }}"
+                     data-checkout-loading-message="{{ paywall.checkout_loading_message | default('Preparing secure DPO payment checkout...') }}"
+                     data-checkout-error-message="{{ paywall.checkout_error_message | default('Could not initiate payment. Please try again.') }}"
+                     data-verification-loading-message="{{ paywall.verification_loading_message | default('Verifying payment with DPO Pay...') }}"
+                     data-verification-error-message="{{ paywall.verification_error_message | default('Payment verification failed. Contact support if charged.') }}"
                      data-verification-success-message="{{ paywall.verification_success_message | default('Payment verified. Your download is starting now.') }}"
                      data-download-again-label="{{ paywall.download_again_label | default('Download Again') }}"
                      {% endif %}>
@@ -236,8 +238,7 @@ layout: base.njk
         </div>
 
         {% if article_paywall_on %}
-        <!-- Paywall Modal -->
-        <div id="paywall-modal" class="paywall-overlay" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
+        <div class="paywall-overlay" id="paywall-modal" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
             <div class="paywall-card">
                 <button class="paywall-close" onclick="closePaywall()" aria-label="{{ paywall.close_label | default('Close') }}">&times;</button>
 
@@ -246,21 +247,18 @@ layout: base.njk
                 </div>
 
                 <span class="paywall-badge">{{ paywall.modal_badge | default("Secured Document") }}</span>
-                <h2 id="paywall-title" class="paywall-title">{{ paywall.modal_title | default("Download This Article") }}</h2>
+                <h2 id="paywall-title" class="paywall-title">{{ paywall.modal_title | default("Unlock Full PDF") }}</h2>
 
                 <div class="paywall-price-block">
-                    <span class="paywall-amount">{{ paywall.currency }} {{ effective_price }}</span>
+                    <span class="paywall-amount">{{ paywall.currency }} {{ effective_price | thousands }}</span>
                     <span class="paywall-per">{{ paywall.per_document_label | default("per document") }}</span>
                 </div>
 
                 <p class="paywall-note">{{ paywall.payment_note }}</p>
 
                 <div class="paywall-actions">
-                    <button type="button" class="btn-pay btn-pay-paypal" id="btn-pay-now-paypal" onclick="startPaywallPayment('paypal')">
-                        <i class="fab fa-paypal"></i> {{ paywall.pay_now_paypal_label | default("Pay with PayPal / Cards") }}
-                    </button>
-                    <button type="button" class="btn-pay btn-pay-flutterwave" id="btn-pay-now-flutterwave" onclick="startPaywallPayment('flutterwave')">
-                        <i class="fas fa-mobile-alt"></i> {{ paywall.pay_now_flutterwave_label | default("Pay with Mobile Money / Cards") }}
+                    <button type="button" class="btn-pay btn-pay-dpo" id="btn-pay-dpo" onclick="startDpoPaywallPayment()">
+                        <i class="fas fa-credit-card"></i> {{ paywall.pay_now_dpo_label | default("Pay via DPO / Mobile Money / Cards") }}
                     </button>
                     <button class="btn-already-paid" id="btn-already-paid" type="button" disabled>
                         <i class="fas fa-shield-alt"></i> {{ paywall.verified_required_label | default("Verified Payment Required") }}
@@ -268,11 +266,11 @@ layout: base.njk
                 </div>
 
                 <p class="paywall-hint" id="paywall-hint">
-                    {{ paywall.redirect_hint | default("You will be redirected to PayPal. After payment is approved, SecuLex verifies the transaction before the document download is unlocked.") }}
+                    {{ paywall.redirect_hint | default("You will be redirected to the DPO Pay secure gateway. After payment is approved, SecuLex verifies the transaction before your PDF download is unlocked.") }}
                 </p>
 
                 <div class="paywall-secure-notice">
-                    <i class="fas fa-shield-alt"></i> {{ paywall.secure_notice | default("Secure payment via trusted provider") }}
+                    <i class="fas fa-shield-alt"></i> {{ paywall.secure_notice | default("Secured by DPO Pay / Network Rwanda — 256-bit SSL encrypted") }}
                 </div>
             </div>
         </div>

@@ -89,6 +89,21 @@
       },
       "duration": "As specified in engagement",
       "is_custom": true
+    },
+    {
+      "id": "article-download",
+      "name": "Article PDF Download",
+      "category": "Scholarly Publications",
+      "badge": "Open Access",
+      "icon": "fa-file-pdf",
+      "description": "One-time secure download of a peer-reviewed SecuLex article in full PDF format. Your contribution supports independent legal scholarship.",
+      "prices": {
+        "RWF": 2000,
+        "USD": 2,
+        "EUR": 1.80
+      },
+      "duration": "Single document download",
+      "is_custom": false
     }
   ]
 }
