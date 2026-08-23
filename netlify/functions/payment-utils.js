@@ -184,7 +184,8 @@ function validateCustomerInput(input) {
   }
 
   const cleanPhone = String(phone || "").trim().replace(/[^\d+()\-\s]/g, "");
-  if (!cleanPhone || cleanPhone.length < 8 || cleanPhone.length > 25) {
+  // Phone is optional for digital article downloads
+  if (cleanPhone && (cleanPhone.length < 8 || cleanPhone.length > 25)) {
     throw new Error("Please provide a valid phone number including country/area code.");
   }
 
@@ -193,7 +194,7 @@ function validateCustomerInput(input) {
   return {
     name: cleanName,
     email: cleanEmail,
-    phone: cleanPhone,
+    phone: cleanPhone || "+250000000000",
     notes: cleanNotes,
   };
 }

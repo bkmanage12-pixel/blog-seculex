@@ -138,6 +138,16 @@ function openPaywall() {
     if (!modal) return;
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    // Pre-fill previously saved buyer information
+    try {
+        const savedName = localStorage.getItem('seculex_buyer_name');
+        const savedEmail = localStorage.getItem('seculex_buyer_email');
+        const nameInput = document.getElementById('paywall-buyer-name');
+        const emailInput = document.getElementById('paywall-buyer-email');
+        if (nameInput && savedName && !nameInput.value) nameInput.value = savedName;
+        if (emailInput && savedEmail && !emailInput.value) emailInput.value = savedEmail;
+    } catch (e) {}
 }
 
 function closePaywall() {
@@ -154,7 +164,7 @@ function tocPaywallNotify(event) {
         hint.textContent = 'This section is available after purchase. Complete payment to access the full article.';
     }
     openPaywall();
-    document.getElementById('btn-pay-dpo')?.focus();
+    document.getElementById('paywall-buyer-name')?.focus();
 }
 
 function _paywallMessage(name, fallback) {
@@ -165,15 +175,45 @@ function _paywallMessage(name, fallback) {
 
 /**
  * Initiate DPO Pay payment for an article PDF download.
- * Calls /.netlify/functions/create-payment with article context,
+ * Validates buyer name & email, calls create-payment with article context,
  * then redirects to the DPO gateway URL returned by the backend.
  */
 async function startDpoPaywallPayment() {
     const block = document.getElementById('attachment-block');
     const payButton = document.getElementById('btn-pay-dpo');
     const hint = document.getElementById('paywall-hint');
+    const nameInput = document.getElementById('paywall-buyer-name');
+    const emailInput = document.getElementById('paywall-buyer-email');
 
     if (!block || !payButton) return;
+
+    const buyerName = nameInput ? nameInput.value.trim() : '';
+    const buyerEmail = emailInput ? emailInput.value.trim() : '';
+
+    if (!buyerName || buyerName.length < 2) {
+        if (hint) {
+            hint.textContent = 'Please enter your full name.';
+            hint.style.color = '#f87171';
+        }
+        if (nameInput) nameInput.focus();
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!buyerEmail || !emailRegex.test(buyerEmail)) {
+        if (hint) {
+            hint.textContent = 'Please enter a valid email address for your receipt and download access.';
+            hint.style.color = '#f87171';
+        }
+        if (emailInput) emailInput.focus();
+        return;
+    }
+
+    // Save buyer info to localStorage for future purchases
+    try {
+        localStorage.setItem('seculex_buyer_name', buyerName);
+        localStorage.setItem('seculex_buyer_email', buyerEmail);
+    } catch (e) {}
 
     payButton.disabled = true;
     payButton.classList.add('loading');
@@ -201,9 +241,8 @@ async function startDpoPaywallPayment() {
                 currency: block.dataset.paywallCurrency || 'USD',
                 articlePrice: (!isNaN(articlePrice) && articlePrice > 0) ? articlePrice : undefined,
                 documentId: block.dataset.documentId || '',
-                // Guest placeholder — no extra form shown for article downloads
-                name: 'Guest',
-                email: 'download@seculex.org',
+                name: buyerName,
+                email: buyerEmail,
                 phone: '+250000000000',
                 notes: `Article PDF: ${block.dataset.articleTitle || document.title}`,
                 articleUrl: window.location.href,

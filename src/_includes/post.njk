@@ -256,9 +256,25 @@ layout: base.njk
 
                 <p class="paywall-note">{{ paywall.payment_note }}</p>
 
+                <!-- Buyer Information Form -->
+                <div class="paywall-form">
+                    <div class="paywall-field">
+                        <label for="paywall-buyer-name" class="paywall-label">
+                            <i class="far fa-user"></i> Full Name <span class="paywall-label-req">*</span>
+                        </label>
+                        <input type="text" id="paywall-buyer-name" class="paywall-input" placeholder="e.g. Dr. Jane Doe" required autocomplete="name">
+                    </div>
+                    <div class="paywall-field">
+                        <label for="paywall-buyer-email" class="paywall-label">
+                            <i class="far fa-envelope"></i> Email Address (for Receipt & Access) <span class="paywall-label-req">*</span>
+                        </label>
+                        <input type="email" id="paywall-buyer-email" class="paywall-input" placeholder="e.g. jane.doe@example.com" required autocomplete="email">
+                    </div>
+                </div>
+
                 <div class="paywall-actions">
                     <button type="button" class="btn-pay btn-pay-dpo" id="btn-pay-dpo" onclick="startDpoPaywallPayment()">
-                        <i class="fas fa-credit-card"></i> {{ paywall.pay_now_dpo_label | default("Pay via DPO / Mobile Money / Cards") }}
+                        <i class="fas fa-credit-card"></i> {{ paywall.pay_now_dpo_label | default("Proceed to Payment") }}
                     </button>
                     <button class="btn-already-paid" id="btn-already-paid" type="button" disabled>
                         <i class="fas fa-shield-alt"></i> {{ paywall.verified_required_label | default("Verified Payment Required") }}

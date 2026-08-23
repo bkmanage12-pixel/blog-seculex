@@ -2629,8 +2629,59 @@ footer::before {
   font-size: 0.85rem;
   color: var(--text-secondary);
   line-height: 1.6;
-  margin: 0 0 1.5rem;
+  margin: 0 0 1rem;
   padding: 0 0.5rem;
+}
+
+/* Buyer Info Form */
+.paywall-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0 0 1.25rem;
+  text-align: left;
+}
+
+.paywall-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.paywall-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.paywall-label-req {
+  color: var(--accent-gold);
+}
+
+.paywall-input {
+  width: 100%;
+  padding: 0.7rem 0.95rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.paywall-input:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+.paywall-input::placeholder {
+  color: rgba(148, 163, 184, 0.45);
 }
 
 /* CTA buttons */
