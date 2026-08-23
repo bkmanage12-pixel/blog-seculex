@@ -201,6 +201,7 @@ collections:
           - {label: "Academic Integrity Link Label", name: "legal_academic_integrity_label", widget: "string", default: "Academic Integrity"}
           - {label: "Terms Link Label", name: "legal_terms_label", widget: "string", default: "Terms of Use"}
           - {label: "Privacy Link Label", name: "legal_privacy_label", widget: "string", default: "Privacy Policy"}
+          - {label: "Refund Policy Link Label", name: "legal_refund_label", widget: "string", default: "Refund Policy"}
           - {label: "Footer Contact Column Title", name: "footer_contact_title", widget: "string", default: "Contact"}
           - {label: "Footer Contact — WhatsApp Label", name: "footer_contact_whatsapp_label", widget: "string", default: "WhatsApp"}
           - {label: "Footer Contact — LinkedIn Label", name: "footer_contact_linkedin_label", widget: "string", default: "LinkedIn"}
