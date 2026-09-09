@@ -34,7 +34,7 @@ description: >-
 
 
   Keywords: Clickbait, Content Creators, Commercial Speech, dark patterns, Digital Deception, fabricated testimonial, Influencers, Strict Liability, undisclosed influencer marketing. 
-author: Ass. Prof. Dr MURANGIRA B. Thierry
+author: Prof. MURANGIRA B. Thierry
 date: 2025-12-04T12:44:03.423Z
 read_time: 5
 thumbnail: /assets/images/digital.png
