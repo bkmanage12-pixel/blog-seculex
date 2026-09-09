@@ -26,7 +26,7 @@ description: "The doctrine of male captus, bene detentus translated as “wrongl
   international practice. However, robust safeguards must be in place to prevent
   abuse and protect human rights. Properly constrained, the doctrine could serve
   justice without compromising legal integrity. "
-author: Ass.Prof. Dr MURANGIRA B. Thierry
+author: Prof. MURANGIRA B. Thierry
 date: 2025-09-03T11:59:10.425Z
 read_time: 5
 thumbnail: /assets/images/bend.png
