@@ -72,7 +72,7 @@ description: >-
 
 
   Keywords: Forensic Evidence; Investigation and Prosecution; International Proceedings
-author: Prof.Dr. Thierry B. MURANGIRA
+author: Prof. MURANGIRA B. Thierry
 author_title: ""
 date: 2024-01-29T09:55:56.247Z
 read_time: 20
