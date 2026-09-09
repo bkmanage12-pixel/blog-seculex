@@ -32,7 +32,7 @@ description: >-
   Keywords: DNA Data; Genetic Information; Right to Genetic Privacy; Integrity of the Human Body; Human Dignity;
 
   Respect for Persons; Informed Consent
-author: Ass. Prof. Dr MURANGIRA B. Thierry
+author: Prof. MURANGIRA B. Thierry
 date: 2017-12-11T14:41:22.362Z
 read_time: 20
 thumbnail: /assets/images/genetic.png
