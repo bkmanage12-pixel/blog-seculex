@@ -60,7 +60,7 @@ description: >-
   of controls and regulations of medically assisted technology to deter likely misuse of
 
   Artificial Reproductive Technologies.
-author: Ass. Prof. Dr MURANGIRA B. Thierry
+author: Prof. MURANGIRA B. Thierry
 date: 2020-03-27T13:27:36.228Z
 read_time: 5
 thumbnail: /assets/images/surrogacy.png
