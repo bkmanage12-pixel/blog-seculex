@@ -223,6 +223,7 @@
                     </ul>
                 </li>
                 <li><a href="/#contact" id="nav-contact"><i class="far fa-envelope"></i> {{ site.nav_contact | default("Contact") }}</a></li>
+                <li class="nav-publish-item"><a href="/publish-with-us/" {% if '/publish-with-us/' in page.url %}class="btn-publish-cta active"{% else %}class="btn-publish-cta"{% endif %} id="nav-publish"><i class="fas fa-pen-nib"></i> {{ site.nav_publish | default("Publish with us") }}</a></li>
             </ul>
             <button class="mobile-toggle" type="button" aria-label="{{ site.mobile_menu_label | default('Open navigation') }}" aria-expanded="false"><i class="fas fa-bars"></i></button>
         </nav>
@@ -302,8 +303,9 @@
 
                 <!-- Legal Column -->
                 <div class="footer-col">
-                    <h4 class="footer-col-heading"><i class="fas fa-balance-scale footer-col-icon"></i>{{ site.footer_legal_title | default("Legal") }}</h4>
+                    <h4 class="footer-col-heading"><i class="fas fa-balance-scale footer-col-icon"></i>{{ site.footer_legal_title | default("Legal & Authors") }}</h4>
                     <ul class="footer-nav-list">
+                        <li><a href="/publish-with-us/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_publish_label | default("Publish with us") }}</a></li>
                         <li><a href="/legal/academic-integrity/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_academic_integrity_label | default("Academic Integrity") }}</a></li>
                         <li><a href="/legal/terms/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_terms_label | default("Terms of Use") }}</a></li>
                         <li><a href="/legal/privacy/"><i class="fas fa-chevron-right footer-nav-arrow"></i>{{ site.legal_privacy_label | default("Privacy Policy") }}</a></li>

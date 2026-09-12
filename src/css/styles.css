@@ -5230,6 +5230,424 @@ input:checked + .slider-toggle:before {
   box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
 }
 
+/* ============================================================
+   "PUBLISH WITH US" NAV BUTTON & GUIDELINES PAGE STYLES
+   ============================================================ */
+/* Header CTA Button */
+.pill-nav .btn-publish-cta {
+  background: var(--accent-gradient) !important;
+  color: #080a11 !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(212, 175, 55, 0.6) !important;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35) !important;
+  padding: 0.5rem 1.15rem !important;
+  border-radius: 50px !important;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+.pill-nav .btn-publish-cta:hover {
+  transform: translateY(-2px) scale(1.03) !important;
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.55) !important;
+  color: #000000 !important;
+}
+
+.pill-nav .btn-publish-cta i {
+  color: #080a11 !important;
+  font-size: 0.85rem;
+}
+
+/* Page Section & Hero */
+.publish-page-section {
+  padding-bottom: 5rem;
+}
+
+.publish-hero {
+  background: linear-gradient(135deg, #080a11 0%, #121829 60%, #0a1324 100%);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 4.5rem 5% 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.publish-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center top, rgba(212, 175, 55, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.publish-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent-gold);
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 0.4rem 1.1rem;
+  border-radius: 50px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
+}
+
+.publish-hero h1 {
+  font-family: var(--font-serif);
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1.2rem;
+  line-height: 1.15;
+}
+
+.publish-hero-lead {
+  max-width: 820px;
+  margin: 0 auto 2.2rem;
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: #cbd5e1;
+  font-weight: 400;
+}
+
+.publish-hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.publish-page-container {
+  max-width: 1180px;
+  margin: 4rem auto 0;
+  padding: 0 5%;
+}
+
+/* Conditions Cards Grid */
+.publish-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.publish-card {
+  background: rgba(12, 16, 28, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 20px;
+  padding: 2.2rem 2.2rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+}
+
+.publish-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent-gradient);
+}
+
+.publish-card--gold::before { background: linear-gradient(90deg, #d4af37, #f5d87a); }
+.publish-card--blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.publish-card--purple::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
+.publish-card--teal::before { background: linear-gradient(90deg, #2dd4bf, #5eead4); }
+
+.publish-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(212, 175, 55, 0.15);
+}
+
+.publish-card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--accent-gold);
+  margin-bottom: 1.25rem;
+}
+
+.publish-card h3 {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.85rem;
+}
+
+.publish-card p {
+  color: #94a3b8;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+}
+
+.publish-check-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.publish-check-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.92rem;
+  color: #e2e8f0;
+  line-height: 1.55;
+}
+
+.publish-check-list i {
+  color: var(--accent-gold);
+  font-size: 0.95rem;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.publish-check-list a {
+  color: var(--accent-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 600;
+}
+
+.publish-check-list a:hover {
+  color: #ffffff;
+}
+
+/* Formatting Guidelines Box */
+.publish-guidelines-box {
+  margin-top: 4rem;
+  background: rgba(18, 24, 40, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 24px;
+  padding: 3rem 3rem;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+}
+
+.guidelines-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.guidelines-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: var(--accent-gold);
+  flex-shrink: 0;
+}
+
+.guidelines-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  color: #ffffff;
+  margin-bottom: 0.3rem;
+}
+
+.guidelines-header p {
+  color: #94a3b8;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.guidelines-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.guidelines-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 1.6rem 1.6rem;
+  position: relative;
+}
+
+.guidelines-number {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: rgba(212, 175, 55, 0.25);
+  position: absolute;
+  top: 1rem;
+  right: 1.2rem;
+  line-height: 1;
+}
+
+.guidelines-item h4 {
+  font-size: 1.15rem;
+  color: #ffffff;
+  margin-bottom: 0.6rem;
+}
+
+.guidelines-item p {
+  color: #cbd5e1;
+  font-size: 0.94rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* Workflow Steps */
+.publish-workflow-section {
+  margin-top: 5rem;
+}
+
+.workflow-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.workflow-step {
+  flex: 1;
+  background: rgba(12, 16, 28, 0.75);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 18px;
+  padding: 2rem 1.4rem;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.workflow-step:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-gold);
+}
+
+.step-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: #080a11;
+  font-weight: 800;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.2rem;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.workflow-step h4 {
+  font-size: 1.1rem;
+  color: #ffffff;
+  margin-bottom: 0.6rem;
+}
+
+.workflow-step p {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.workflow-step-arrow {
+  color: var(--accent-gold);
+  font-size: 1.2rem;
+  opacity: 0.5;
+}
+
+/* Final CTA Card */
+.publish-cta-card {
+  margin-top: 5rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.16) 0%, rgba(18, 21, 32, 0.95) 60%, rgba(59, 130, 246, 0.15) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 24px;
+  padding: 3.5rem 3rem;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.cta-inner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.cta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 1rem;
+}
+
+.cta-inner h2 {
+  font-family: var(--font-serif);
+  font-size: 2.3rem;
+  color: #ffffff;
+  margin-bottom: 0.85rem;
+}
+
+.cta-inner p {
+  font-size: 1.08rem;
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+}
+
+.cta-actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .publish-grid,
+  .guidelines-grid {
+    grid-template-columns: 1fr;
+  }
+  .workflow-steps {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .workflow-step-arrow {
+    transform: rotate(90deg);
+  }
+  .publish-hero h1 {
+    font-size: 2.4rem;
+  }
+  .publish-guidelines-box,
+  .publish-cta-card {
+    padding: 2.2rem 1.6rem;
+  }
+}
+
 
 
 
