@@ -5032,14 +5032,14 @@ input:checked + .slider-toggle:before {
   border-radius: 7px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 8px rgba(212, 175, 55, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   position: sticky;
-  top: calc(var(--site-header-height) + 8px);
+  top: calc(var(--site-header-height) + 2px);
   z-index: 99;
   overflow: hidden;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   /* Always stay inside the viewport, including narrow phones. */
   max-width: 1400px;
-  margin: 9px auto;
+  margin: 3px auto 7px;
   width: calc(100% - 2rem);
 }
 
@@ -5194,7 +5194,7 @@ input:checked + .slider-toggle:before {
 @media (max-width: 768px) {
   .latest-articles-ticker {
     width: calc(100% - 1rem);
-    margin: 6px auto;
+    margin: 2px auto 5px;
   }
   .ticker-inner {
     height: 30px;
