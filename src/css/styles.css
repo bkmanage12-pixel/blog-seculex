@@ -5036,9 +5036,10 @@ input:checked + .slider-toggle:before {
   overflow: hidden;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  /* Always stay inside the viewport, including narrow phones. */
   max-width: 1400px;
   margin: 18px auto 14px;
-  width: calc(100% - 2 * var(--page-padding, 2rem));
+  width: calc(100% - 2rem);
 }
 
 .ticker-inner {
@@ -5046,6 +5047,7 @@ input:checked + .slider-toggle:before {
   align-items: center;
   width: 100%;
   height: 44px;
+  min-width: 0;
 }
 
 .ticker-badge {
@@ -5112,6 +5114,7 @@ input:checked + .slider-toggle:before {
   animation: none !important;
   transform: none !important;
   justify-content: flex-start;
+  min-width: 0;
 }
 
 .ticker-item {
@@ -5174,12 +5177,16 @@ input:checked + .slider-toggle:before {
 
 /* Mobile Ticker adjustments */
 @media (max-width: 768px) {
+  .latest-articles-ticker {
+    width: calc(100% - 1rem);
+    margin: 10px auto;
+  }
   .ticker-badge-text {
-    font-size: 0.68rem;
-    letter-spacing: 1px;
+    display: none;
   }
   .ticker-badge {
-    padding: 0 0.85rem;
+    gap: 0.4rem;
+    padding: 0 0.7rem;
   }
   .ticker-title {
     font-size: 0.82rem;
@@ -5196,8 +5203,10 @@ input:checked + .slider-toggle:before {
 .latest-articles-ticker.ticker-frozen .ticker-track-wrapper {
   mask-image: none !important;
   -webkit-mask-image: none !important;
-  overflow-x: auto;
+  /* Keep the live-publications banner fixed: no independent horizontal scrolling. */
+  overflow: hidden;
   scrollbar-width: none;
+  touch-action: pan-y;
 }
 
 .latest-articles-ticker.ticker-frozen .ticker-track-wrapper::-webkit-scrollbar {

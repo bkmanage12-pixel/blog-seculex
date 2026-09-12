@@ -230,11 +230,11 @@
     </header>
 
     {% if site.ticker_enabled != false %}
-    <!-- Live Published Articles Scroll Ticker -->
-    <div class="latest-articles-ticker" aria-label="Latest Publications Ticker">
+    <!-- Latest publications banner — deliberately static, not an auto-scrolling ticker. -->
+    <div class="latest-articles-ticker ticker-frozen" aria-label="Latest Publications">
         <div class="ticker-inner">
             <div class="ticker-badge">
-                <span class="ticker-pulse-dot"></span>
+                <span class="ticker-pulse-dot is-frozen"></span>
                 <i class="fas fa-bolt"></i>
                 <span class="ticker-badge-text">{{ site.ticker_badge_text | default("RECENT PUBLICATIONS") }}</span>
             </div>
