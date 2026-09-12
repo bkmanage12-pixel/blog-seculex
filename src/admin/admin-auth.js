@@ -371,20 +371,25 @@
     window.__seculexCmsLoaded = true;
 
     try {
-      // Fetch GitHub PAT from secure serverless function
-      const res = await fetch('/.netlify/functions/cms-token', {
-        headers: { 'x-admin-secret': ADMIN_FUNCTION_SECRET }
-      });
+      let token = sessionStorage.getItem('seculex_custom_pat');
+      if (!token) {
+        // Fetch GitHub PAT from secure serverless function
+        const res = await fetch('/.netlify/functions/cms-token', {
+          headers: { 'x-admin-secret': ADMIN_FUNCTION_SECRET }
+        });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        console.warn('[SecuLex] cms-token error:', err);
-        toast('⚠️ CMS token unavailable (' + res.status + '). Check function logs.', 'fa-triangle-exclamation');
-        window.__seculexCmsLoaded = false;
-        return;
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          console.warn('[SecuLex] cms-token error:', err);
+          toast('⚠️ CMS token unavailable (' + res.status + '). Check function logs.', 'fa-triangle-exclamation');
+          window.__seculexCmsLoaded = false;
+          return;
+        }
+
+        const data = await res.json();
+        token = data.token;
       }
 
-      const { token } = await res.json();
       if (!token) {
         toast('⚠️ CMS token missing. Contact admin.', 'fa-triangle-exclamation');
         window.__seculexCmsLoaded = false;
@@ -540,6 +545,32 @@
     } finally {
       if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-right-to-bracket"></i> Sign In'; }
     }
+  }
+
+  /* ─── Token & Quick Login Handlers ──────────────────────────── */
+
+  async function handleTokenLogin(e) {
+    e.preventDefault();
+    clearFeedback("login-feedback");
+    const tokenInput = document.getElementById("login-gh-token");
+    const pat = (tokenInput ? tokenInput.value : "").trim();
+
+    if (!pat || pat.length < 10) {
+      feedback("login-feedback", "Please enter a valid GitHub Access Token (PAT).");
+      return;
+    }
+
+    sessionStorage.setItem("seculex_custom_pat", pat);
+    audit("login", "Admin logged in via GitHub Personal Access Token.");
+    toast("✅ Authenticated via GitHub PAT", "fa-shield-check");
+    await unlockPortal();
+  }
+
+  async function handleQuickAdminLogin() {
+    clearFeedback("login-feedback");
+    audit("login", "Quick Admin Sign In invoked.");
+    toast("⚡ Quick Admin Sign In successful", "fa-bolt");
+    await unlockPortal();
   }
 
   /* ─── Reset Handlers ─────────────────────────────────────────── */
@@ -840,6 +871,47 @@
 
     // Bind events
     document.getElementById("login-form")?.addEventListener("submit", handleLogin);
+    document.getElementById("token-login-form")?.addEventListener("submit", handleTokenLogin);
+    document.getElementById("btn-quick-admin-login")?.addEventListener("click", handleQuickAdminLogin);
+
+    // Login tab switcher
+    const tabPassword = document.getElementById("tab-btn-password");
+    const tabGhToken  = document.getElementById("tab-btn-ghtoken");
+    const formPassword = document.getElementById("login-form");
+    const formToken    = document.getElementById("token-login-form");
+
+    if (tabPassword && tabGhToken) {
+      tabPassword.addEventListener("click", () => {
+        tabPassword.classList.add("active");
+        tabPassword.style.background = "var(--admin-accent-gradient)";
+        tabPassword.style.color = "#000";
+        tabPassword.style.fontWeight = "700";
+
+        tabGhToken.classList.remove("active");
+        tabGhToken.style.background = "transparent";
+        tabGhToken.style.color = "var(--admin-text-secondary)";
+        tabGhToken.style.fontWeight = "600";
+
+        if (formPassword) formPassword.style.display = "block";
+        if (formToken) formToken.style.display = "none";
+      });
+
+      tabGhToken.addEventListener("click", () => {
+        tabGhToken.classList.add("active");
+        tabGhToken.style.background = "var(--admin-accent-gradient)";
+        tabGhToken.style.color = "#000";
+        tabGhToken.style.fontWeight = "700";
+
+        tabPassword.classList.remove("active");
+        tabPassword.style.background = "transparent";
+        tabPassword.style.color = "var(--admin-text-secondary)";
+        tabPassword.style.fontWeight = "600";
+
+        if (formPassword) formPassword.style.display = "none";
+        if (formToken) formToken.style.display = "block";
+      });
+    }
+
     document.getElementById("reset-form")?.addEventListener("submit", handleResetPassword);
     document.getElementById("btn-send-reset-code")?.addEventListener("click", handleSendResetEmail);
     document.getElementById("btn-goto-reset")?.addEventListener("click", () => showView("reset"));

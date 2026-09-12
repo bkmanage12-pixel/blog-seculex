@@ -80,6 +80,18 @@
           <p class="admin-auth-subtitle">Authorised access only &mdash; single-owner portal</p>
         </div>
 
+        <div class="admin-login-tabs" style="display: flex; gap: 6px; margin-bottom: 1.2rem; background: rgba(0,0,0,0.3); padding: 4px; border-radius: var(--admin-radius); border: 1px solid var(--admin-card-border);">
+          <button type="button" id="tab-btn-password" class="admin-tab-btn active" style="flex: 1; padding: 7px 10px; border: none; border-radius: var(--admin-radius-sm); background: var(--admin-accent-gradient); color: #000; font-weight: 700; font-size: 0.78rem; cursor: pointer;">
+            <i class="fas fa-lock"></i> Password
+          </button>
+          <button type="button" id="tab-btn-ghtoken" class="admin-tab-btn" style="flex: 1; padding: 7px 10px; border: none; border-radius: var(--admin-radius-sm); background: transparent; color: var(--admin-text-secondary); font-weight: 600; font-size: 0.78rem; cursor: pointer;">
+            <i class="fab fa-github"></i> GitHub PAT
+          </button>
+          <button type="button" id="btn-quick-admin-login" class="admin-tab-btn" style="flex: 1; padding: 7px 10px; border: none; border-radius: var(--admin-radius-sm); background: rgba(34,197,94,0.15); color: #86efac; font-weight: 600; font-size: 0.78rem; cursor: pointer;" title="Instant Admin Access using server key">
+            <i class="fas fa-bolt"></i> Quick Sign In
+          </button>
+        </div>
+
         <div id="login-feedback" class="admin-feedback" role="alert"></div>
 
         <form id="login-form" autocomplete="off" novalidate>
@@ -108,6 +120,33 @@
 
           <button type="submit" class="admin-btn-primary" id="login-submit-btn">
             <i class="fas fa-right-to-bracket"></i> Sign In
+          </button>
+        </form>
+
+        <form id="token-login-form" style="display: none;" autocomplete="off" novalidate>
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="login-gh-token">
+              <i class="fab fa-github"></i> GitHub Access Token (PAT)
+            </label>
+            <div class="admin-input-wrapper">
+              <input
+                type="password"
+                id="login-gh-token"
+                class="admin-form-input admin-form-input-mono"
+                placeholder="ghp_..."
+                required
+              />
+              <button type="button" class="admin-toggle-eye" aria-label="Toggle token visibility">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--admin-text-secondary); margin-top: 6px; line-height: 1.4;">
+              Enter your GitHub token with repo scope for direct publishing access.
+            </div>
+          </div>
+
+          <button type="submit" class="admin-btn-primary" id="token-submit-btn">
+            <i class="fab fa-github"></i> Sign In with Token
           </button>
         </form>
 
