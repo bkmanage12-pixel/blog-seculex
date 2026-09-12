@@ -230,16 +230,17 @@
     </header>
 
     {% if site.ticker_enabled != false %}
-    <!-- Latest publications banner — deliberately static, not an auto-scrolling ticker. -->
-    <div class="latest-articles-ticker ticker-frozen" aria-label="Latest Publications">
+    <!-- Fixed latest-publications bar with a continuously moving text track. -->
+    <div class="latest-articles-ticker" aria-label="Latest Publications">
         <div class="ticker-inner">
             <div class="ticker-badge">
-                <span class="ticker-pulse-dot is-frozen"></span>
+                <span class="ticker-pulse-dot"></span>
                 <i class="fas fa-bolt"></i>
                 <span class="ticker-badge-text">{{ site.ticker_badge_text | default("RECENT PUBLICATIONS") }}</span>
             </div>
             <div class="ticker-track-wrapper">
                 <div class="ticker-track">
+                    <div class="ticker-track-group">
                     {% set recent_posts = collections.posts | reverse %}
                     {% for post in recent_posts %}
                     {% if loop.index0 < 5 %}
@@ -251,6 +252,20 @@
                     {% if not loop.last %}<span class="ticker-sep">•</span>{% endif %}
                     {% endif %}
                     {% endfor %}
+                    </div>
+                    <!-- Duplicate the items so the marquee loops without a blank gap. -->
+                    <div class="ticker-track-group" aria-hidden="true">
+                    {% for post in recent_posts %}
+                    {% if loop.index0 < 5 %}
+                    <a href="{{ post.url }}" class="ticker-item" tabindex="-1">
+                        <span class="ticker-category">{{ post.data.category }}</span>
+                        <span class="ticker-title">{{ post.data.title }}</span>
+                        <span class="ticker-date"><i class="far fa-calendar-alt"></i> {{ post.data.date | readableDate }}</span>
+                    </a>
+                    {% if not loop.last %}<span class="ticker-sep">•</span>{% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
