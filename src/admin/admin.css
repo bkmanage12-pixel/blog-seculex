@@ -568,6 +568,18 @@ body {
   animation: adminSpin 0.75s linear infinite;
 }
 
+/* Publish all drafts button */
+.admin-bar-btn-publish {
+  color: #a5b4fc;
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.admin-bar-btn-publish:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.5);
+  color: #c7d2fe;
+}
+
 /* Lock / danger */
 .admin-bar-btn-danger {
   color: #fca5a5;

@@ -29,7 +29,7 @@ exports.handler = async (event) => {
   }
 
   // — Admin authentication guard —
-  const adminSecret = (process.env.ADMIN_FUNCTION_SECRET || "seculex_admin_secret_v1").trim();
+  const adminSecret = (process.env.ADMIN_FUNCTION_SECRET || "seculex_admin_secret_98a7b6c5d4e3f2a1_prod").trim();
   const providedSecret = (event.headers["x-admin-secret"] || "").trim();
   if (!providedSecret || providedSecret !== adminSecret) {
     return {
@@ -39,9 +39,9 @@ exports.handler = async (event) => {
     };
   }
 
-  const token      = process.env.GITHUB_TOKEN;
-  const owner      = process.env.GITHUB_OWNER;
-  const repo       = process.env.GITHUB_REPO;
+  const token      = process.env.GITHUB_TOKEN || process.env.CMS_GITHUB_TOKEN;
+  const owner      = process.env.GITHUB_OWNER || "bkmanage12-pixel";
+  const repo       = process.env.GITHUB_REPO  || "blog-seculex";
   const buildHook  = process.env.NETLIFY_BUILD_HOOK_URL;
 
   if (!token || !owner || !repo) {

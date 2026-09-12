@@ -43,6 +43,9 @@
       <button id="bar-btn-sync" class="admin-bar-btn admin-bar-btn-rebuild" title="Trigger site rebuild and refresh cache">
         <i class="fas fa-rotate"></i> <span>Rebuild Site</span>
       </button>
+      <button id="bar-btn-publish-all" class="admin-bar-btn admin-bar-btn-publish" title="Publish all saved CMS drafts to the live site">
+        <i class="fas fa-globe"></i> <span>Publish All</span>
+      </button>
       <div class="admin-bar-divider"></div>
       <button id="bar-btn-audit" class="admin-bar-btn" title="View Security Audit Logs">
         <i class="fas fa-list-check"></i> <span>Audit Log</span>
@@ -443,42 +446,15 @@
     <!-- ═══════════════════════════════════════════════════════════════
          DECAP CMS ENGINE
     ════════════════════════════════════════════════════════════════ -->
-    <!-- Netlify Identity Widget MUST load BEFORE Decap CMS engine to enable Git Gateway authentication -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <!-- Decap CMS + Netlify Identity are loaded DYNAMICALLY by admin-auth.js after PBKDF2 login.
+         This prevents auth failures on page load and ensures the GitHub PAT hash is
+         set before CMS initialises (no Netlify Identity / Git Gateway required). -->
+
+
 
     <!-- Admin Authentication & Event Handlers -->
     <script src="/admin/admin-auth.js"></script>
 
-    <!-- CMS Hooks: preview styles + publish event feedback -->
-    <script>
-      if (typeof CMS !== "undefined") {
-        CMS.registerPreviewStyle("/css/styles.css");
-        if (CMS.registerEventListener) {
-          CMS.registerEventListener({
-            name: "postPublish",
-            handler: function (data) {
-              var title = data && data.entry && data.entry.getIn ? data.entry.getIn(["data", "title"]) : "Content";
-              if (typeof window.seculexToast === "function") {
-                window.seculexToast("✅ Saved & published to live site! Netlify rebuilding...", "fa-check-double");
-              }
-              if (typeof window.seculexAudit === "function") {
-                window.seculexAudit("publish", 'Published entry: "' + (title || "Document") + '" to main branch.');
-              }
-            },
-          });
-          CMS.registerEventListener({
-            name: "postUnpublish",
-            handler: function () {
-              if (typeof window.seculexToast === "function") {
-                window.seculexToast("ℹ️ Entry unpublished from live site.", "fa-info-circle");
-              }
-            },
-          });
-        }
-      }
-    </script>
 
-    <!-- <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script> -->
   </body>
 </html>

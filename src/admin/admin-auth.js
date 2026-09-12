@@ -358,37 +358,106 @@
     if (el) el.style.display = "block";
   }
 
+  /* ─── CMS Dynamic Loader ─────────────────────────────────────── */
+
+  /**
+   * Loads Decap CMS dynamically after PBKDF2 login.
+   * Fetches the GitHub PAT from the secure cms-token function,
+   * injects it into the URL hash so Decap CMS github backend
+   * authenticates instantly (no Netlify Identity or Git Gateway needed).
+   */
+  async function initCMS() {
+    if (window.__seculexCmsLoaded) return;
+    window.__seculexCmsLoaded = true;
+
+    try {
+      // Fetch GitHub PAT from secure serverless function
+      const res = await fetch('/.netlify/functions/cms-token', {
+        headers: { 'x-admin-secret': ADMIN_FUNCTION_SECRET }
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.warn('[SecuLex] cms-token error:', err);
+        toast('⚠️ CMS token unavailable (' + res.status + '). Check function logs.', 'fa-triangle-exclamation');
+        window.__seculexCmsLoaded = false;
+        return;
+      }
+
+      const { token } = await res.json();
+      if (!token) {
+        toast('⚠️ CMS token missing. Contact admin.', 'fa-triangle-exclamation');
+        window.__seculexCmsLoaded = false;
+        return;
+      }
+
+      // Inject token into URL hash — Decap CMS github+implicit backend reads this on init
+      // and clears it from the URL immediately after authenticating.
+      const currentHash = window.location.hash.slice(1);
+      if (!new URLSearchParams(currentHash).get('access_token')) {
+        window.history.replaceState({}, '', window.location.pathname +
+          '#access_token=' + encodeURIComponent(token) + '&token_type=bearer');
+      }
+
+      // Dynamically load Decap CMS — it auto-initialises on load
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js';
+        s.onload  = resolve;
+        s.onerror = () => reject(new Error('Failed to load decap-cms.js'));
+        document.body.appendChild(s);
+      });
+
+      // Register CMS event hooks now that CMS is available
+      if (typeof CMS !== 'undefined') {
+        try { CMS.registerPreviewStyle('/css/styles.css'); } catch (_) {}
+        if (CMS.registerEventListener) {
+          CMS.registerEventListener({
+            name: 'postPublish',
+            handler: function (data) {
+              var title = data && data.entry && data.entry.getIn
+                ? data.entry.getIn(['data', 'title']) : 'Content';
+              toast('\u2705 Saved & published to live site! Netlify rebuilding...', 'fa-check-double');
+              audit('publish', 'Published entry: "' + (title || 'Document') + '" to main branch.');
+            }
+          });
+          CMS.registerEventListener({
+            name: 'postUnpublish',
+            handler: function () {
+              toast('\u2139\ufe0f Entry unpublished from live site.', 'fa-info-circle');
+            }
+          });
+        }
+      }
+
+      toast('\u2705 CMS ready! Edit and publish your content.', 'fa-pen-to-square');
+    } catch (err) {
+      console.error('[SecuLex] CMS init failed:', err);
+      toast('\u26a0\ufe0f CMS failed to load: ' + err.message, 'fa-triangle-exclamation');
+      window.__seculexCmsLoaded = false;
+    }
+  }
+
   /* ─── Portal Lock / Unlock ───────────────────────────────────── */
 
   async function unlockPortal() {
     await createSession();
     clearAttempts();
-    document.getElementById("admin-security-overlay")?.classList.add("hidden");
-    const bar = document.getElementById("admin-security-bar");
-    if (bar) bar.style.display = "flex";
+    document.getElementById('admin-security-overlay')?.classList.add('hidden');
+    const bar = document.getElementById('admin-security-bar');
+    if (bar) bar.style.display = 'flex';
     resetIdleTimer();
 
-    // Verify Netlify Identity authentication for Git Gateway publishing
-    if (window.netlifyIdentity) {
-      const user = window.netlifyIdentity.currentUser();
-      if (!user) {
-        toast("Please log in to Netlify Identity to enable CMS saving", "fa-user-lock");
-        setTimeout(() => {
-          try { window.netlifyIdentity.open("login"); } catch (e) {}
-        }, 600);
-      }
-    }
+    // Load CMS (no-op if already loaded)
+    await initCMS();
   }
 
   function lockPortal() {
     destroySession();
     if (idleTimer) clearTimeout(idleTimer);
-    try { window.netlifyIdentity?.logout?.(); } catch {}
-    document.querySelectorAll("input[type='password']").forEach(i => i.value = "");
-    document.getElementById("admin-security-overlay")?.classList.remove("hidden");
-    const bar = document.getElementById("admin-security-bar");
-    if (bar) bar.style.display = "none";
-    showView("login");
+    // Hard reload for clean CMS state (clears PAT from hash, resets CMS session)
+    window.__seculexCmsLoaded = false;
+    window.location.replace(window.location.pathname);
   }
 
   /* ─── Toast ──────────────────────────────────────────────────── */
@@ -471,7 +540,7 @@
     const btn = document.getElementById("btn-send-reset-code");
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Requesting...'; }
     try {
-      window.netlifyIdentity?.open?.("recovery");
+      // (Netlify Identity removed — custom PBKDF2 reset used instead)
       const res  = await fetch("/.netlify/functions/request-admin-reset", {
         method:  "POST",
         headers: { "content-type": "application/json" },
@@ -808,21 +877,16 @@
         renderAuditLogs();
       }
     });
-    document.getElementById("bar-btn-sync")?.addEventListener("click", handleSyncSite);
-    document.getElementById("bar-btn-change")?.addEventListener("click", () =>
-      document.getElementById("admin-change-modal")?.classList.add("active"));
-    document.getElementById("bar-btn-lock")?.addEventListener("click", () => {
-      audit("logout", "Admin logged out manually.");
+    document.getElementById('bar-btn-sync')?.addEventListener('click', handleSyncSite);
+    document.getElementById('bar-btn-publish-all')?.addEventListener('click', handlePublishAll);
+    document.getElementById('bar-btn-change')?.addEventListener('click', () =>
+      document.getElementById('admin-change-modal')?.classList.add('active'));
+    document.getElementById('bar-btn-lock')?.addEventListener('click', () => {
+      audit('logout', 'Admin logged out manually.');
       lockPortal();
     });
 
-    // Netlify Identity event handler for Decap CMS / Git Gateway integration
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("login", user => {
-        toast("✅ Git Gateway connected! Netlify Identity user: " + (user.email || "authenticated"), "fa-check-double");
-        audit("login", "Netlify Identity token established for Git Gateway.");
-      });
-    }
+    // (Netlify Identity removed — CMS now uses GitHub direct auth via PAT)
 
     // Allow pressing Escape to dismiss any open modal
     document.addEventListener("keydown", (e) => {
