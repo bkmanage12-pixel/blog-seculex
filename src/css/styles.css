@@ -5091,7 +5091,7 @@ input:checked + .slider-toggle:before {
   display: flex;
   align-items: center;
   white-space: nowrap;
-  animation: marqueeContinuous 38s linear infinite;
+  animation: marqueeContinuous 90s linear infinite;
   will-change: transform;
 }
 
