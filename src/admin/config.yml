@@ -207,6 +207,8 @@ collections:
           - {label: "Nav Articles Label", name: "nav_articles", widget: "string", default: "Articles"}
           - {label: "Nav Categories Label", name: "nav_categories", widget: "string", default: "Categories"}
           - {label: "Nav Contact Label", name: "nav_contact", widget: "string", default: "Contact"}
+          - {label: "Nav Publish With Us Button Label", name: "nav_publish", widget: "string", default: "Publish with us", hint: "Label for the gold 'Publish with us' button in the navigation header."}
+          - {label: "Footer — Publish With Us Link Label", name: "legal_publish_label", widget: "string", default: "Publish with us", hint: "Label for the Publish With Us link in the footer Legal column."}
           - {label: "Mobile Menu Button Label", name: "mobile_menu_label", widget: "string", default: "Open navigation"}
           - {label: "Enable Live Publications Ticker", name: "ticker_enabled", widget: "boolean", default: true}
           - {label: "Publications Ticker Badge Text", name: "ticker_badge_text", widget: "string", default: "RECENT PUBLICATIONS"}
@@ -393,3 +395,95 @@ collections:
           - {label: "Verification Error Message", name: "verification_error_message", widget: "string"}
           - {label: "Verification Success Message", name: "verification_success_message", widget: "string"}
           - {label: "Download Again Label", name: "download_again_label", widget: "string"}
+
+      - label: "Publish With Us Page"
+        name: "publish_with_us"
+        file: "src/_data/publish_with_us.json"
+        fields:
+          - {label: "Page Meta Title", name: "page_meta_title", widget: "string", default: "Publish with Us | SecuLex"}
+          - {label: "Page Meta Description", name: "page_meta_description", widget: "text"}
+          - {label: "Hero — Badge Text", name: "hero_badge", widget: "string", default: "Call for Submissions & Author Guidelines"}
+          - {label: "Hero — Page Heading", name: "page_title", widget: "string", default: "Publish Your Research with"}
+          - {label: "Hero — Lead Paragraph", name: "hero_lead", widget: "text"}
+          - {label: "Hero — Button Label", name: "hero_button_label", widget: "string", default: "Review Conditions"}
+          - {label: "Conditions Section Tag", name: "conditions_tag", widget: "string", default: "Author Compliance & Standards"}
+          - {label: "Conditions Section Title", name: "conditions_title", widget: "string", default: "Publication Conditions & Legal Regulations"}
+          - {label: "Conditions Section Description", name: "conditions_description", widget: "text"}
+          - label: "Card 1 — Academic Integrity"
+            name: "card1_group"
+            widget: "object"
+            fields:
+              - {label: "Card Title", name: "card1_title", widget: "string", default: "1. Academic Integrity & Originality"}
+              - {label: "Card Intro", name: "card1_intro", widget: "text"}
+              - {label: "Item 1 Bold Label", name: "card1_item1_bold", widget: "string", default: "Zero Plagiarism Tolerance:"}
+              - {label: "Item 1 Text", name: "card1_item1_text", widget: "string"}
+              - {label: "Item 2 Bold Label", name: "card1_item2_bold", widget: "string", default: "Citation Standards:"}
+              - {label: "Item 2 Text", name: "card1_item2_text", widget: "string"}
+              - {label: "Item 3 Text Prefix", name: "card1_item3_text", widget: "string", default: "Read our full"}
+              - {label: "Item 3 Link Label", name: "card1_item3_label", widget: "string", default: "Statement of Academic Integrity"}
+              - {label: "Item 3 Link URL", name: "card1_item3_url", widget: "string", default: "/legal/academic-integrity/"}
+          - label: "Card 2 — Domain Scope"
+            name: "card2_group"
+            widget: "object"
+            fields:
+              - {label: "Card Title", name: "card2_title", widget: "string", default: "2. Domain Scope & Focus Areas"}
+              - {label: "Card Intro", name: "card2_intro", widget: "text"}
+              - {label: "Item 1 Bold Label", name: "card2_item1_bold", widget: "string", default: "Cyber & Tech Regulation:"}
+              - {label: "Item 1 Text", name: "card2_item1_text", widget: "string"}
+              - {label: "Item 2 Bold Label", name: "card2_item2_bold", widget: "string", default: "International & Public Law:"}
+              - {label: "Item 2 Text", name: "card2_item2_text", widget: "string"}
+              - {label: "Item 3 Bold Label", name: "card2_item3_bold", widget: "string", default: "Specialized Legal Disciplines:"}
+              - {label: "Item 3 Text", name: "card2_item3_text", widget: "string"}
+          - label: "Card 3 — Terms of Use"
+            name: "card3_group"
+            widget: "object"
+            fields:
+              - {label: "Card Title", name: "card3_title", widget: "string", default: "3. Terms of Use & Author Rights"}
+              - {label: "Card Intro", name: "card3_intro", widget: "text"}
+              - {label: "Item 1 Bold Label", name: "card3_item1_bold", widget: "string", default: "Copyright Attribution:"}
+              - {label: "Item 1 Text", name: "card3_item1_text", widget: "string"}
+              - {label: "Item 2 Bold Label", name: "card3_item2_bold", widget: "string", default: "Repository Access:"}
+              - {label: "Item 2 Text", name: "card3_item2_text", widget: "string"}
+              - {label: "Item 3 Text Prefix", name: "card3_item3_text", widget: "string", default: "Read our full"}
+              - {label: "Item 3 Link Label", name: "card3_item3_label", widget: "string", default: "Terms of Use"}
+              - {label: "Item 3 Link URL", name: "card3_item3_url", widget: "string", default: "/legal/terms/"}
+          - label: "Card 4 — Privacy"
+            name: "card4_group"
+            widget: "object"
+            fields:
+              - {label: "Card Title", name: "card4_title", widget: "string", default: "4. Privacy & Peer-Review Confidentiality"}
+              - {label: "Card Intro", name: "card4_intro", widget: "text"}
+              - {label: "Item 1 Bold Label", name: "card4_item1_bold", widget: "string", default: "Data Protection:"}
+              - {label: "Item 1 Text", name: "card4_item1_text", widget: "string"}
+              - {label: "Item 2 Bold Label", name: "card4_item2_bold", widget: "string", default: "Editorial Confidentiality:"}
+              - {label: "Item 2 Text", name: "card4_item2_text", widget: "string"}
+              - {label: "Item 3 Text Prefix", name: "card4_item3_text", widget: "string", default: "Read our full"}
+              - {label: "Item 3 Link Label", name: "card4_item3_label", widget: "string", default: "Privacy Policy"}
+              - {label: "Item 3 Link URL", name: "card4_item3_url", widget: "string", default: "/legal/privacy/"}
+          - {label: "Formatting Box Title", name: "formatting_title", widget: "string", default: "Manuscript Formatting & Requirements"}
+          - {label: "Formatting Box Intro", name: "formatting_intro", widget: "string", default: "Ensure your document meets the following criteria prior to sending:"}
+          - {label: "Req 1 — Title", name: "req1_title", widget: "string", default: "Word Count"}
+          - {label: "Req 1 — Body (HTML allowed)", name: "req1_body", widget: "text"}
+          - {label: "Req 2 — Title", name: "req2_title", widget: "string", default: "Abstract & Keywords"}
+          - {label: "Req 2 — Body (HTML allowed)", name: "req2_body", widget: "text"}
+          - {label: "Req 3 — Title", name: "req3_title", widget: "string", default: "Author Biography"}
+          - {label: "Req 3 — Body (HTML allowed)", name: "req3_body", widget: "text"}
+          - {label: "Req 4 — Title", name: "req4_title", widget: "string", default: "File Formats"}
+          - {label: "Req 4 — Body (HTML allowed)", name: "req4_body", widget: "text"}
+          - {label: "Process Section Tag", name: "process_tag", widget: "string", default: "From Submission to Publication"}
+          - {label: "Process Section Title", name: "process_title", widget: "string", default: "Our Review & Editorial Process"}
+          - {label: "Process Section Description", name: "process_description", widget: "text"}
+          - {label: "Step 1 — Title", name: "step1_title", widget: "string", default: "Submission"}
+          - {label: "Step 1 — Body", name: "step1_body", widget: "text"}
+          - {label: "Step 2 — Title", name: "step2_title", widget: "string", default: "Initial Screening"}
+          - {label: "Step 2 — Body", name: "step2_body", widget: "text"}
+          - {label: "Step 3 — Title", name: "step3_title", widget: "string", default: "Peer Review"}
+          - {label: "Step 3 — Body", name: "step3_body", widget: "text"}
+          - {label: "Step 4 — Title", name: "step4_title", widget: "string", default: "Publication"}
+          - {label: "Step 4 — Body", name: "step4_body", widget: "text"}
+          - {label: "CTA Badge Text", name: "cta_badge", widget: "string", default: "Ready to Submit?"}
+          - {label: "CTA Heading", name: "cta_title", widget: "string", default: "Share Your Legal & Strategic Insights"}
+          - {label: "CTA Body Text", name: "cta_body", widget: "text"}
+          - {label: "CTA Email Address", name: "cta_email", widget: "string", default: "info@seculex.org"}
+          - {label: "CTA Button Label", name: "cta_button_label", widget: "string", default: "Email Manuscript to info@seculex.org"}
+

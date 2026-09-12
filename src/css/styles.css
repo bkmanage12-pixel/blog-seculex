@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&display=swap');
+/* Gill Sans MT is a system font on Windows — no import needed */
 
 :root {
   --bg-primary: #080a11;
@@ -13,8 +13,8 @@
   --glass-bg: rgba(18, 21, 32, 0.7);
   --glass-border: rgba(255, 255, 255, 0.1);
   --site-header-height: 115px;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Gill Sans MT', 'Gill Sans', Calibri, 'Trebuchet MS', sans-serif;
+  --font-serif: 'Gill Sans MT', 'Gill Sans', Calibri, 'Trebuchet MS', sans-serif;
   
   /* Screen-Inch Sizing Variables (Adjusted via JS based on estimated physical inches) */
   --base-font-size: 16px;
@@ -2447,7 +2447,7 @@ footer::before {
 }
 
 .author-bio-name {
-  font-family: var(--font-serif, Georgia, serif);
+  font-family: var(--font-serif, 'Gill Sans MT', 'Gill Sans', Calibri, sans-serif);
   font-size: 1.2rem;
   font-weight: 700;
   color: #fff;

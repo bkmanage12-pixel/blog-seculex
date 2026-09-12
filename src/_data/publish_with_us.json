@@ -1,0 +1,89 @@
+{
+  "page_title": "Publish Your Research with SecuLex",
+  "page_meta_title": "Publish with Us | SecuLex",
+  "page_meta_description": "Submission guidelines, rules, regulations, and academic integrity conditions for authors publishing legal, security, and strategic research on SecuLex.",
+
+  "hero_badge": "Call for Submissions & Author Guidelines",
+  "hero_lead": "SecuLex invites legal scholars, security analysts, practitioners, and emerging researchers to contribute original analyses, commentaries, and research articles connecting Law, Strategy, and Security in an evolving digital era.",
+  "hero_button_label": "Review Conditions",
+
+  "conditions_tag": "Author Compliance & Standards",
+  "conditions_title": "Publication Conditions & Legal Regulations",
+  "conditions_description": "Every manuscript submitted to SecuLex must comply strictly with our core academic, legal, and operational frameworks.",
+
+  "card1_title": "1. Academic Integrity & Originality",
+  "card1_intro": "Contributors must guarantee that submitted manuscripts represent entirely original research that has not been previously published or concurrently submitted elsewhere.",
+  "card1_item1_bold": "Zero Plagiarism Tolerance:",
+  "card1_item1_text": "All quotes, data, and paraphrased arguments must be thoroughly cited.",
+  "card1_item2_bold": "Citation Standards:",
+  "card1_item2_text": "Use accepted citation formats (OSCOLA, Bluebook, or Chicago Manual).",
+  "card1_item3_text": "Read our full",
+  "card1_item3_label": "Statement of Academic Integrity",
+  "card1_item3_url": "/legal/academic-integrity/",
+
+  "card2_title": "2. Domain Scope & Focus Areas",
+  "card2_intro": "SecuLex prioritizes critical analysis, comparative inquiry, and practical commentary across our core legal and strategic pillars:",
+  "card2_item1_bold": "Cyber & Tech Regulation:",
+  "card2_item1_text": "Cybercrime, AI governance, digital evidence, data privacy.",
+  "card2_item2_bold": "International & Public Law:",
+  "card2_item2_text": "State responsibility, human rights, global governance.",
+  "card2_item3_bold": "Specialized Legal Disciplines:",
+  "card2_item3_text": "Medical Law, Forensic Law, PhD Thesis abstracts.",
+
+  "card3_title": "3. Terms of Use & Author Rights",
+  "card3_intro": "By submitting your work, you agree to the licensing and distribution terms governed by the SecuLex publishing network:",
+  "card3_item1_bold": "Copyright Attribution:",
+  "card3_item1_text": "Authors retain moral rights while granting SecuLex first publishing rights.",
+  "card3_item2_bold": "Repository Access:",
+  "card3_item2_text": "Content may be categorized under Open Access or Premium Repository access.",
+  "card3_item3_text": "Read our full",
+  "card3_item3_label": "Terms of Use",
+  "card3_item3_url": "/legal/terms/",
+
+  "card4_title": "4. Privacy & Peer-Review Confidentiality",
+  "card4_intro": "SecuLex safeguards personal information and maintains strict editorial confidentiality during review:",
+  "card4_item1_bold": "Data Protection:",
+  "card4_item1_text": "Author contact information is processed strictly under our privacy policy.",
+  "card4_item2_bold": "Editorial Confidentiality:",
+  "card4_item2_text": "Manuscripts remain confidential until formal publication.",
+  "card4_item3_text": "Read our full",
+  "card4_item3_label": "Privacy Policy",
+  "card4_item3_url": "/legal/privacy/",
+
+  "formatting_title": "Manuscript Formatting & Requirements",
+  "formatting_intro": "Ensure your document meets the following criteria prior to sending:",
+
+  "req1_title": "Word Count",
+  "req1_body": "<strong>Short Commentary:</strong> 1,500 – 3,000 words.<br><strong>Full Scholarly Article:</strong> 3,000 – 8,000 words.",
+
+  "req2_title": "Abstract & Keywords",
+  "req2_body": "Include a concise <strong>Abstract (150–250 words)</strong> summarizing research questions, methodology, findings, and 4–6 key search terms.",
+
+  "req3_title": "Author Biography",
+  "req3_body": "Provide a 2–4 sentence professional bio, academic affiliation, official title, and optional high-resolution portrait photo.",
+
+  "req4_title": "File Formats",
+  "req4_body": "Submit documents in editable <strong>Microsoft Word (.docx)</strong> format. Accompanying tables or diagrams must be vector or high-res PNG.",
+
+  "process_tag": "From Submission to Publication",
+  "process_title": "Our Review & Editorial Process",
+  "process_description": "SecuLex ensures rigorous editorial evaluation while providing rapid feedback for authors.",
+
+  "step1_title": "Submission",
+  "step1_body": "Author submits manuscript via email with abstract, affiliations, and compliance statement.",
+
+  "step2_title": "Initial Screening",
+  "step2_body": "Editorial desk reviews scope alignment, plagiarism checks, and formatting standards (3–5 days).",
+
+  "step3_title": "Peer Review",
+  "step3_body": "Subject matter experts evaluate doctrinal accuracy, legal reasoning, and factual evidence.",
+
+  "step4_title": "Publication",
+  "step4_body": "Approved articles are published online, indexed in our repository, and shared globally.",
+
+  "cta_badge": "Ready to Submit?",
+  "cta_title": "Share Your Legal & Strategic Insights",
+  "cta_body": "Send your manuscript directly to our editorial committee for review and publication.",
+  "cta_email": "info@seculex.org",
+  "cta_button_label": "Email Manuscript to info@seculex.org"
+}

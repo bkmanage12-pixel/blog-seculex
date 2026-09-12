@@ -1,7 +1,7 @@
 ---
 layout: base.njk
-title: Publish with Us | SecuLex
-description: Submission guidelines, rules, regulations, and academic integrity conditions for authors publishing legal, security, and strategic research on SecuLex.
+title: "{{ publish_with_us.page_meta_title | default('Publish with Us | SecuLex') }}"
+description: "{{ publish_with_us.page_meta_description | default('Submission guidelines, rules, regulations, and academic integrity conditions for authors publishing on SecuLex.') }}"
 permalink: /publish-with-us/index.html
 ---
 
@@ -9,15 +9,15 @@ permalink: /publish-with-us/index.html
     <!-- Hero Header -->
     <div class="publish-hero fade-in">
         <div class="publish-hero-badge">
-            <i class="fas fa-pen-nib"></i> Call for Submissions & Author Guidelines
+            <i class="fas fa-pen-nib"></i> {{ publish_with_us.hero_badge | default("Call for Submissions &amp; Author Guidelines") }}
         </div>
-        <h1>Publish Your Research with <span class="text-gold">SecuLex</span></h1>
+        <h1>{{ publish_with_us.page_title | default("Publish Your Research with") }} <span class="text-gold">SecuLex</span></h1>
         <p class="publish-hero-lead">
-            SecuLex invites legal scholars, security analysts, practitioners, and emerging researchers to contribute original analyses, commentaries, and research articles connecting Law, Strategy, and Security in an evolving digital era.
+            {{ publish_with_us.hero_lead | default("SecuLex invites legal scholars, security analysts, practitioners, and emerging researchers to contribute original analyses, commentaries, and research articles connecting Law, Strategy, and Security in an evolving digital era.") }}
         </p>
         <div class="publish-hero-actions">
             <a href="#conditions" class="btn btn-pill-solid">
-                <i class="fas fa-gavel"></i> Review Conditions
+                <i class="fas fa-gavel"></i> {{ publish_with_us.hero_button_label | default("Review Conditions") }}
             </a>
         </div>
     </div>
@@ -25,9 +25,9 @@ permalink: /publish-with-us/index.html
     <div class="publish-page-container">
         <!-- Submission Conditions & Policies Grid -->
         <div id="conditions" class="section-header fade-in">
-            <span class="section-tag"><i class="fas fa-balance-scale"></i> Author Compliance & Standards</span>
-            <h2>Publication Conditions & Legal Regulations</h2>
-            <p>Every manuscript submitted to SecuLex must comply strictly with our core academic, legal, and operational frameworks.</p>
+            <span class="section-tag"><i class="fas fa-balance-scale"></i> {{ publish_with_us.conditions_tag | default("Author Compliance &amp; Standards") }}</span>
+            <h2>{{ publish_with_us.conditions_title | default("Publication Conditions &amp; Legal Regulations") }}</h2>
+            <p>{{ publish_with_us.conditions_description | default("Every manuscript submitted to SecuLex must comply strictly with our core academic, legal, and operational frameworks.") }}</p>
             <div class="section-header-line"></div>
         </div>
 
@@ -37,14 +37,12 @@ permalink: /publish-with-us/index.html
                 <div class="publish-card-icon">
                     <i class="fas fa-shield-alt"></i>
                 </div>
-                <h3>1. Academic Integrity & Originality</h3>
-                <p>
-                    Contributors must guarantee that submitted manuscripts represent entirely <strong>original research</strong> that has not been previously published or concurrently submitted elsewhere.
-                </p>
+                <h3>{{ publish_with_us.card1_title | default("1. Academic Integrity &amp; Originality") }}</h3>
+                <p>{{ publish_with_us.card1_intro | default("Contributors must guarantee that submitted manuscripts represent entirely original research that has not been previously published or concurrently submitted elsewhere.") }}</p>
                 <ul class="publish-check-list">
-                    <li><i class="fas fa-check-circle"></i> <strong>Zero Plagiarism Tolerance:</strong> All quotes, data, and paraphrased arguments must be thoroughly cited.</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Citation Standards:</strong> Use accepted citation formats (OSCOLA, Bluebook, or Chicago Manual).</li>
-                    <li><i class="fas fa-check-circle"></i> Read our full <a href="/legal/academic-integrity/">Statement of Academic Integrity</a>.</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>{{ publish_with_us.card1_item1_bold | default("Zero Plagiarism Tolerance:") }}</strong> {{ publish_with_us.card1_item1_text | default("All quotes, data, and paraphrased arguments must be thoroughly cited.") }}</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>{{ publish_with_us.card1_item2_bold | default("Citation Standards:") }}</strong> {{ publish_with_us.card1_item2_text | default("Use accepted citation formats (OSCOLA, Bluebook, or Chicago Manual).") }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ publish_with_us.card1_item3_text | default("Read our full") }} <a href="{{ publish_with_us.card1_item3_url | default('/legal/academic-integrity/') }}">{{ publish_with_us.card1_item3_label | default("Statement of Academic Integrity") }}</a>.</li>
                 </ul>
             </div>
 
@@ -53,14 +51,12 @@ permalink: /publish-with-us/index.html
                 <div class="publish-card-icon">
                     <i class="fas fa-layer-group"></i>
                 </div>
-                <h3>2. Domain Scope & Focus Areas</h3>
-                <p>
-                    SecuLex prioritizes critical analysis, comparative inquiry, and practical commentary across our core legal and strategic pillars:
-                </p>
+                <h3>{{ publish_with_us.card2_title | default("2. Domain Scope &amp; Focus Areas") }}</h3>
+                <p>{{ publish_with_us.card2_intro | default("SecuLex prioritizes critical analysis, comparative inquiry, and practical commentary across our core legal and strategic pillars:") }}</p>
                 <ul class="publish-check-list">
-                    <li><i class="fas fa-check-circle"></i> <strong>Cyber & Tech Regulation:</strong> Cybercrime, AI governance, digital evidence, data privacy.</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>International & Public Law:</strong> State responsibility, human rights, global governance.</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Specialized Legal Disciplines:</strong> Medical Law, Forensic Law, PhD Thesis abstracts.</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>{{ publish_with_us.card2_item1_bold | default("Cyber &amp; Tech Regulation:") }}</strong> {{ publish_with_us.card2_item1_text | default("Cybercrime, AI governance, digital evidence, data privacy.") }}</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>{{ publish_with_us.card2_item2_bold | default("International &amp; Public Law:") }}</strong> {{ publish_with_us.card2_item2_text | default("State responsibility, human rights, global governance.") }}</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>{{ publish_with_us.card2_item3_bold | default("Specialized Legal Disciplines:") }}</strong> {{ publish_with_us.card2_item3_text | default("Medical Law, Forensic Law, PhD Thesis abstracts.") }}</li>
                 </ul>
             </div>
 
@@ -69,14 +65,12 @@ permalink: /publish-with-us/index.html
                 <div class="publish-card-icon">
                     <i class="fas fa-file-contract"></i>
                 </div>
-                <h3>3. Terms of Use & Author Rights</h3>
-                <p>
-                    By submitting your work, you agree to the licensing and distribution terms governed by the SecuLex publishing network:
-                </p>
+                <h3>{{ publish_with_us.card3_title | default("3. Terms of Use &amp; Author Rights") }}</h3>
+                <p>{{ publish_with_us.card3_intro | default("By submitting your work, you agree to the licensing and distribution terms governed by the SecuLex publishing network:") }}</p>
                 <ul class="publish-check-list">
-                    <li><i class="fas fa-check-circle"></i> <strong>Copyright Attribution:</strong> Authors retain moral rights while granting SecuLex first publishing rights.</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Repository Access:</strong> Content may be categorized under Open Access or Premium Repository access.</li>
-                    <li><i class="fas fa-check-circle"></i> Read our full <a href="/legal/terms/">Terms of Use</a>.</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>{{ publish_with_us.card3_item1_bold | default("Copyright Attribution:") }}</strong> {{ publish_with_us.card3_item1_text | default("Authors retain moral rights while granting SecuLex first publishing rights.") }}</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>{{ publish_with_us.card3_item2_bold | default("Repository Access:") }}</strong> {{ publish_with_us.card3_item2_text | default("Content may be categorized under Open Access or Premium Repository access.") }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ publish_with_us.card3_item3_text | default("Read our full") }} <a href="{{ publish_with_us.card3_item3_url | default('/legal/terms/') }}">{{ publish_with_us.card3_item3_label | default("Terms of Use") }}</a>.</li>
                 </ul>
             </div>
 
@@ -85,14 +79,12 @@ permalink: /publish-with-us/index.html
                 <div class="publish-card-icon">
                     <i class="fas fa-user-shield"></i>
                 </div>
-                <h3>4. Privacy & Peer-Review Confidentiality</h3>
-                <p>
-                    SecuLex safeguards personal information and maintains strict editorial confidentiality during review:
-                </p>
+                <h3>{{ publish_with_us.card4_title | default("4. Privacy &amp; Peer-Review Confidentiality") }}</h3>
+                <p>{{ publish_with_us.card4_intro | default("SecuLex safeguards personal information and maintains strict editorial confidentiality during review:") }}</p>
                 <ul class="publish-check-list">
-                    <li><i class="fas fa-check-circle"></i> <strong>Data Protection:</strong> Author contact information is processed strictly under our privacy policy.</li>
-                    <li><i class="fas fa-check-circle"></i> <strong>Editorial Confidentiality:</strong> Manuscripts remain confidential until formal publication.</li>
-                    <li><i class="fas fa-check-circle"></i> Read our full <a href="/legal/privacy/">Privacy Policy</a>.</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>{{ publish_with_us.card4_item1_bold | default("Data Protection:") }}</strong> {{ publish_with_us.card4_item1_text | default("Author contact information is processed strictly under our privacy policy.") }}</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>{{ publish_with_us.card4_item2_bold | default("Editorial Confidentiality:") }}</strong> {{ publish_with_us.card4_item2_text | default("Manuscripts remain confidential until formal publication.") }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ publish_with_us.card4_item3_text | default("Read our full") }} <a href="{{ publish_with_us.card4_item3_url | default('/legal/privacy/') }}">{{ publish_with_us.card4_item3_label | default("Privacy Policy") }}</a>.</li>
                 </ul>
             </div>
         </div>
@@ -102,30 +94,30 @@ permalink: /publish-with-us/index.html
             <div class="guidelines-header">
                 <div class="guidelines-icon"><i class="fas fa-scroll"></i></div>
                 <div>
-                    <h3>Manuscript Formatting & Requirements</h3>
-                    <p>Ensure your document meets the following criteria prior to sending:</p>
+                    <h3>{{ publish_with_us.formatting_title | default("Manuscript Formatting &amp; Requirements") }}</h3>
+                    <p>{{ publish_with_us.formatting_intro | default("Ensure your document meets the following criteria prior to sending:") }}</p>
                 </div>
             </div>
             <div class="guidelines-grid">
                 <div class="guidelines-item">
                     <span class="guidelines-number">01</span>
-                    <h4>Word Count</h4>
-                    <p><strong>Short Commentary:</strong> 1,500 – 3,000 words.<br><strong>Full Scholarly Article:</strong> 3,000 – 8,000 words.</p>
+                    <h4>{{ publish_with_us.req1_title | default("Word Count") }}</h4>
+                    <p>{{ publish_with_us.req1_body | safe | default("<strong>Short Commentary:</strong> 1,500 – 3,000 words.<br><strong>Full Scholarly Article:</strong> 3,000 – 8,000 words.") }}</p>
                 </div>
                 <div class="guidelines-item">
                     <span class="guidelines-number">02</span>
-                    <h4>Abstract & Keywords</h4>
-                    <p>Include a concise <strong>Abstract (150–250 words)</strong> summarizing research questions, methodology, findings, and 4–6 key search terms.</p>
+                    <h4>{{ publish_with_us.req2_title | default("Abstract &amp; Keywords") }}</h4>
+                    <p>{{ publish_with_us.req2_body | safe | default("Include a concise <strong>Abstract (150–250 words)</strong> summarizing research questions, methodology, findings, and 4–6 key search terms.") }}</p>
                 </div>
                 <div class="guidelines-item">
                     <span class="guidelines-number">03</span>
-                    <h4>Author Biography</h4>
-                    <p>Provide a 2–4 sentence professional bio, academic affiliation, official title, and optional high-resolution portrait photo.</p>
+                    <h4>{{ publish_with_us.req3_title | default("Author Biography") }}</h4>
+                    <p>{{ publish_with_us.req3_body | safe | default("Provide a 2–4 sentence professional bio, academic affiliation, official title, and optional high-resolution portrait photo.") }}</p>
                 </div>
                 <div class="guidelines-item">
                     <span class="guidelines-number">04</span>
-                    <h4>File Formats</h4>
-                    <p>Submit documents in editable <strong>Microsoft Word (.docx)</strong> format. Accompanying tables or diagrams must be vector or high-res PNG.</p>
+                    <h4>{{ publish_with_us.req4_title | default("File Formats") }}</h4>
+                    <p>{{ publish_with_us.req4_body | safe | default("Submit documents in editable <strong>Microsoft Word (.docx)</strong> format. Accompanying tables or diagrams must be vector or high-res PNG.") }}</p>
                 </div>
             </div>
         </div>
@@ -133,35 +125,35 @@ permalink: /publish-with-us/index.html
         <!-- Peer Review & Editorial Process Steps -->
         <div class="publish-workflow-section fade-in">
             <div class="section-header">
-                <span class="section-tag"><i class="fas fa-route"></i> From Submission to Publication</span>
-                <h2>Our Review & Editorial Process</h2>
-                <p>SecuLex ensures rigorous editorial evaluation while providing rapid feedback for authors.</p>
+                <span class="section-tag"><i class="fas fa-route"></i> {{ publish_with_us.process_tag | default("From Submission to Publication") }}</span>
+                <h2>{{ publish_with_us.process_title | default("Our Review &amp; Editorial Process") }}</h2>
+                <p>{{ publish_with_us.process_description | default("SecuLex ensures rigorous editorial evaluation while providing rapid feedback for authors.") }}</p>
                 <div class="section-header-line"></div>
             </div>
 
             <div class="workflow-steps">
                 <div class="workflow-step">
                     <div class="step-badge">1</div>
-                    <h4>Submission</h4>
-                    <p>Author submits manuscript via email with abstract, affiliations, and compliance statement.</p>
+                    <h4>{{ publish_with_us.step1_title | default("Submission") }}</h4>
+                    <p>{{ publish_with_us.step1_body | default("Author submits manuscript via email with abstract, affiliations, and compliance statement.") }}</p>
                 </div>
                 <div class="workflow-step-arrow"><i class="fas fa-chevron-right"></i></div>
                 <div class="workflow-step">
                     <div class="step-badge">2</div>
-                    <h4>Initial Screening</h4>
-                    <p>Editorial desk reviews scope alignment, plagiarism checks, and formatting standards (3–5 days).</p>
+                    <h4>{{ publish_with_us.step2_title | default("Initial Screening") }}</h4>
+                    <p>{{ publish_with_us.step2_body | default("Editorial desk reviews scope alignment, plagiarism checks, and formatting standards (3–5 days).") }}</p>
                 </div>
                 <div class="workflow-step-arrow"><i class="fas fa-chevron-right"></i></div>
                 <div class="workflow-step">
                     <div class="step-badge">3</div>
-                    <h4>Peer Review</h4>
-                    <p>Subject matter experts evaluate doctrinal accuracy, legal reasoning, and factual evidence.</p>
+                    <h4>{{ publish_with_us.step3_title | default("Peer Review") }}</h4>
+                    <p>{{ publish_with_us.step3_body | default("Subject matter experts evaluate doctrinal accuracy, legal reasoning, and factual evidence.") }}</p>
                 </div>
                 <div class="workflow-step-arrow"><i class="fas fa-chevron-right"></i></div>
                 <div class="workflow-step">
                     <div class="step-badge">4</div>
-                    <h4>Publication</h4>
-                    <p>Approved articles are published online, indexed in our repository, and shared globally.</p>
+                    <h4>{{ publish_with_us.step4_title | default("Publication") }}</h4>
+                    <p>{{ publish_with_us.step4_body | default("Approved articles are published online, indexed in our repository, and shared globally.") }}</p>
                 </div>
             </div>
         </div>
@@ -169,12 +161,12 @@ permalink: /publish-with-us/index.html
         <!-- Final Call to Action -->
         <div class="publish-cta-card fade-in">
             <div class="cta-inner">
-                <div class="cta-badge"><i class="fas fa-paper-plane"></i> Ready to Submit?</div>
-                <h2>Share Your Legal & Strategic Insights</h2>
-                <p>Send your manuscript directly to our editorial committee for review and publication.</p>
+                <div class="cta-badge"><i class="fas fa-paper-plane"></i> {{ publish_with_us.cta_badge | default("Ready to Submit?") }}</div>
+                <h2>{{ publish_with_us.cta_title | default("Share Your Legal &amp; Strategic Insights") }}</h2>
+                <p>{{ publish_with_us.cta_body | default("Send your manuscript directly to our editorial committee for review and publication.") }}</p>
                 <div class="cta-actions">
-                    <a href="mailto:info@seculex.org?subject=Article%20Submission%20-%20SecuLex" class="btn btn-pill-solid">
-                        <i class="fas fa-envelope"></i> Email Manuscript to info@seculex.org
+                    <a href="mailto:{{ publish_with_us.cta_email | default('info@seculex.org') }}?subject=Article%20Submission%20-%20SecuLex" class="btn btn-pill-solid">
+                        <i class="fas fa-envelope"></i> {{ publish_with_us.cta_button_label | default("Email Manuscript to info@seculex.org") }}
                     </a>
                 </div>
             </div>
