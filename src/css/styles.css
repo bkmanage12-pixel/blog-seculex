@@ -5091,30 +5091,27 @@ input:checked + .slider-toggle:before {
 
 .ticker-track-wrapper {
   flex-grow: 1;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   position: relative;
   height: 100%;
   display: flex;
   align-items: center;
-  mask-image: linear-gradient(to right, transparent 0%, black 25px, black calc(100% - 25px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 25px, black calc(100% - 25px), transparent 100%);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.ticker-track-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .ticker-track {
   display: flex;
   align-items: center;
   white-space: nowrap;
-  animation: marqueeContinuous 90s linear infinite;
-  will-change: transform;
-}
-
-.ticker-track-wrapper:hover .ticker-track {
-  animation-play-state: paused;
-}
-
-@keyframes marqueeContinuous {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  animation: none !important;
+  transform: none !important;
+  justify-content: flex-start;
 }
 
 .ticker-item {
