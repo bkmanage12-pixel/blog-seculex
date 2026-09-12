@@ -100,58 +100,58 @@ title: Home | SecuLex
         </div>
     </div>
 
-    <!-- Our Purpose, Our Vision, Our Mission Grid -->
+    <!-- Our Purpose, Our Vision, Our Mission Grid (Landscape Layout) -->
     <div class="about-pvm-container">
         <div class="about-pvm-grid">
             <!-- Our Purpose Card -->
             <div id="purpose" class="pvm-card pvm-card--purpose fade-in">
-                <div class="pvm-card-header">
+                <div class="pvm-card-left">
                     <div class="pvm-icon-wrapper pvm-icon--gold">
                         <i class="fas fa-bullseye"></i>
                     </div>
                     <span class="pvm-card-tag">Core Objective</span>
                     <h3>{{ about.purpose.title | default("Our Purpose") }}</h3>
+                    <div class="pvm-card-badge-wrap">
+                        <span class="pvm-badge"><i class="fas fa-book-reader"></i> Public Education & Sharing</span>
+                    </div>
                 </div>
-                <div class="pvm-card-body">
+                <div class="pvm-card-right">
                     <p class="pvm-lead-text">{{ about.purpose.lead_text }}</p>
                     <p class="pvm-body-text">{{ about.purpose.body_text | replace("digital society, the relationship between technology and law has become impossible to ignore.", "<strong>digital society, the relationship between technology and law has become impossible to ignore.</strong>") | safe }}</p>
-                </div>
-                <div class="pvm-card-footer">
-                    <span class="pvm-badge"><i class="fas fa-book-reader"></i> Public Education & Knowledge Sharing</span>
                 </div>
             </div>
 
             <!-- Our Vision Card -->
             <div id="vision" class="pvm-card pvm-card--vision fade-in">
-                <div class="pvm-card-header">
+                <div class="pvm-card-left">
                     <div class="pvm-icon-wrapper pvm-icon--blue">
                         <i class="fas fa-eye"></i>
                     </div>
                     <span class="pvm-card-tag">Aspiration</span>
                     <h3>{{ about.vision.title | default("Our Vision") }}</h3>
+                    <div class="pvm-card-badge-wrap">
+                        <span class="pvm-badge pvm-badge--blue"><i class="fas fa-compass"></i> Trusted Knowledge Platform</span>
+                    </div>
                 </div>
-                <div class="pvm-card-body">
+                <div class="pvm-card-right">
                     <p class="pvm-body-text pvm-highlight-text">{{ about.vision.body_text }}</p>
-                </div>
-                <div class="pvm-card-footer">
-                    <span class="pvm-badge"><i class="fas fa-compass"></i> Trusted Knowledge Platform</span>
                 </div>
             </div>
 
             <!-- Our Mission Card -->
             <div id="mission" class="pvm-card pvm-card--mission fade-in">
-                <div class="pvm-card-header">
+                <div class="pvm-card-left">
                     <div class="pvm-icon-wrapper pvm-icon--purple">
                         <i class="fas fa-rocket"></i>
                     </div>
                     <span class="pvm-card-tag">Commitment</span>
                     <h3>{{ about.mission.title | default("Our Mission") }}</h3>
+                    <div class="pvm-card-badge-wrap">
+                        <span class="pvm-badge pvm-badge--purple"><i class="fas fa-pen-nib"></i> Credible & Practical Insights</span>
+                    </div>
                 </div>
-                <div class="pvm-card-body">
+                <div class="pvm-card-right">
                     <p class="pvm-body-text pvm-highlight-text">{{ about.mission.body_text }}</p>
-                </div>
-                <div class="pvm-card-footer">
-                    <span class="pvm-badge"><i class="fas fa-pen-nib"></i> Credible & Practical Insights</span>
                 </div>
             </div>
         </div>
