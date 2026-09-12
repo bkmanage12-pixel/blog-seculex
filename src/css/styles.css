@@ -12,7 +12,8 @@
   --border-color: rgba(255, 255, 255, 0.08);
   --glass-bg: rgba(18, 21, 32, 0.7);
   --glass-border: rgba(255, 255, 255, 0.1);
-  --site-header-height: 115px;
+  --site-header-height: 130px;
+  --ticker-height: 35px;
   --font-sans: 'Gill Sans MT', 'Gill Sans', Calibri, 'Trebuchet MS', sans-serif;
   --font-serif: 'Gill Sans MT', 'Gill Sans', Calibri, 'Trebuchet MS', sans-serif;
   
@@ -42,7 +43,8 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
-  padding-top: var(--site-header-height);
+  /* Reserve room for the fixed header and the attached publications ticker. */
+  padding-top: calc(var(--site-header-height) + var(--ticker-height));
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -5029,18 +5031,19 @@ input:checked + .slider-toggle:before {
 .latest-articles-ticker {
   background: rgba(8, 11, 22, 0.96);
   border: 1px solid rgba(212, 175, 55, 0.4);
-  border-radius: 7px;
+  border-radius: 0;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 8px rgba(212, 175, 55, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  position: sticky;
+  position: fixed;
   top: var(--site-header-height);
+  left: 0;
   z-index: 99;
   overflow: hidden;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   /* Always stay inside the viewport, including narrow phones. */
-  max-width: 1400px;
-  margin: 0 auto 7px;
-  width: calc(100% - 2rem);
+  max-width: none;
+  margin: 0;
+  width: 100%;
 }
 
 .ticker-inner {
@@ -5192,9 +5195,12 @@ input:checked + .slider-toggle:before {
 
 /* Mobile Ticker adjustments */
 @media (max-width: 768px) {
+  :root {
+    --ticker-height: 31px;
+  }
   .latest-articles-ticker {
-    width: calc(100% - 1rem);
-    margin: 0 auto 5px;
+    width: 100%;
+    margin: 0;
   }
   .ticker-inner {
     height: 30px;
