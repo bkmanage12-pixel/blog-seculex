@@ -11,7 +11,7 @@ permalink: /publish-with-us/index.html
         <div class="publish-hero-badge">
             <i class="fas fa-pen-nib"></i> {{ publish_with_us.hero_badge | default("Call for Submissions &amp; Author Guidelines") }}
         </div>
-        <h1>{{ publish_with_us.page_title | default("Publish Your Research with") }} <span class="text-gold">SecuLex</span></h1>
+        <h1>{{ publish_with_us.page_title | default("Publish Your Research with") }} <span class="text-gold">{{ publish_with_us.page_title_accent | default("SecuLex") }}</span></h1>
         <p class="publish-hero-lead">
             {{ publish_with_us.hero_lead | default("SecuLex invites legal scholars, security analysts, practitioners, and emerging researchers to contribute original analyses, commentaries, and research articles connecting Law, Strategy, and Security in an evolving digital era.") }}
         </p>
