@@ -30,7 +30,7 @@
   const KEY_AUDIT      = "seculex_admin_audit_logs_v1";
   const VERIFY_URL     = "/.netlify/functions/admin-verify";
   // Injected at Netlify build time via site.json or meta tag — see base.njk
-  const ADMIN_FUNCTION_SECRET = ((document.querySelector('meta[name="admin-function-secret"]') || {}).content || "").trim() || "seculex_admin_secret_v1";
+  const ADMIN_FUNCTION_SECRET = ((document.querySelector('meta[name="admin-function-secret"]') || {}).content || "").trim() || "seculex_admin_secret_98a7b6c5d4e3f2a1_prod";
 
   const PBKDF2_ITER = 100000;
   const MAX_ATTEMPTS = 5;

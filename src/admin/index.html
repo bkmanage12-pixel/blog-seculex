@@ -9,15 +9,7 @@
     <meta name="admin-function-secret" content="{{ site.admin_function_secret | default: '' }}" />
     <title>SecuLex — Admin Portal</title>
 
-    <!-- Domain guard: block access from the public custom domain -->
-    <script>
-      (function () {
-        var h = window.location.hostname.toLowerCase();
-        if (h === "seculex.org" || h === "www.seculex.org") {
-          window.location.replace("/404.html");
-        }
-      })();
-    </script>
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
