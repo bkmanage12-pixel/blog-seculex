@@ -5116,7 +5116,7 @@ input:checked + .slider-toggle:before {
   align-items: center;
   white-space: nowrap;
   width: max-content;
-  animation: tickerScroll 42s linear infinite;
+  animation: tickerScroll 75s linear infinite;
 }
 
 .ticker-track-group {
