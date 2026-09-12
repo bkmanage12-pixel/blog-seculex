@@ -203,14 +203,16 @@ function validateCustomerInput(input) {
  * HMAC signature for state tokens (to allow server-verified state without external database if needed)
  */
 function signPaymentState(payload) {
-  const secret = process.env.PAYMENT_SIGNING_SECRET || "seculex_default_signing_key_2026";
+  const secret = process.env.PAYMENT_SIGNING_SECRET;
+  if (!secret) throw new Error("PAYMENT_SIGNING_SECRET environment variable is not configured.");
   const data = Buffer.from(JSON.stringify(payload)).toString("base64url");
   const signature = crypto.createHmac("sha256", secret).update(data).digest("base64url");
   return `${data}.${signature}`;
 }
 
 function verifyPaymentState(token) {
-  const secret = process.env.PAYMENT_SIGNING_SECRET || "seculex_default_signing_key_2026";
+  const secret = process.env.PAYMENT_SIGNING_SECRET;
+  if (!secret) return null; // Not configured — treat as no state
   const [data, signature] = String(token || "").split(".");
   if (!data || !signature) return null;
 

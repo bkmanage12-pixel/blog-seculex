@@ -24,12 +24,11 @@
 
 const crypto = require("crypto");
 
-const DEFAULT_HASH = "5523d8cbbaa1a7c1dda2839929ad199e1e90b534c1dc54f4dc73427297766fd2";
-const DEFAULT_SALT = "cdfc6609f037b959358fec5f4976c74e";
-
+// ⚠️  SECURITY: credentials must be set via Netlify Dashboard → Environment Variables ONLY.
+// No hardcoded fallbacks — missing env vars return 'not_configured' to the caller.
 function getStoredCredentials() {
-  const hash = (process.env.ADMIN_PASSWORD_HASH || DEFAULT_HASH).trim();
-  const salt = (process.env.ADMIN_PASSWORD_SALT || DEFAULT_SALT).trim();
+  const hash = (process.env.ADMIN_PASSWORD_HASH || "").trim();
+  const salt = (process.env.ADMIN_PASSWORD_SALT || "").trim();
   return { hash, salt };
 }
 
@@ -132,12 +131,37 @@ exports.handler = async (event) => {
 
 
   // ── SAVE ─────────────────────────────────────────────────────
+  // SECURITY: Caller must prove knowledge of the CURRENT password before
+  // a new hash can be stored. Prevents unauthenticated password replacement.
   if (action === "save") {
     const hash = String(body.hash || "").trim();
     const salt = String(body.salt || "").trim();
+    const currentPassword = String(body.currentPassword || "").trim();
 
     if (!hash || !salt || hash.length < 32 || salt.length < 16) {
       return { statusCode: 400, headers, body: JSON.stringify({ error: "Invalid hash/salt" }) };
+    }
+
+    // Require current-password proof unless the system is not yet configured
+    const { hash: storedHashNow, salt: storedSaltNow } = getStoredCredentials();
+    if (storedHashNow && storedSaltNow) {
+      if (!currentPassword) {
+        return { statusCode: 401, headers, body: JSON.stringify({ error: "current_password_required" }) };
+      }
+      // Verify current password server-side
+      const derivedCurrent = await new Promise((resolve, reject) => {
+        const saltBuf = Buffer.from(storedSaltNow, "hex");
+        crypto.pbkdf2(currentPassword, saltBuf, 100000, 32, "sha256", (err, key) => {
+          if (err) reject(err); else resolve(key.toString("hex"));
+        });
+      });
+      const currentValid = crypto.timingSafeEqual(
+        Buffer.from(derivedCurrent, "hex"),
+        Buffer.from(storedHashNow, "hex")
+      );
+      if (!currentValid) {
+        return { statusCode: 401, headers, body: JSON.stringify({ error: "invalid_current_password" }) };
+      }
     }
 
     const token  = process.env.NETLIFY_ACCESS_TOKEN;

@@ -29,6 +29,8 @@
   const KEY_ATTEMPTS   = "seculex_admin_attempts_v1";
   const KEY_AUDIT      = "seculex_admin_audit_logs_v1";
   const VERIFY_URL     = "/.netlify/functions/admin-verify";
+  // Injected at Netlify build time via site.json or meta tag — see base.njk
+  const ADMIN_FUNCTION_SECRET = (document.querySelector('meta[name="admin-function-secret"]') || {}).content || "";
 
   const PBKDF2_ITER = 100000;
   const MAX_ATTEMPTS = 5;
@@ -58,10 +60,12 @@
 
   function randomRecoveryKey() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
     let r = "";
     for (let i = 0; i < 16; i++) {
       if (i && i % 4 === 0) r += "-";
-      r += chars[Math.floor(Math.random() * chars.length)];
+      r += chars[bytes[i] % chars.length];
     }
     return r;
   }
@@ -73,7 +77,7 @@
    * 1. Hashes locally with PBKDF2 and caches in localStorage
    * 2. Pushes hash+salt to server (Netlify env vars) for cross-device use
    */
-  async function savePassword(plaintext) {
+  async function savePassword(plaintext, currentPassword = "") {
     const salt = randomHex(16);
     const hash = await pbkdf2Hash(plaintext, salt);
 
@@ -85,7 +89,7 @@
     fetch(VERIFY_URL, {
       method:  "POST",
       headers: { "content-type": "application/json" },
-      body:    JSON.stringify({ action: "save", hash, salt })
+      body:    JSON.stringify({ action: "save", hash, salt, currentPassword })
     }).then(r => r.json()).then(d => {
       if (d.success)  console.info("[SecuLex] Password synced to server ✓");
       else console.warn("[SecuLex] Server sync:", d.message || d.error);
@@ -515,7 +519,7 @@
     if (newPw.length < 8) { feedback("change-feedback", "New password must be at least 8 characters."); return; }
     if (newPw !== confirm) { feedback("change-feedback", "New passwords do not match."); return; }
 
-    await savePassword(newPw);
+    await savePassword(newPw, cur);
     audit("change", "Admin password updated from dashboard.");
     feedback("change-feedback", "Password updated & synced to all devices!", "success");
     setTimeout(() => document.getElementById("admin-change-modal")?.classList.remove("active"), 1800);
@@ -526,7 +530,10 @@
     if (btn) { btn.classList.add("spinning"); btn.disabled = true; }
     toast("Triggering site rebuild...", "fa-rotate");
     try {
-      const res  = await fetch("/.netlify/functions/sync-site", { method: "POST" });
+      const res  = await fetch("/.netlify/functions/sync-site", {
+        method: "POST",
+        headers: { "x-admin-secret": ADMIN_FUNCTION_SECRET }
+      });
       const data = await res.json();
       toast(data?.buildHookTriggered ? "✅ Rebuild triggered! Updates in ~1–2 mins." : "✅ Rebuild request sent.", "fa-check-double");
     } catch { toast("⚠️ Could not reach rebuild function.", "fa-triangle-exclamation"); }
@@ -546,7 +553,10 @@
     }
     toast("Publishing all saved drafts...", "fa-globe");
     try {
-      const res  = await fetch("/.netlify/functions/publish-all", { method: "POST" });
+      const res  = await fetch("/.netlify/functions/publish-all", {
+        method: "POST",
+        headers: { "x-admin-secret": ADMIN_FUNCTION_SECRET }
+      });
       const data = await res.json();
 
       if (data.needsSetup) {
@@ -685,16 +695,9 @@
     statsLoaded = false;
     statsShowState("stats-loading");
 
-    // Get session token for auth
-    let adminToken = "";
-    try {
-      const sess = JSON.parse(sessionStorage.getItem(KEY_SESSION) || localStorage.getItem(KEY_SESSION) || "{}");
-      adminToken = sess.fingerprint || sess.token || "seculex_admin_session";
-    } catch {}
-
     try {
       const res = await fetch(`/.netlify/functions/analytics-stats?range=${range}`, {
-        headers: { "X-Admin-Token": adminToken },
+        headers: { "x-admin-secret": ADMIN_FUNCTION_SECRET },
       });
       const data = await res.json();
 

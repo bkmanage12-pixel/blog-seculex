@@ -34,7 +34,8 @@ exports.handler = async (event) => {
       const expiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes
 
       activeTokens.set(code, { email, expiresAt });
-      console.log(`[Admin Reset] Generated security code ${code} for ${ADMIN_EMAIL}`);
+      // Security: reset code is NOT logged to prevent log-based bypass attacks.
+      console.log(`[Admin Reset] Security code generated for ${ADMIN_EMAIL}.`);
 
       let emailSent = false;
       let emailError = "";

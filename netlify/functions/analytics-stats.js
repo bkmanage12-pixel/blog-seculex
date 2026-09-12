@@ -127,9 +127,10 @@ exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers: cors, body: "" };
   if (event.httpMethod !== "GET") return { statusCode: 405, headers: cors, body: JSON.stringify({ error: "Method not allowed" }) };
 
-  /* — Basic admin token guard — */
-  const token = (event.headers["x-admin-token"] || "").trim();
-  if (!token || token.length < 8) {
+  /* — Admin authentication guard — */
+  const adminSecret = process.env.ADMIN_FUNCTION_SECRET;
+  const providedSecret = (event.headers["x-admin-secret"] || event.headers["x-admin-token"] || "").trim();
+  if (!adminSecret || !providedSecret || providedSecret !== adminSecret) {
     return { statusCode: 401, headers: cors, body: JSON.stringify({ error: "Unauthorized access" }) };
   }
 

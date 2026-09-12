@@ -8,8 +8,9 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  ADMIN_PASSWORD_HASH = "5523d8cbbaa1a7c1dda2839929ad199e1e90b534c1dc54f4dc73427297766fd2"
-  ADMIN_PASSWORD_SALT = "cdfc6609f037b959358fec5f4976c74e"
+  # ⚠️  SECURITY: ADMIN_PASSWORD_HASH and ADMIN_PASSWORD_SALT must be set
+  #               ONLY via Netlify Dashboard → Site → Environment Variables.
+  #               NEVER commit credential values here.
 
 # 1. Block /admin on the public custom domain (seculex.org and www.seculex.org)
 [[redirects]]
@@ -80,3 +81,46 @@
   to = "https://seculex.org/:splat"
   status = 301
   force = true
+
+# ══════════════════════════════════════════════════════════════════
+# HTTP SECURITY HEADERS
+# ══════════════════════════════════════════════════════════════════
+
+# 5. Global security headers for all pages
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Force HTTPS for 2 years and include subdomains
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    # Block site from being embedded in iframes (clickjacking protection)
+    X-Frame-Options = "DENY"
+    # Prevent browsers from MIME-sniffing responses
+    X-Content-Type-Options = "nosniff"
+    # Enable browser XSS filter (legacy browsers)
+    X-XSS-Protection = "1; mode=block"
+    # Control referrer information leakage
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Restrict access to browser APIs
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(self)"
+    # Content Security Policy — allows all required external resources
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://identity.netlify.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://*.netlify.app https://*.netlify.com https://www.google-analytics.com https://analytics.google.com https://oauth2.googleapis.com https://analyticsdata.googleapis.com https://api.github.com https://api.resend.com https://api.sendgrid.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests;"
+
+# 6. Stricter headers for the admin portal
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    # Prevent all caching on admin pages
+    Cache-Control = "no-store, no-cache, must-revalidate, max-age=0"
+    Pragma = "no-cache"
+    # Admin must never be indexed
+    X-Robots-Tag = "noindex, nofollow, noarchive, nosnippet"
+    # Admin must never be framed
+    X-Frame-Options = "DENY"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://identity.netlify.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src 'self' data: https:; connect-src 'self' https://*.netlify.app https://*.netlify.com https://api.github.com https://oauth2.googleapis.com https://analyticsdata.googleapis.com; frame-src 'none'; object-src 'none'; base-uri 'self';"
+
+# 7. No caching on Netlify functions
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate"
+    X-Content-Type-Options = "nosniff"

@@ -27,6 +27,17 @@ exports.handler = async (event) => {
     return { statusCode: 204, headers: corsHeaders, body: "" };
   }
 
+  // — Admin authentication guard —
+  const adminSecret = process.env.ADMIN_FUNCTION_SECRET;
+  const providedSecret = (event.headers["x-admin-secret"] || "").trim();
+  if (!adminSecret || !providedSecret || providedSecret !== adminSecret) {
+    return {
+      statusCode: 401,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "Unauthorized. Valid X-Admin-Secret header required." }),
+    };
+  }
+
   const buildHookUrl = process.env.NETLIFY_BUILD_HOOK_URL;
 
   if (!buildHookUrl) {

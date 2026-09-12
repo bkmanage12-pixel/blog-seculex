@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta name="referrer" content="no-referrer" />
+    <!-- ADMIN_FUNCTION_SECRET injected at build time — only served on .netlify.app domain -->
+    <meta name="admin-function-secret" content="{{ site.admin_function_secret | default('') }}" />
     <title>SecuLex — Admin Portal</title>
 
     <!-- Domain guard: block access from the public custom domain -->

@@ -59,8 +59,10 @@ exports.handler = async (event) => {
 
     let finalStatus = dpoVerification.status || "PENDING";
 
-    // Allow testing different outcomes in simulation/test mode if specified
-    if (mockOutcome && ["PAID", "PENDING", "FAILED", "CANCELLED", "EXPIRED", "VERIFICATION_FAILED"].includes(mockOutcome)) {
+    // Allow mock outcome override ONLY in non-production (test/dev) environments.
+    // In PRODUCTION, this block is skipped entirely to prevent payment bypass attacks.
+    const isTestMode = (process.env.DPO_ENVIRONMENT || "TEST").toUpperCase() !== "PRODUCTION";
+    if (isTestMode && mockOutcome && ["PAID", "PENDING", "FAILED", "CANCELLED", "EXPIRED", "VERIFICATION_FAILED"].includes(mockOutcome)) {
       finalStatus = mockOutcome;
     }
 

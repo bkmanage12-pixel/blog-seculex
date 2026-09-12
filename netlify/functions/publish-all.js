@@ -28,6 +28,17 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: cors, body: JSON.stringify({ error: "Method not allowed" }) };
   }
 
+  // — Admin authentication guard —
+  const adminSecret = process.env.ADMIN_FUNCTION_SECRET;
+  const providedSecret = (event.headers["x-admin-secret"] || "").trim();
+  if (!adminSecret || !providedSecret || providedSecret !== adminSecret) {
+    return {
+      statusCode: 401,
+      headers: cors,
+      body: JSON.stringify({ error: "Unauthorized. Valid X-Admin-Secret header required." }),
+    };
+  }
+
   const token      = process.env.GITHUB_TOKEN;
   const owner      = process.env.GITHUB_OWNER;
   const repo       = process.env.GITHUB_REPO;
