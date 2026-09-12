@@ -1,8 +1,7 @@
-local_backend: true
-# publish_mode: editorial_workflow (Disabled to ensure immediate direct deployment to main branch)
+# local_backend: true (Disabled in production so CMS commits directly via Netlify Git Gateway)
 backend:
   name: git-gateway
-  branch: main # Branch to update (optional; defaults to master)
+  branch: main # Branch to update
 
 media_folder: "src/assets/images" # Media files will be stored in the repo under src/assets/images
 public_folder: "/assets/images" # The src attribute for uploaded media will begin with /assets/images
