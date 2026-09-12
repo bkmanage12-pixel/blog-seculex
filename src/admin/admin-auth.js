@@ -367,6 +367,17 @@
     const bar = document.getElementById("admin-security-bar");
     if (bar) bar.style.display = "flex";
     resetIdleTimer();
+
+    // Verify Netlify Identity authentication for Git Gateway publishing
+    if (window.netlifyIdentity) {
+      const user = window.netlifyIdentity.currentUser();
+      if (!user) {
+        toast("Please log in to Netlify Identity to enable CMS saving", "fa-user-lock");
+        setTimeout(() => {
+          try { window.netlifyIdentity.open("login"); } catch (e) {}
+        }, 600);
+      }
+    }
   }
 
   function lockPortal() {
@@ -804,6 +815,14 @@
       audit("logout", "Admin logged out manually.");
       lockPortal();
     });
+
+    // Netlify Identity event handler for Decap CMS / Git Gateway integration
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("login", user => {
+        toast("✅ Git Gateway connected! Netlify Identity user: " + (user.email || "authenticated"), "fa-check-double");
+        audit("login", "Netlify Identity token established for Git Gateway.");
+      });
+    }
 
     // Allow pressing Escape to dismiss any open modal
     document.addEventListener("keydown", (e) => {

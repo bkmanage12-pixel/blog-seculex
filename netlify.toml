@@ -69,6 +69,19 @@
   status = 200
   force = false
 
+# 3b. Pass-through Netlify internal API endpoints (Identity, Git Gateway, Functions) on Netlify app domain
+[[redirects]]
+  from = "https://seculexp.netlify.app/.netlify/*"
+  to = "/.netlify/:splat"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "https://seculex.netlify.app/.netlify/*"
+  to = "/.netlify/:splat"
+  status = 200
+  force = false
+
 # 4. Redirect all public pages from Netlify app domain directly to seculex.org
 [[redirects]]
   from = "https://seculexp.netlify.app/*"
@@ -103,7 +116,7 @@
     # Restrict access to browser APIs
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(self)"
     # Content Security Policy — allows all required external resources + CMS dynamic template evaluation, image uploads & Git Gateway auth
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://identity.netlify.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src 'self' data: https: blob: https://raw.githubusercontent.com https://user-images.githubusercontent.com https://avatars.githubusercontent.com; connect-src 'self' https://*.netlify.app https://*.netlify.com https://identity.netlify.com https://git-gateway.netlify.com https://api.github.com https://github.com https://raw.githubusercontent.com https://media.githubusercontent.com https://www.google-analytics.com https://analytics.google.com https://oauth2.googleapis.com https://analyticsdata.googleapis.com https://api.resend.com https://api.sendgrid.com; media-src 'self' data: blob: https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' https://identity.netlify.com https://*.netlify.app https://*.netlify.com; upgrade-insecure-requests;"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://identity.netlify.com https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src 'self' data: https: blob: https://raw.githubusercontent.com https://user-images.githubusercontent.com https://avatars.githubusercontent.com; connect-src 'self' https://*.netlify.app https://*.netlify.com https://identity.netlify.com https://git-gateway.netlify.com https://api.netlify.com https://api.github.com https://github.com https://raw.githubusercontent.com https://media.githubusercontent.com https://www.google-analytics.com https://analytics.google.com https://oauth2.googleapis.com https://analyticsdata.googleapis.com https://api.resend.com https://api.sendgrid.com; media-src 'self' data: blob: https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' https://identity.netlify.com https://*.netlify.app https://*.netlify.com; upgrade-insecure-requests;"
 
 # 6. Stricter headers for the admin portal
 [[headers]]
@@ -116,7 +129,7 @@
     X-Robots-Tag = "noindex, nofollow, noarchive, nosnippet"
     # Admin must never be framed externally
     X-Frame-Options = "DENY"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://identity.netlify.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src 'self' data: https: blob: https://raw.githubusercontent.com https://user-images.githubusercontent.com https://avatars.githubusercontent.com; connect-src 'self' https://*.netlify.app https://*.netlify.com https://identity.netlify.com https://git-gateway.netlify.com https://api.github.com https://github.com https://raw.githubusercontent.com https://media.githubusercontent.com https://oauth2.googleapis.com https://analyticsdata.googleapis.com; media-src 'self' data: blob: https:; frame-src 'self' https://identity.netlify.com https://*.netlify.app https://*.netlify.com; object-src 'none'; base-uri 'self';"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://identity.netlify.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src 'self' data: https: blob: https://raw.githubusercontent.com https://user-images.githubusercontent.com https://avatars.githubusercontent.com; connect-src 'self' https://*.netlify.app https://*.netlify.com https://identity.netlify.com https://git-gateway.netlify.com https://api.netlify.com https://api.github.com https://github.com https://raw.githubusercontent.com https://media.githubusercontent.com https://oauth2.googleapis.com https://analyticsdata.googleapis.com; media-src 'self' data: blob: https:; frame-src 'self' https://identity.netlify.com https://*.netlify.app https://*.netlify.com; object-src 'none'; base-uri 'self';"
 
 # 7. No caching on Netlify functions
 [[headers]]
