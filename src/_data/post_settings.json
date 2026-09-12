@@ -1,6 +1,6 @@
 {
   "abstract_section_title": "Abstract",
-  "default_author_name": "Ass. Prof. Dr MURANGIRA B. Thierry",
+  "default_author_name": "Prof. MURANGIRA B. Thierry",
   "unlock_button_label": "Unlock Full PDF",
   "secure_download_label": "Secure Download",
   "authors_section_title": "Authors",
@@ -10,7 +10,9 @@
   "by_label": "By:",
   "sidebar_free_description": "This is an open-access publication. You can download the full text PDF below.",
   "sidebar_paid_description": "Access to this peer-reviewed publication requires purchase. Unlock to download the full PDF format document.",
+  "author_bio_fallback": "No biography provided for this author.",
   "open_access_label": "Open Access",
+  "author_bio_section_title": "About the Author",
   "no_abstract_label": "No abstract available for this article.",
   "sidebar_title": "Looking for full text?",
   "toc_locked_notice": "Full content access requires purchase — click any section to unlock",
@@ -18,7 +20,5 @@
   "repository_footer_text": "SecuLex Scholarly Repository",
   "download_button_label": "Download PDF",
   "no_toc_label": "No table of contents outlined.",
-  "format_pdf_label": "Format: PDF (Full Text)",
-  "author_bio_section_title": "About the Author",
-  "author_bio_fallback": "No biography provided for this author."
-}
+  "format_pdf_label": "Format: PDF (Full Text)"
+}
