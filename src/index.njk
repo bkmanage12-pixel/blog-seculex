@@ -59,7 +59,7 @@ title: Home | SecuLex
     </div>
 </section>
 
-<!-- About the Journal Section -->
+<!-- About SecuLex Section -->
 <section id="about" class="about-section fade-in"{% if about.background_image %} style="--about-bg-image: url('{{ about.background_image }}');"{% endif %}>
     <div class="about-inner">
         <div class="about-badge">
@@ -70,10 +70,25 @@ title: Home | SecuLex
             {% endif %}
         </div>
         <div class="about-text">
-            <span class="section-tag">{{ about.section_tag }}</span>
+            <span class="section-tag"><i class="fas fa-shield-alt"></i> {{ about.section_tag | default("About SecuLex") }}</span>
             <h2>{{ about.title | replace("SecuLex", "Secu<span class='text-gold'>Lex</span>") | safe }}</h2>
-            <p class="about-lead">{{ about.lead_text }}</p>
-            <p>{{ about.body_text }}</p>
+            {% if about.subtitle %}
+            <h3 class="about-subtitle">{{ about.subtitle }}</h3>
+            {% endif %}
+            
+            <p class="about-lead">
+                <i class="fas fa-quote-left about-quote-icon"></i>
+                {{ about.lead_text | default(about.quote) }}
+            </p>
+
+            {% if about.paragraphs %}
+                {% for p in about.paragraphs %}
+                <p class="about-body-paragraph">{{ p | safe }}</p>
+                {% endfor %}
+            {% elif about.body_text %}
+                <p class="about-body-paragraph">{{ about.body_text }}</p>
+            {% endif %}
+
             <div class="about-pillars">
                 {% for pillar in about.pillars %}
                 <div class="pillar">
@@ -83,6 +98,72 @@ title: Home | SecuLex
                 {% endfor %}
             </div>
         </div>
+    </div>
+
+    <!-- Our Purpose, Our Vision, Our Mission Grid -->
+    <div class="about-pvm-container">
+        <div class="about-pvm-grid">
+            <!-- Our Purpose Card -->
+            <div id="purpose" class="pvm-card pvm-card--purpose fade-in">
+                <div class="pvm-card-header">
+                    <div class="pvm-icon-wrapper pvm-icon--gold">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <span class="pvm-card-tag">Core Objective</span>
+                    <h3>{{ about.purpose.title | default("Our Purpose") }}</h3>
+                </div>
+                <div class="pvm-card-body">
+                    <p class="pvm-lead-text">{{ about.purpose.lead_text }}</p>
+                    <p class="pvm-body-text">{{ about.purpose.body_text | replace("digital society, the relationship between technology and law has become impossible to ignore.", "<strong>digital society, the relationship between technology and law has become impossible to ignore.</strong>") | safe }}</p>
+                </div>
+                <div class="pvm-card-footer">
+                    <span class="pvm-badge"><i class="fas fa-book-reader"></i> Public Education & Knowledge Sharing</span>
+                </div>
+            </div>
+
+            <!-- Our Vision Card -->
+            <div id="vision" class="pvm-card pvm-card--vision fade-in">
+                <div class="pvm-card-header">
+                    <div class="pvm-icon-wrapper pvm-icon--blue">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <span class="pvm-card-tag">Aspiration</span>
+                    <h3>{{ about.vision.title | default("Our Vision") }}</h3>
+                </div>
+                <div class="pvm-card-body">
+                    <p class="pvm-body-text pvm-highlight-text">{{ about.vision.body_text }}</p>
+                </div>
+                <div class="pvm-card-footer">
+                    <span class="pvm-badge"><i class="fas fa-compass"></i> Trusted Knowledge Platform</span>
+                </div>
+            </div>
+
+            <!-- Our Mission Card -->
+            <div id="mission" class="pvm-card pvm-card--mission fade-in">
+                <div class="pvm-card-header">
+                    <div class="pvm-icon-wrapper pvm-icon--purple">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <span class="pvm-card-tag">Commitment</span>
+                    <h3>{{ about.mission.title | default("Our Mission") }}</h3>
+                </div>
+                <div class="pvm-card-body">
+                    <p class="pvm-body-text pvm-highlight-text">{{ about.mission.body_text }}</p>
+                </div>
+                <div class="pvm-card-footer">
+                    <span class="pvm-badge"><i class="fas fa-pen-nib"></i> Credible & Practical Insights</span>
+                </div>
+            </div>
+        </div>
+
+        {% if about.motto %}
+        <!-- Closing Executive Motto Banner -->
+        <div class="about-motto-banner fade-in">
+            <div class="motto-shield-icon"><i class="fas fa-shield-halved"></i></div>
+            <p class="motto-text">“{{ about.motto }}”</p>
+            <div class="motto-accent-line"></div>
+        </div>
+        {% endif %}
     </div>
 </section>
 

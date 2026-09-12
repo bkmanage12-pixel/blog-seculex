@@ -152,10 +152,30 @@ collections:
         fields:
           - {label: "Section Tag", name: "section_tag", widget: "string"}
           - {label: "Title", name: "title", widget: "string"}
-          - {label: "Lead Paragraph", name: "lead_text", widget: "text"}
-          - {label: "Body Text", name: "body_text", widget: "text"}
+          - {label: "Subtitle", name: "subtitle", widget: "string"}
+          - {label: "Lead Paragraph / Quote", name: "lead_text", widget: "text"}
           - {label: "Background Photo", name: "background_image", widget: "image", required: false, hint: "Optional. Background image displayed behind the About section."}
           - {label: "Profile Photo", name: "profile_photo", widget: "image", required: false, hint: "Optional. Author portrait to display next to the About description."}
+          - label: "Purpose Block"
+            name: "purpose"
+            widget: "object"
+            fields:
+              - {label: "Title", name: "title", widget: "string", default: "Our Purpose"}
+              - {label: "Lead Text", name: "lead_text", widget: "text"}
+              - {label: "Body Text", name: "body_text", widget: "text"}
+          - label: "Vision Block"
+            name: "vision"
+            widget: "object"
+            fields:
+              - {label: "Title", name: "title", widget: "string", default: "Our Vision"}
+              - {label: "Body Text", name: "body_text", widget: "text"}
+          - label: "Mission Block"
+            name: "mission"
+            widget: "object"
+            fields:
+              - {label: "Title", name: "title", widget: "string", default: "Our Mission"}
+              - {label: "Body Text", name: "body_text", widget: "text"}
+          - {label: "Motto Tagline", name: "motto", widget: "string"}
           - label: "Pillars"
             name: "pillars"
             widget: "list"

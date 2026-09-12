@@ -1955,6 +1955,247 @@ footer::before {
   transform: scale(1.2);
 }
 
+/* Scroll Margins for Anchor Navigation */
+#about,
+#purpose,
+#vision,
+#mission {
+  scroll-margin-top: calc(var(--site-header-height, 100px) + 20px);
+}
+
+.about-subtitle {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  margin-top: -0.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
+
+.about-quote-icon {
+  color: var(--accent-gold);
+  margin-right: 0.6rem;
+  opacity: 0.7;
+}
+
+.about-body-paragraph {
+  color: #cbd5e1;
+  font-size: 1.02rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.85;
+}
+
+/* ==============================
+   PURPOSE, VISION & MISSION GRID
+   ============================== */
+.about-pvm-container {
+  max-width: 1100px;
+  margin: 3.5rem auto 0;
+}
+
+.about-pvm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+.pvm-card {
+  background: rgba(12, 16, 28, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 18px;
+  padding: 2.2rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+}
+
+.pvm-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-gradient);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.pvm-card--purpose::before {
+  background: linear-gradient(90deg, #d4af37, #f5d87a);
+}
+.pvm-card--vision::before {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+.pvm-card--mission::before {
+  background: linear-gradient(90deg, #a855f7, #c084fc);
+}
+
+.pvm-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212, 175, 55, 0.45);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(212, 175, 55, 0.15);
+}
+
+.pvm-card:hover::before {
+  opacity: 1;
+}
+
+.pvm-card-header {
+  margin-bottom: 1.2rem;
+}
+
+.pvm-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.pvm-icon--gold {
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--accent-gold);
+}
+
+.pvm-icon--blue {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #60a5fa;
+}
+
+.pvm-icon--purple {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+}
+
+.pvm-card-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.pvm-card-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.pvm-card-body {
+  flex-grow: 1;
+}
+
+.pvm-lead-text {
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: #e2e8f0;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.pvm-body-text {
+  font-size: 0.94rem;
+  line-height: 1.75;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.pvm-highlight-text {
+  font-size: 1.02rem;
+  line-height: 1.8;
+  color: #e2e8f0;
+  font-weight: 400;
+}
+
+.pvm-card-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pvm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  opacity: 0.9;
+}
+
+/* ==============================
+   ABOUT MOTTO BANNER
+   ============================== */
+.about-motto-banner {
+  margin-top: 3.5rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(18, 21, 32, 0.85) 50%, rgba(59, 130, 246, 0.1) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 20px;
+  padding: 2.2rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.motto-shield-icon {
+  font-size: 2.2rem;
+  color: var(--accent-gold);
+  margin-bottom: 0.75rem;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.4));
+}
+
+.motto-text {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.8px;
+  margin: 0 0 1rem;
+  line-height: 1.4;
+}
+
+.motto-accent-line {
+  width: 80px;
+  height: 3px;
+  background: var(--accent-gradient);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* Responsive Grid Adjustments */
+@media (max-width: 992px) {
+  .about-pvm-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .about-motto-banner {
+    padding: 1.8rem 1.5rem;
+  }
+  .motto-text {
+    font-size: 1.2rem;
+  }
+}
+
 /* ==============================
    ATTACHMENT BLOCK
    ============================== */

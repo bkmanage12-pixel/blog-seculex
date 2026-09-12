@@ -179,7 +179,35 @@
         <nav class="pill-nav">
             <ul>
                 <li><a href="/" {% if page.url == '/' %}class="active"{% endif %} id="nav-home"><i class="fas fa-home"></i> {{ site.nav_home | default("Home") }}</a></li>
-                <li><a href="/#about" id="nav-about"><i class="far fa-user"></i> {{ site.nav_about | default("About") }}</a></li>
+                <li class="has-dropdown">
+                    <a href="/#about" id="nav-about"><i class="far fa-user"></i> {{ site.nav_about | default("About") }} <i class="fas fa-chevron-down nav-chevron"></i></a>
+                    <ul class="nav-dropdown">
+                        <li>
+                            <a href="/#about">
+                                <span class="drop-icon drop-icon--security"><i class="fas fa-info-circle"></i></span>
+                                About SecuLex
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/#purpose">
+                                <span class="drop-icon drop-icon--cyber"><i class="fas fa-bullseye"></i></span>
+                                Our Purpose
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/#vision">
+                                <span class="drop-icon drop-icon--internationallaw"><i class="fas fa-eye"></i></span>
+                                Our Vision
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/#mission">
+                                <span class="drop-icon drop-icon--phdthesis"><i class="fas fa-rocket"></i></span>
+                                Our Mission
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li><a href="/articles/" {% if '/articles/' in page.url or '/posts/' in page.url %}class="active"{% endif %} id="nav-articles"><i class="far fa-file-alt"></i> {{ site.nav_articles | default("Articles") }}</a></li>
                 <li class="has-dropdown">
                     <a href="/categories/" {% if '/categories/' in page.url %}class="active"{% endif %} id="nav-categories"><i class="fas fa-th-large"></i> {{ site.nav_categories | default("Categories") }} <i class="fas fa-chevron-down nav-chevron"></i></a>
