@@ -455,9 +455,18 @@
   function lockPortal() {
     destroySession();
     if (idleTimer) clearTimeout(idleTimer);
-    // Hard reload for clean CMS state (clears PAT from hash, resets CMS session)
     window.__seculexCmsLoaded = false;
-    window.location.replace(window.location.pathname);
+
+    // Hide bar and display login view overlay cleanly
+    const bar = document.getElementById("admin-security-bar");
+    if (bar) bar.style.display = "none";
+    document.getElementById("admin-security-overlay")?.classList.remove("hidden");
+    showView("login");
+
+    // Clear access tokens from hash if present (without triggering page reload loop)
+    if (window.location.hash && window.location.hash.includes("access_token")) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
   }
 
   /* ─── Toast ──────────────────────────────────────────────────── */
