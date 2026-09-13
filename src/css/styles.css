@@ -4906,18 +4906,77 @@ html[data-screen-inches-cat="phone"] nav ul {
   position: fixed;
   top: 0;
   right: 0;
-  width: 300px;
-  max-width: 82vw;
+  width: 320px;
+  max-width: 86vw;
   height: 100vh;
-  background: var(--bg-secondary);
+  background: #0b0e1a;
   flex-direction: column;
-  padding: 6rem 3rem;
-  transition: transform 0.4s ease;
+  padding: 5.5rem 1.8rem 2.5rem;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translateX(105%);
-  border-left: 1px solid var(--border-color);
+  border-left: 1px solid rgba(212, 175, 55, 0.3);
+  overflow-y: auto;
+  gap: 0.75rem;
+  align-items: stretch;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.85);
+  z-index: 99990;
 }
 html[data-screen-inches-cat="phone"] nav ul.active {
   transform: translateX(0);
+}
+html[data-screen-inches-cat="phone"] .has-dropdown {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+html[data-screen-inches-cat="phone"] .has-dropdown > a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+html[data-screen-inches-cat="phone"] .has-dropdown > a .nav-chevron {
+  transition: transform 0.3s ease;
+}
+html[data-screen-inches-cat="phone"] .has-dropdown.open > a .nav-chevron {
+  transform: rotate(180deg);
+}
+html[data-screen-inches-cat="phone"] .nav-dropdown {
+  position: static;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  box-shadow: none;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgba(18, 24, 42, 0.8);
+  border-radius: 12px;
+  margin-top: 0.4rem;
+  padding: 0.4rem;
+  min-width: 0;
+  max-width: 100%;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+html[data-screen-inches-cat="phone"] .nav-dropdown::before,
+html[data-screen-inches-cat="phone"] .has-dropdown::after {
+  display: none;
+}
+html[data-screen-inches-cat="phone"] .has-dropdown.open .nav-dropdown {
+  display: flex;
+}
+html[data-screen-inches-cat="phone"] .nav-dropdown a {
+  padding: 0.6rem 0.9rem;
+  border-radius: 9px;
+  font-size: 0.88rem;
+  gap: 0.55rem;
+  color: var(--text-secondary);
+}
+html[data-screen-inches-cat="phone"] .nav-dropdown a:hover {
+  background: rgba(212, 175, 55, 0.12);
+  color: var(--accent-gold);
 }
 
 /* Specific layout adjustments for tablet sizes */
