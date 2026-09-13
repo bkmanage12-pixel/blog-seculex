@@ -159,7 +159,9 @@ title: Home | SecuLex
         {% if about.motto %}
         <!-- Closing Executive Motto Banner -->
         <div class="about-motto-banner fade-in">
-            <div class="motto-shield-icon"><i class="fas fa-shield-halved"></i></div>
+            <div class="motto-logo-wrapper">
+                <img src="{{ site.logo_image | default('/assets/images/seculex-shield.png') }}" alt="{{ site.site_title | default('SecuLex') }} Logo" class="motto-logo-img">
+            </div>
             <p class="motto-text">“{{ about.motto }}”</p>
             <div class="motto-accent-line"></div>
         </div>
