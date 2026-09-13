@@ -596,10 +596,6 @@
     toast("✅ Access key authorized! Opening CMS...", "fa-shield-check");
     await unlockPortal();
   }
-    audit("login", "Quick Admin Sign In invoked.");
-    toast("⚡ Quick Admin Sign In successful", "fa-bolt");
-    await unlockPortal();
-  }
 
   /* ─── Reset Handlers ─────────────────────────────────────────── */
 
