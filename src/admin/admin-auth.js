@@ -118,11 +118,11 @@
     const now = Date.now();
     const data = JSON.stringify({ ts: now, exp: now + SESSION_MS, fp });
     sessionStorage.setItem(KEY_SESSION, data);
-    localStorage.setItem(KEY_SESSION, data);
+    localStorage.removeItem(KEY_SESSION);
   }
 
   async function sessionIsValid() {
-    const raw = sessionStorage.getItem(KEY_SESSION) || localStorage.getItem(KEY_SESSION);
+    const raw = sessionStorage.getItem(KEY_SESSION);
     if (!raw) return false;
     try {
       const p = JSON.parse(raw);
@@ -698,6 +698,7 @@
     });
 
     // ── Check for existing valid session ──────────────────────────
+    localStorage.removeItem(KEY_SESSION);
     if (await sessionIsValid()) {
       await unlockPortal();
     } else {
