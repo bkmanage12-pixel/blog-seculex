@@ -401,8 +401,19 @@
         } catch (_) {}
       }
 
-      // Inject access token into hash so Decap CMS authenticates automatically
+      // Set CMS user token in localStorage so Decap CMS logs in instantly
       if (token) {
+        const cmsUser = {
+          token: token,
+          email: 'seculexpublications@gmail.com',
+          name: 'SecuLex Admin',
+          login: 'bkmanage12-pixel'
+        };
+        try {
+          localStorage.setItem('decap-cms-user', JSON.stringify(cmsUser));
+          localStorage.setItem('netlify-cms-user', JSON.stringify(cmsUser));
+        } catch (_) {}
+
         const currentHash = window.location.hash.slice(1);
         if (!new URLSearchParams(currentHash).get('access_token')) {
           window.history.replaceState({}, '', window.location.pathname +
@@ -469,6 +480,10 @@
     destroySession();
     if (idleTimer) clearTimeout(idleTimer);
     window.__seculexCmsLoaded = false;
+    try {
+      localStorage.removeItem('decap-cms-user');
+      localStorage.removeItem('netlify-cms-user');
+    } catch (_) {}
 
     // Hide bar and display login view overlay cleanly
     const bar = document.getElementById("admin-security-bar");
