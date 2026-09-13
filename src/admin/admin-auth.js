@@ -286,26 +286,12 @@
         document.head.appendChild(link);
       }
 
-      // Git Gateway uses a short-lived Netlify Identity session. Never expose
-      // a GitHub personal access token to the browser or local storage.
-      const identitySettings = await fetch("/.netlify/identity/settings", {
-        cache: "no-store",
-        credentials: "same-origin"
-      });
-      if (!identitySettings.ok) {
-        throw new Error(
-          "Netlify Identity is unavailable. In Netlify, enable Identity and Git Gateway for this site, then reload the portal."
-        );
-      }
-
-      if (window.netlifyIdentity && !window.__seculexIdentityListenerBound) {
-        window.__seculexIdentityListenerBound = true;
-        window.netlifyIdentity.on("login", () => {
-          toast("✅ Netlify Identity connected — you can now save and publish.", "fa-circle-check");
-        });
-        window.netlifyIdentity.on("error", () => {
-          toast("⚠️ Netlify Identity could not sign in. Check that Git Gateway is enabled in Netlify.", "fa-triangle-exclamation");
-        });
+      // Check if user saved a custom GitHub token
+      const savedToken = localStorage.getItem("seculex_github_token");
+      if (savedToken && savedToken.trim()) {
+        const userObj = JSON.stringify({ token: savedToken.trim(), backendName: "github" });
+        localStorage.setItem("decap-cms-user", userObj);
+        localStorage.setItem("netlify-cms-user", userObj);
       }
 
       if (typeof CMS === "undefined") {
@@ -328,7 +314,7 @@
         }
       }
 
-      toast("✅ Editor ready — use Netlify Identity to sign in, then save or publish.", "fa-pen-to-square");
+      toast("✅ Editor ready — signed in to GitHub CMS backend.", "fa-pen-to-square");
 
     } catch (err) {
       console.error("[SecuLex] CMS init error:", err);
@@ -463,10 +449,13 @@
     const cur     = ((document.getElementById("change-current-password") || {}).value || "");
     const newPw   = ((document.getElementById("change-new-password") || {}).value || "").trim();
     const confirm = ((document.getElementById("change-confirm-password") || {}).value || "").trim();
+    const ghToken = ((document.getElementById("change-github-token") || {}).value || "").trim();
 
-    if (!(await verifyPassword(cur))) {
-      feedback("change-feedback", "Current password is incorrect.");
-      return;
+    if (newPw || cur) {
+      if (!(await verifyPassword(cur))) {
+        feedback("change-feedback", "Current password is incorrect.");
+        return;
+      }
     }
 
     if (newPw) {
@@ -475,9 +464,23 @@
       await saveNewPassword(newPw);
     }
 
+    if (ghToken !== undefined) {
+      if (ghToken) {
+        localStorage.setItem("seculex_github_token", ghToken);
+        const userObj = JSON.stringify({ token: ghToken, backendName: "github" });
+        localStorage.setItem("decap-cms-user", userObj);
+        localStorage.setItem("netlify-cms-user", userObj);
+      } else {
+        localStorage.removeItem("seculex_github_token");
+      }
+    }
+
     audit("change", "Admin settings updated.");
-    feedback("change-feedback", "Settings saved!", "success");
-    setTimeout(() => document.getElementById("admin-change-modal")?.classList.remove("active"), 1800);
+    feedback("change-feedback", "Settings saved! Reloading editor...", "success");
+    setTimeout(() => {
+      document.getElementById("admin-change-modal")?.classList.remove("active");
+      if (ghToken) window.location.reload();
+    }, 1500);
   }
 
   /* ─── Analytics & Stats ──────────────────────────────────────── */
@@ -629,9 +632,14 @@
 
     // Security bar buttons
     document.getElementById("bar-btn-stats")?.addEventListener("click", openStatsModal);
-    document.getElementById("bar-btn-change")?.addEventListener("click", () =>
-      document.getElementById("admin-change-modal")?.classList.add("active")
-    );
+    document.getElementById("bar-btn-change")?.addEventListener("click", () => {
+      const modal = document.getElementById("admin-change-modal");
+      if (modal) {
+        const ghInput = document.getElementById("change-github-token");
+        if (ghInput) ghInput.value = localStorage.getItem("seculex_github_token") || "";
+        modal.classList.add("active");
+      }
+    });
     document.getElementById("bar-btn-lock")?.addEventListener("click", () => {
       audit("logout", "Admin logged out manually.");
       lockPortal();
