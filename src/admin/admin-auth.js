@@ -643,7 +643,7 @@
     document.getElementById("btn-goto-reset")?.addEventListener("click", () => showView("reset"));
     document.getElementById("btn-back-to-login")?.addEventListener("click", () => showView("login"));
     document.getElementById("btn-send-reset-code")?.addEventListener("click", () => {
-      feedback("reset-feedback", "Enter the Recovery Key: SECULEX-ADMIN-RECOVERY-KEY", "success");
+      feedback("reset-feedback", "Enter your administrative recovery key below to set a new password.", "success");
     });
 
     // Security bar buttons
