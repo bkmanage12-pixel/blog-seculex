@@ -442,11 +442,10 @@
     <!-- ═══════════════════════════════════════════════════════════════
          DECAP CMS ENGINE
     ════════════════════════════════════════════════════════════════ -->
-    <!-- Decap CMS + Netlify Identity are loaded DYNAMICALLY by admin-auth.js after PBKDF2 login.
-         This prevents auth failures on page load and ensures the GitHub PAT hash is
-         set before CMS initialises (no Netlify Identity / Git Gateway required). -->
-
-
+    <!-- Load Identity and Decap during page initialization. Decap's automatic
+         bootstrap runs on DOMContentLoaded, so it must not be injected later. -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
     <!-- Admin Authentication & Event Handlers -->
     <script src="/admin/admin-auth.js"></script>

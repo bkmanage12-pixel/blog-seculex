@@ -298,16 +298,6 @@
         );
       }
 
-      if (!document.querySelector('script[src*="netlify-identity-widget"]')) {
-        await new Promise((resolve, reject) => {
-          const s = document.createElement("script");
-          s.src = "https://identity.netlify.com/v1/netlify-identity-widget.js";
-          s.onload = resolve;
-          s.onerror = () => reject(new Error("Failed to load Netlify Identity"));
-          document.head.appendChild(s);
-        });
-      }
-
       if (window.netlifyIdentity && !window.__seculexIdentityListenerBound) {
         window.__seculexIdentityListenerBound = true;
         window.netlifyIdentity.on("login", () => {
@@ -318,15 +308,8 @@
         });
       }
 
-      // Dynamically load Decap CMS
-      if (typeof CMS === "undefined" && !document.querySelector('script[src*="decap-cms"]')) {
-        await new Promise((resolve, reject) => {
-          const s   = document.createElement("script");
-          s.src     = "https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js";
-          s.onload  = resolve;
-          s.onerror = () => reject(new Error("Failed to load Decap CMS"));
-          document.body.appendChild(s);
-        });
+      if (typeof CMS === "undefined") {
+        throw new Error("Decap CMS did not load. Refresh the portal and try again.");
       }
 
       // Register CMS event hooks
