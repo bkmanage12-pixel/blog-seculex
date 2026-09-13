@@ -155,6 +155,11 @@ collections:
           - {label: "Title", name: "title", widget: "string"}
           - {label: "Subtitle", name: "subtitle", widget: "string"}
           - {label: "Lead Paragraph / Quote", name: "lead_text", widget: "text"}
+          - label: "Main Description Paragraphs"
+            name: "paragraphs"
+            widget: "list"
+            field: {label: "Paragraph Text", name: "paragraph", widget: "text"}
+            hint: "Add or edit main description paragraphs for the About section."
           - {label: "Background Photo", name: "background_image", widget: "image", required: false, hint: "Optional. Background image displayed behind the About section."}
           - {label: "Profile Photo", name: "profile_photo", widget: "image", required: false, hint: "Optional. Author portrait to display next to the About description."}
           - label: "Purpose Block"
@@ -183,6 +188,30 @@ collections:
             fields:
               - {label: "Icon / Emoji", name: "emoji", widget: "string", hint: "Paste a small icon or emoji here."}
               - {label: "Text", name: "text", widget: "string"}
+
+      - label: "Legal Services & Advisory Catalog"
+        name: "services"
+        file: "src/_data/services.json"
+        fields:
+          - label: "Services Catalog"
+            name: "services"
+            widget: "list"
+            fields:
+              - {label: "Service ID", name: "id", widget: "string"}
+              - {label: "Service Name", name: "name", widget: "string"}
+              - {label: "Category", name: "category", widget: "string"}
+              - {label: "Badge Label", name: "badge", widget: "string"}
+              - {label: "FontAwesome Icon Class", name: "icon", widget: "string"}
+              - {label: "Description", name: "description", widget: "text"}
+              - label: "Prices"
+                name: "prices"
+                widget: "object"
+                fields:
+                  - {label: "Price in RWF", name: "RWF", widget: "number", value_type: "int"}
+                  - {label: "Price in USD ($)", name: "USD", widget: "number", value_type: "float"}
+                  - {label: "Price in EUR (€)", name: "EUR", widget: "number", value_type: "float"}
+              - {label: "Duration / Delivery Note", name: "duration", widget: "string"}
+              - {label: "Is Custom Price", name: "is_custom", widget: "boolean", default: false}
 
       - label: "Site Settings & Navigation"
         name: "site"
