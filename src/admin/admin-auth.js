@@ -374,39 +374,6 @@
     window.__seculexCmsLoaded = true;
 
     try {
-      let token = sessionStorage.getItem('seculex_custom_pat');
-      if (!token) {
-        // Fetch GitHub PAT from secure serverless function
-        const res = await fetch('/.netlify/functions/cms-token', {
-          headers: { 'x-admin-secret': ADMIN_FUNCTION_SECRET }
-        });
-
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          console.warn('[SecuLex] cms-token error:', err);
-          toast('⚠️ CMS token unavailable (' + res.status + '). Check function logs.', 'fa-triangle-exclamation');
-          window.__seculexCmsLoaded = false;
-          return;
-        }
-
-        const data = await res.json();
-        token = data.token;
-      }
-
-      if (!token) {
-        toast('⚠️ CMS token missing. Contact admin.', 'fa-triangle-exclamation');
-        window.__seculexCmsLoaded = false;
-        return;
-      }
-
-      // Inject token into URL hash — Decap CMS github+implicit backend reads this on init
-      // and clears it from the URL immediately after authenticating.
-      const currentHash = window.location.hash.slice(1);
-      if (!new URLSearchParams(currentHash).get('access_token')) {
-        window.history.replaceState({}, '', window.location.pathname +
-          '#access_token=' + encodeURIComponent(token) + '&token_type=bearer');
-      }
-
       // Ensure Decap CMS config URL tag exists in head
       if (!document.querySelector('link[rel="cms-config-url"]')) {
         const link = document.createElement('link');
@@ -416,14 +383,38 @@
         document.head.appendChild(link);
       }
 
-      // Dynamically load Decap CMS — it auto-initialises on load
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js';
-        s.onload  = resolve;
-        s.onerror = () => reject(new Error('Failed to load decap-cms.js'));
-        document.body.appendChild(s);
-      });
+      // Ensure Netlify Identity widget script is present
+      if (!window.netlifyIdentity && !document.querySelector('script[src*="netlify-identity-widget"]')) {
+        await new Promise((resolve) => {
+          const idScript = document.createElement('script');
+          idScript.src = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
+          idScript.onload = resolve;
+          idScript.onerror = resolve;
+          document.head.appendChild(idScript);
+        });
+      }
+
+      // Dynamically load Decap CMS — it auto-initialises on load with git-gateway backend
+      if (typeof CMS === 'undefined' && !document.querySelector('script[src*="decap-cms"]')) {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js';
+          s.onload  = resolve;
+          s.onerror = () => reject(new Error('Failed to load decap-cms.js'));
+          document.body.appendChild(s);
+        });
+      }
+
+      // Netlify Identity listener for smooth login
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", (user) => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.reload();
+            });
+          }
+        });
+      }
 
       // Register CMS event hooks now that CMS is available
       if (typeof CMS !== 'undefined') {
@@ -447,7 +438,7 @@
         }
       }
 
-      toast('\u2705 CMS ready! Edit and publish your content.', 'fa-pen-to-square');
+      toast('\u2705 CMS ready! Log in with Netlify to manage content.', 'fa-pen-to-square');
     } catch (err) {
       console.error('[SecuLex] CMS init failed:', err);
       toast('\u26a0\ufe0f CMS failed to load: ' + err.message, 'fa-triangle-exclamation');

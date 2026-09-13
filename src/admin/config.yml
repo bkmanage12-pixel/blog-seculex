@@ -1,12 +1,7 @@
-# Backend: github (direct) — bypasses Netlify Identity & Git Gateway entirely.
-# Authentication uses a GitHub PAT fetched from /.netlify/functions/cms-token
-# and injected into the URL hash (#access_token=...) before CMS loads.
+# Backend: Netlify Git Gateway + Netlify Identity
 backend:
-  name: github
-  repo: bkmanage12-pixel/blog-seculex
+  name: git-gateway
   branch: main
-  auth_type: implicit
-  app_id: seculex
 
 media_folder: "src/assets/images" # Media files will be stored in the repo under src/assets/images
 public_folder: "/assets/images" # The src attribute for uploaded media will begin with /assets/images
