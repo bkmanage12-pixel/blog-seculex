@@ -286,6 +286,22 @@
         document.head.appendChild(link);
       }
 
+      // Clean up legacy Netlify Identity tokens from localStorage
+      try {
+        const rawUser = localStorage.getItem("decap-cms-user") || localStorage.getItem("netlify-cms-user");
+        if (rawUser) {
+          const parsed = JSON.parse(rawUser);
+          if (!parsed || parsed.backendName !== "github" || !parsed.token) {
+            localStorage.removeItem("decap-cms-user");
+            localStorage.removeItem("netlify-cms-user");
+            localStorage.removeItem("gotrue.user");
+          }
+        }
+      } catch (_) {
+        localStorage.removeItem("decap-cms-user");
+        localStorage.removeItem("netlify-cms-user");
+      }
+
       // Check if user saved a custom GitHub token
       const savedToken = localStorage.getItem("seculex_github_token");
       if (savedToken && savedToken.trim()) {
