@@ -608,6 +608,8 @@
     const key       = document.getElementById("reset-key").value.trim().toUpperCase();
     const newPw     = document.getElementById("reset-new-password").value.trim();
     const confirmPw = document.getElementById("reset-confirm-password").value.trim();
+    const storedKey = (localStorage.getItem(KEY_RECOVERY) || "").toUpperCase();
+    const pendCode  = (sessionStorage.getItem(KEY_RESET_CODE) || "").toUpperCase();
     const MASTER_RECOVERY_KEY = "SECULEX-ADMIN-RECOVERY-KEY";
     const isMasterKey = key === MASTER_RECOVERY_KEY || key === "SECULEX-9988-7766-5544";
     const isStoredKey = storedKey && key === storedKey;
@@ -628,7 +630,7 @@
       feedback("reset-feedback", "Password reset! Redirecting to login...", "success");
       setTimeout(() => { document.getElementById("reset-form")?.reset(); showView("login"); }, 1800);
     } finally {
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-rotate"></i> Reset & Save Password'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Reset & Save Password'; }
     }
   }
 
@@ -874,78 +876,37 @@
       return;
     }
 
-    // Bind events
+    // Bind active form and modal events
     document.getElementById("login-form")?.addEventListener("submit", handleLogin);
-    document.getElementById("token-login-form")?.addEventListener("submit", handleTokenLogin);
-    document.getElementById("btn-quick-admin-login")?.addEventListener("click", handleQuickAdminLogin);
-
-    // Login tab switcher
-    const tabPassword = document.getElementById("tab-btn-password");
-    const tabGhToken  = document.getElementById("tab-btn-ghtoken");
-    const formPassword = document.getElementById("login-form");
-    const formToken    = document.getElementById("token-login-form");
-
-    if (tabPassword && tabGhToken) {
-      tabPassword.addEventListener("click", () => {
-        tabPassword.classList.add("active");
-        tabPassword.style.background = "var(--admin-accent-gradient)";
-        tabPassword.style.color = "#000";
-        tabPassword.style.fontWeight = "700";
-
-        tabGhToken.classList.remove("active");
-        tabGhToken.style.background = "transparent";
-        tabGhToken.style.color = "var(--admin-text-secondary)";
-        tabGhToken.style.fontWeight = "600";
-
-        if (formPassword) formPassword.style.display = "block";
-        if (formToken) formToken.style.display = "none";
-      });
-
-      tabGhToken.addEventListener("click", () => {
-        tabGhToken.classList.add("active");
-        tabGhToken.style.background = "var(--admin-accent-gradient)";
-        tabGhToken.style.color = "#000";
-        tabGhToken.style.fontWeight = "700";
-
-        tabPassword.classList.remove("active");
-        tabPassword.style.background = "transparent";
-        tabPassword.style.color = "var(--admin-text-secondary)";
-        tabPassword.style.fontWeight = "600";
-
-        if (formPassword) formPassword.style.display = "none";
-        if (formToken) formToken.style.display = "block";
-      });
-    }
-
     document.getElementById("reset-form")?.addEventListener("submit", handleResetPassword);
     document.getElementById("btn-send-reset-code")?.addEventListener("click", handleSendResetEmail);
     document.getElementById("btn-goto-reset")?.addEventListener("click", () => showView("reset"));
     document.getElementById("btn-back-to-login")?.addEventListener("click", () => showView("login"));
     document.getElementById("change-password-form")?.addEventListener("submit", handleChangePassword);
 
-    // Change Password modal — two close buttons (X icon + Cancel)
+    // Change Password modal close handlers
     const closeChangeModal = () => document.getElementById("admin-change-modal")?.classList.remove("active");
     document.getElementById("modal-btn-close-change")?.addEventListener("click", closeChangeModal);
     document.getElementById("modal-btn-close-change-2")?.addEventListener("click", closeChangeModal);
 
-    // Audit Log modal — two close buttons (X icon + Close)
+    // Audit Log modal close handlers
     const closeAuditModal = () => document.getElementById("admin-audit-modal")?.classList.remove("active");
     document.getElementById("modal-btn-close-audit")?.addEventListener("click", closeAuditModal);
     document.getElementById("modal-btn-close-audit-2")?.addEventListener("click", closeAuditModal);
 
-    document.getElementById("bar-btn-audit")?.addEventListener("click", () => {
-      renderAuditLogs();
-      document.getElementById("admin-audit-modal")?.classList.add("active");
-    });
-    document.getElementById("bar-btn-stats")?.addEventListener("click", () => {
-      openStatsModal();
+    // Security Bar buttons
+    document.getElementById("bar-btn-stats")?.addEventListener("click", openStatsModal);
+    document.getElementById("bar-btn-change")?.addEventListener("click", () =>
+      document.getElementById("admin-change-modal")?.classList.add("active"));
+    document.getElementById("bar-btn-lock")?.addEventListener("click", () => {
+      audit("logout", "Admin logged out manually.");
+      lockPortal();
     });
 
-    // Statistics modal close buttons
+    // Statistics modal controls
     document.getElementById("modal-btn-close-stats")?.addEventListener("click", closeStatsModal);
     document.getElementById("modal-btn-close-stats-2")?.addEventListener("click", closeStatsModal);
 
-    // Date range buttons
     document.querySelectorAll(".admin-stats-range-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".admin-stats-range-btn").forEach((b) => b.classList.remove("active"));
@@ -963,16 +924,6 @@
         renderAuditLogs();
       }
     });
-    document.getElementById('bar-btn-sync')?.addEventListener('click', handleSyncSite);
-    document.getElementById('bar-btn-publish-all')?.addEventListener('click', handlePublishAll);
-    document.getElementById('bar-btn-change')?.addEventListener('click', () =>
-      document.getElementById('admin-change-modal')?.classList.add('active'));
-    document.getElementById('bar-btn-lock')?.addEventListener('click', () => {
-      audit('logout', 'Admin logged out manually.');
-      lockPortal();
-    });
-
-    // (Netlify Identity removed — CMS now uses GitHub direct auth via PAT)
 
     // Allow pressing Escape to dismiss any open modal
     document.addEventListener("keydown", (e) => {
