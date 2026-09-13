@@ -41,7 +41,15 @@ exports.handler = async (event) => {
     };
   }
 
-  const token = (process.env.CMS_GITHUB_TOKEN || '').trim();
+  const token = (
+    process.env.CMS_GITHUB_TOKEN ||
+    process.env.GITHUB_PAT ||
+    process.env.GH_TOKEN ||
+    process.env.GITHUB_TOKEN ||
+    process.env.NETLIFY_ACCESS_TOKEN ||
+    ''
+  ).trim();
+
   if (!token) {
     return {
       statusCode: 503,

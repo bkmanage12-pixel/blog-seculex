@@ -383,18 +383,34 @@
         document.head.appendChild(link);
       }
 
-      // Ensure Netlify Identity widget script is present
-      if (!window.netlifyIdentity && !document.querySelector('script[src*="netlify-identity-widget"]')) {
-        await new Promise((resolve) => {
-          const idScript = document.createElement('script');
-          idScript.src = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
-          idScript.onload = resolve;
-          idScript.onerror = resolve;
-          document.head.appendChild(idScript);
-        });
+      // Check for token in sessionStorage or fetch from serverless function
+      let token = sessionStorage.getItem('seculex_custom_pat');
+
+      if (!token) {
+        try {
+          const res = await fetch('/.netlify/functions/cms-token', {
+            headers: { 'x-admin-secret': ADMIN_FUNCTION_SECRET }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.token) {
+              token = data.token;
+              sessionStorage.setItem('seculex_custom_pat', token);
+            }
+          }
+        } catch (_) {}
       }
 
-      // Dynamically load Decap CMS — it auto-initialises on load with git-gateway backend
+      // Inject access token into hash so Decap CMS authenticates automatically
+      if (token) {
+        const currentHash = window.location.hash.slice(1);
+        if (!new URLSearchParams(currentHash).get('access_token')) {
+          window.history.replaceState({}, '', window.location.pathname +
+            '#access_token=' + encodeURIComponent(token) + '&token_type=bearer');
+        }
+      }
+
+      // Dynamically load Decap CMS — it auto-initialises on load
       if (typeof CMS === 'undefined' && !document.querySelector('script[src*="decap-cms"]')) {
         await new Promise((resolve, reject) => {
           const s = document.createElement('script');
@@ -405,18 +421,7 @@
         });
       }
 
-      // Netlify Identity listener for smooth login
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", (user) => {
-          if (!user) {
-            window.netlifyIdentity.on("login", () => {
-              document.location.reload();
-            });
-          }
-        });
-      }
-
-      // Register CMS event hooks now that CMS is available
+      // Register CMS event hooks
       if (typeof CMS !== 'undefined') {
         try { CMS.registerPreviewStyle('/css/styles.css'); } catch (_) {}
         if (CMS.registerEventListener) {
@@ -425,23 +430,23 @@
             handler: function (data) {
               var title = data && data.entry && data.entry.getIn
                 ? data.entry.getIn(['data', 'title']) : 'Content';
-              toast('\u2705 Saved & published to live site! Netlify rebuilding...', 'fa-check-double');
+              toast('✅ Saved & published to live site! Netlify rebuilding...', 'fa-check-double');
               audit('publish', 'Published entry: "' + (title || 'Document') + '" to main branch.');
             }
           });
           CMS.registerEventListener({
             name: 'postUnpublish',
             handler: function () {
-              toast('\u2139\ufe0f Entry unpublished from live site.', 'fa-info-circle');
+              toast('ℹ️ Entry unpublished from live site.', 'fa-info-circle');
             }
           });
         }
       }
 
-      toast('\u2705 CMS ready! Log in with Netlify to manage content.', 'fa-pen-to-square');
+      toast('✅ CMS ready! Edit and publish your content.', 'fa-pen-to-square');
     } catch (err) {
       console.error('[SecuLex] CMS init failed:', err);
-      toast('\u26a0\ufe0f CMS failed to load: ' + err.message, 'fa-triangle-exclamation');
+      toast('⚠️ CMS failed to load: ' + err.message, 'fa-triangle-exclamation');
       window.__seculexCmsLoaded = false;
     }
   }
