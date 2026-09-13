@@ -12,17 +12,29 @@
   #               ONLY via Netlify Dashboard → Site → Environment Variables.
   #               NEVER commit credential values here.
 
-# 1. Direct access for Admin Portal on all domains
+# 1. Block /admin on the public custom domain (seculex.org and www.seculex.org)
 [[redirects]]
-  from = "/admin"
-  to = "/admin/index.html"
-  status = 200
+  from = "https://seculex.org/admin/*"
+  to = "/404.html"
+  status = 404
   force = true
 
 [[redirects]]
-  from = "/admin/*"
-  to = "/admin/:splat"
-  status = 200
+  from = "https://seculex.org/admin"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.seculex.org/admin/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.seculex.org/admin"
+  to = "/404.html"
+  status = 404
   force = true
 
 # 2. Redirect www.seculex.org to canonical apex seculex.org
@@ -32,7 +44,7 @@
   status = 301
   force = true
 
-# 3. Explicit Admin Portal routing on Netlify app domains
+# 3. Explicit Admin Portal routing ONLY on publisherseculexp.netlify.app
 [[redirects]]
   from = "https://publisherseculexp.netlify.app/admin/*"
   to = "/admin/:splat"
@@ -53,18 +65,6 @@
 
 [[redirects]]
   from = "https://seculexp.netlify.app/admin"
-  to = "/admin/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "https://seculex.netlify.app/admin/*"
-  to = "/admin/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "https://seculex.netlify.app/admin"
   to = "/admin/index.html"
   status = 200
   force = true
