@@ -89,12 +89,16 @@ title: Home | SecuLex
                 <p class="about-body-paragraph">{{ about.body_text }}</p>
             {% endif %}
 
+        </div>
+
+        <!-- Full-Width Pillars Grid across the About Card -->
+        <div class="about-pillars-wrapper">
             <div class="about-pillars-header">
                 <span class="pillars-header-tag"><i class="fas fa-layer-group"></i> Core Focus Domains</span>
             </div>
             <div class="about-pillars">
                 {% for pillar in about.pillars %}
-                <div class="pillar">
+                <div class="pillar" title="{{ pillar.text }}">
                     <div class="pillar-icon-box">
                         <span class="pillar-emoji">{{ pillar.emoji }}</span>
                     </div>
