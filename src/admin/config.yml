@@ -1,10 +1,8 @@
-# Backend: github (direct) — robust direct API publishing to main branch
+# Publishing backend: Netlify Identity authenticates editors and Git Gateway
+# commits their edits to the configured GitHub repository.
 backend:
-  name: github
-  repo: bkmanage12-pixel/blog-seculex
+  name: git-gateway
   branch: main
-  auth_type: implicit
-  app_id: seculex
 
 media_folder: "src/assets/images" # Media files will be stored in the repo under src/assets/images
 public_folder: "/assets/images" # The src attribute for uploaded media will begin with /assets/images

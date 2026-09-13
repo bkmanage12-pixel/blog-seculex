@@ -122,50 +122,6 @@
         </div>
       </div>
 
-      <!-- ── GITHUB TOKEN SETUP ──────────────────────────────────── -->
-      <div id="admin-view-token" class="admin-auth-card admin-auth-view" style="display: none;">
-        <div class="admin-card-accent-bar"></div>
-        <div class="admin-auth-header">
-          <div class="admin-auth-logo" style="background: rgba(255,255,255,0.08); color: var(--admin-text-primary);">
-            <i class="fab fa-github"></i>
-          </div>
-          <h1 class="admin-auth-title">Publishing Access Key</h1>
-          <p class="admin-auth-subtitle">Enter your GitHub Access Token (PAT) to authorize direct site editing &amp; publishing.</p>
-        </div>
-
-        <div id="token-feedback" class="admin-feedback" role="alert"></div>
-
-        <form id="token-form" autocomplete="off" novalidate>
-          <div class="admin-form-group">
-            <label class="admin-form-label" for="pat-input">
-              <i class="fas fa-key"></i> GitHub Access Token (PAT)
-            </label>
-            <div class="admin-input-wrapper">
-              <input
-                type="password"
-                id="pat-input"
-                class="admin-form-input"
-                placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                required
-                autocomplete="off"
-                autofocus
-              />
-              <button type="button" class="admin-toggle-eye" aria-label="Toggle visibility">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-            <div style="font-size: 0.73rem; color: var(--admin-text-secondary); margin-top: 6px; line-height: 1.4;">
-              <i class="fas fa-circle-info" style="color:var(--admin-accent-gold)"></i>
-              Needed for publishing directly to <code>bkmanage12-pixel/blog-seculex</code>. Saved securely in browser session.
-            </div>
-          </div>
-
-          <button type="submit" class="admin-btn-primary">
-            <i class="fas fa-shield-check"></i> Authorize &amp; Open CMS
-          </button>
-        </form>
-      </div>
-
       <!-- ── PASSWORD RESET ──────────────────────────────────────── -->
       <div id="admin-view-reset" class="admin-auth-card admin-auth-view" style="display: none;">
 
@@ -301,19 +257,6 @@
             <div class="admin-input-wrapper">
               <input type="password" id="change-confirm-password" class="admin-form-input" placeholder="Repeat new password" required autocomplete="new-password" />
               <button type="button" class="admin-toggle-eye" aria-label="Toggle visibility"><i class="fas fa-eye"></i></button>
-            </div>
-          </div>
-
-          <div class="admin-form-group" style="margin-top: 1.2rem; border-top: 1px solid var(--admin-card-border); padding-top: 1rem;">
-            <label class="admin-form-label" for="change-github-pat">
-              <i class="fab fa-github"></i> GitHub Access Token (Optional Direct PAT)
-            </label>
-            <div class="admin-input-wrapper">
-              <input type="password" id="change-github-pat" class="admin-form-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx (Optional)" autocomplete="off" />
-              <button type="button" class="admin-toggle-eye" aria-label="Toggle visibility"><i class="fas fa-eye"></i></button>
-            </div>
-            <div style="font-size: 0.73rem; color: var(--admin-text-secondary); margin-top: 4px;">
-              Provide a GitHub PAT to override automatic token resolution for direct publishing.
             </div>
           </div>
 

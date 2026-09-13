@@ -9,8 +9,7 @@
  * • Session stored in sessionStorage + localStorage (4-hour expiry).
  * • 5-attempt brute-force lockout (60 s cooldown).
  * • 15-minute idle auto-lock.
- * • After login, GitHub PAT fetched from /.netlify/functions/cms-token
- *   to authenticate Decap CMS directly against GitHub API.
+ * • Publishing is authenticated through Netlify Identity and Git Gateway.
  */
 
 (function () {
@@ -22,7 +21,6 @@
   const KEY_SESSION  = "seculex_session";
   const KEY_ATTEMPTS = "seculex_attempts";
   const KEY_AUDIT    = "seculex_audit";
-  const KEY_PAT      = "seculex_pat";
 
   // Default credentials — user should change password after first login
   // Hash of "SecuLex2024!" with the salt below
@@ -288,50 +286,16 @@
         document.head.appendChild(link);
       }
 
-      // Get GitHub token: session cache → localStorage → server function → PAT entry form
-      let token = sessionStorage.getItem(KEY_PAT) || localStorage.getItem(KEY_PAT);
-
-      if (!token) {
-        try {
-          const res = await fetch("/.netlify/functions/cms-token", {
-            headers: { "x-admin-secret": ADMIN_FUNCTION_SECRET }
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.token) {
-              token = data.token;
-              sessionStorage.setItem(KEY_PAT, token);
-              localStorage.setItem(KEY_PAT, token);
-            }
-          }
-        } catch (_) {}
-      }
-
-      if (!token) {
-        // No token available — show PAT entry card
-        window.__seculexCmsLoaded = false;
-        showView("token");
-        return;
-      }
-
-      // Inject CMS user into localStorage so Decap auto-authenticates
-      const cmsUser = {
-        token: token,
-        email: "seculexpublications@gmail.com",
-        name:  "SecuLex Admin",
-        login: "bkmanage12-pixel"
-      };
-      try {
-        localStorage.setItem("decap-cms-user",  JSON.stringify(cmsUser));
-        localStorage.setItem("netlify-cms-user", JSON.stringify(cmsUser));
-      } catch (_) {}
-
-      // Set access_token in URL hash for Decap implicit flow
-      if (!window.location.hash.includes("access_token")) {
-        window.history.replaceState({}, "",
-          window.location.pathname +
-          "#access_token=" + encodeURIComponent(token) + "&token_type=bearer"
-        );
+      // Git Gateway uses a short-lived Netlify Identity session. Never expose
+      // a GitHub personal access token to the browser or local storage.
+      if (!document.querySelector('script[src*="netlify-identity-widget"]')) {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://identity.netlify.com/v1/netlify-identity-widget.js";
+          s.onload = resolve;
+          s.onerror = () => reject(new Error("Failed to load Netlify Identity"));
+          document.head.appendChild(s);
+        });
       }
 
       // Dynamically load Decap CMS
@@ -361,7 +325,7 @@
         }
       }
 
-      toast("✅ CMS ready — edit and publish your content.", "fa-pen-to-square");
+      toast("✅ CMS ready — sign in with Netlify Identity to edit and publish.", "fa-pen-to-square");
 
     } catch (err) {
       console.error("[SecuLex] CMS init error:", err);
@@ -390,16 +354,6 @@
     destroySession();
     if (idleTimer) clearTimeout(idleTimer);
     window.__seculexCmsLoaded = false;
-
-    try {
-      localStorage.removeItem("decap-cms-user");
-      localStorage.removeItem("netlify-cms-user");
-    } catch (_) {}
-
-    // Clean access_token from URL hash
-    if (window.location.hash && window.location.hash.includes("access_token")) {
-      window.history.replaceState(null, "", window.location.pathname);
-    }
 
     const bar = document.getElementById("admin-security-bar");
     if (bar) bar.style.display = "none";
@@ -458,27 +412,6 @@
     }
   }
 
-  /* ─── PAT (GitHub Token) Handler ─────────────────────────────── */
-
-  async function handleTokenSubmit(e) {
-    e.preventDefault();
-    clearFeedback("token-feedback");
-
-    const pat = ((document.getElementById("pat-input") || {}).value || "").trim();
-    if (!pat || pat.length < 10) {
-      feedback("token-feedback", "Please enter a valid GitHub Personal Access Token.");
-      return;
-    }
-
-    sessionStorage.setItem(KEY_PAT, pat);
-    localStorage.setItem(KEY_PAT, pat);
-    audit("login", "GitHub PAT authorized for CMS publishing.");
-    toast("✅ Access token saved — loading CMS...", "fa-shield-check");
-
-    // Re-run full CMS init with the now-available token
-    await unlockPortal();
-  }
-
   /* ─── Password Reset Handler ─────────────────────────────────── */
 
   async function handleResetPassword(e) {
@@ -527,7 +460,6 @@
     const cur     = ((document.getElementById("change-current-password") || {}).value || "");
     const newPw   = ((document.getElementById("change-new-password") || {}).value || "").trim();
     const confirm = ((document.getElementById("change-confirm-password") || {}).value || "").trim();
-    const pat     = ((document.getElementById("change-github-pat") || {}).value || "").trim();
 
     if (!(await verifyPassword(cur))) {
       feedback("change-feedback", "Current password is incorrect.");
@@ -538,22 +470,6 @@
       if (newPw.length < 8) { feedback("change-feedback", "New password must be at least 8 characters."); return; }
       if (newPw !== confirm) { feedback("change-feedback", "Passwords do not match."); return; }
       await saveNewPassword(newPw);
-    }
-
-    if (pat) {
-      sessionStorage.setItem(KEY_PAT, pat);
-      localStorage.setItem(KEY_PAT, pat);
-      const cmsUser = {
-        token: pat,
-        email: "seculexpublications@gmail.com",
-        name:  "SecuLex Admin",
-        login: "bkmanage12-pixel"
-      };
-      try {
-        localStorage.setItem("decap-cms-user",  JSON.stringify(cmsUser));
-        localStorage.setItem("netlify-cms-user", JSON.stringify(cmsUser));
-      } catch (_) {}
-      toast("✅ GitHub Access Token saved!", "fa-key");
     }
 
     audit("change", "Admin settings updated.");
@@ -699,7 +615,6 @@
 
     // Event bindings
     document.getElementById("login-form")?.addEventListener("submit", handleLogin);
-    document.getElementById("token-form")?.addEventListener("submit", handleTokenSubmit);
     document.getElementById("reset-form")?.addEventListener("submit", handleResetPassword);
     document.getElementById("change-password-form")?.addEventListener("submit", handleChangePassword);
 
