@@ -407,6 +407,15 @@
           '#access_token=' + encodeURIComponent(token) + '&token_type=bearer');
       }
 
+      // Ensure Decap CMS config URL tag exists in head
+      if (!document.querySelector('link[rel="cms-config-url"]')) {
+        const link = document.createElement('link');
+        link.rel = 'cms-config-url';
+        link.type = 'text/yaml';
+        link.href = '/admin/config.yml';
+        document.head.appendChild(link);
+      }
+
       // Dynamically load Decap CMS — it auto-initialises on load
       await new Promise((resolve, reject) => {
         const s = document.createElement('script');
