@@ -383,8 +383,8 @@
         document.head.appendChild(link);
       }
 
-      // Check for token in sessionStorage or fetch from serverless function
-      let token = sessionStorage.getItem('seculex_custom_pat');
+      // Check for token in sessionStorage / localStorage or fetch from serverless function
+      let token = sessionStorage.getItem('seculex_custom_pat') || localStorage.getItem('seculex_custom_pat');
 
       if (!token) {
         try {
@@ -661,14 +661,34 @@
     const cur     = document.getElementById("change-current-password").value;
     const newPw   = document.getElementById("change-new-password").value.trim();
     const confirm = document.getElementById("change-confirm-password").value.trim();
+    const pat     = (document.getElementById("change-github-pat")?.value || "").trim();
 
     if (!(await verifyPassword(cur))) { feedback("change-feedback", "Current password is incorrect."); return; }
-    if (newPw.length < 8) { feedback("change-feedback", "New password must be at least 8 characters."); return; }
-    if (newPw !== confirm) { feedback("change-feedback", "New passwords do not match."); return; }
 
-    await savePassword(newPw, cur);
-    audit("change", "Admin password updated from dashboard.");
-    feedback("change-feedback", "Password updated & synced to all devices!", "success");
+    if (newPw) {
+      if (newPw.length < 8) { feedback("change-feedback", "New password must be at least 8 characters."); return; }
+      if (newPw !== confirm) { feedback("change-feedback", "New passwords do not match."); return; }
+      await savePassword(newPw, cur);
+    }
+
+    if (pat) {
+      sessionStorage.setItem("seculex_custom_pat", pat);
+      localStorage.setItem("seculex_custom_pat", pat);
+      const cmsUser = {
+        token: pat,
+        email: "seculexpublications@gmail.com",
+        name: "SecuLex Admin",
+        login: "bkmanage12-pixel"
+      };
+      try {
+        localStorage.setItem("decap-cms-user", JSON.stringify(cmsUser));
+        localStorage.setItem("netlify-cms-user", JSON.stringify(cmsUser));
+      } catch (_) {}
+      toast("✅ Custom GitHub Access Token saved!", "fa-key");
+    }
+
+    audit("change", "Admin settings updated from dashboard.");
+    feedback("change-feedback", "Settings saved & updated!", "success");
     setTimeout(() => document.getElementById("admin-change-modal")?.classList.remove("active"), 1800);
   }
 
