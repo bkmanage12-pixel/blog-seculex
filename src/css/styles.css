@@ -2000,14 +2000,13 @@ footer::before {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(212, 175, 55, 0.3);
-  padding: 0.55rem 0.85rem;
+  padding: 0.6rem 0.85rem;
   border-radius: 12px;
   transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.08);
   cursor: default;
   min-height: 48px;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .pillar-icon-box {
@@ -2032,16 +2031,14 @@ footer::before {
 }
 
 .pillar-text {
-  font-size: 0.82rem;
+  font-size: 0.83rem;
   font-weight: 600;
   color: #f1f5f9;
   letter-spacing: 0.1px;
   line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
   word-break: normal;
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   hyphens: none;
   flex: 1;
   min-width: 0;
