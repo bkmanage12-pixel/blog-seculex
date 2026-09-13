@@ -282,12 +282,22 @@
         const link = document.createElement("link");
         link.rel   = "cms-config-url";
         link.type  = "text/yaml";
-        link.href  = "/admin/config.yml";
+        link.href  = "/admin/config.yml?v=1";
         document.head.appendChild(link);
       }
 
       // Git Gateway uses a short-lived Netlify Identity session. Never expose
       // a GitHub personal access token to the browser or local storage.
+      const identitySettings = await fetch("/.netlify/identity/settings", {
+        cache: "no-store",
+        credentials: "same-origin"
+      });
+      if (!identitySettings.ok) {
+        throw new Error(
+          "Netlify Identity is unavailable. In Netlify, enable Identity and Git Gateway for this site, then reload the portal."
+        );
+      }
+
       if (!document.querySelector('script[src*="netlify-identity-widget"]')) {
         await new Promise((resolve, reject) => {
           const s = document.createElement("script");
@@ -295,6 +305,16 @@
           s.onload = resolve;
           s.onerror = () => reject(new Error("Failed to load Netlify Identity"));
           document.head.appendChild(s);
+        });
+      }
+
+      if (window.netlifyIdentity && !window.__seculexIdentityListenerBound) {
+        window.__seculexIdentityListenerBound = true;
+        window.netlifyIdentity.on("login", () => {
+          toast("✅ Netlify Identity connected — you can now save and publish.", "fa-circle-check");
+        });
+        window.netlifyIdentity.on("error", () => {
+          toast("⚠️ Netlify Identity could not sign in. Check that Git Gateway is enabled in Netlify.", "fa-triangle-exclamation");
         });
       }
 
@@ -325,7 +345,7 @@
         }
       }
 
-      toast("✅ CMS ready — sign in with Netlify Identity to edit and publish.", "fa-pen-to-square");
+      toast("✅ Editor ready — use Netlify Identity to sign in, then save or publish.", "fa-pen-to-square");
 
     } catch (err) {
       console.error("[SecuLex] CMS init error:", err);
