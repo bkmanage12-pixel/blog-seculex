@@ -1949,49 +1949,99 @@ footer::before {
   line-height: 1.85;
 }
 
-.about-pillars {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.95rem;
+/* ==============================
+   PILLARS GRID (Symmetrical 4-Column Layout)
+   ============================== */
+.about-pillars-header {
   margin-top: 2.2rem;
+  margin-bottom: 0.9rem;
+}
+
+.pillars-header-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent-gold);
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  padding: 0.35rem 0.95rem;
+  border-radius: 50px;
+}
+
+.about-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.95rem;
+  margin-top: 0.5rem;
 }
 
 .pillar {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.7rem;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 175, 55, 0.28);
-  padding: 0.7rem 1.45rem;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #f1f5f9;
-  letter-spacing: 0.4px;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, rgba(18, 24, 42, 0.82) 0%, rgba(10, 14, 25, 0.92) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 0.75rem 1.1rem;
+  border-radius: 14px;
   transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.08);
   cursor: default;
+  min-height: 54px;
+}
+
+.pillar-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(212, 175, 55, 0.14);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
 }
 
 .pillar-emoji {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   line-height: 1;
-  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.4));
   transition: transform 0.3s ease;
 }
 
+.pillar-text {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  letter-spacing: 0.3px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .pillar:hover {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(212, 175, 55, 0.08) 100%);
-  border-color: var(--accent-gold);
-  color: #ffffff;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(18, 24, 42, 0.95) 100%);
+  border-color: rgba(212, 175, 55, 0.65);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 25px rgba(212, 175, 55, 0.2);
+}
+
+.pillar:hover .pillar-icon-box {
+  background: rgba(212, 175, 55, 0.28);
+  border-color: var(--accent-gold);
+  transform: scale(1.1);
 }
 
 .pillar:hover .pillar-emoji {
-  transform: scale(1.25) rotate(5deg);
+  transform: scale(1.2) rotate(4deg);
 }
 
 /* Scroll Margins for Anchor Navigation */
@@ -2302,12 +2352,29 @@ footer::before {
     padding-bottom: 1.25rem;
   }
 
+  .about-pillars {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+  }
+  
   .about-motto-banner {
     padding: 1.8rem 1.5rem;
   }
   
   .motto-text {
     font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .about-inner {
+    grid-template-columns: 1fr;
+    padding: 2.2rem 1.6rem;
+    gap: 2rem;
+  }
+
+  .about-pillars {
+    grid-template-columns: 1fr;
   }
 }
 
