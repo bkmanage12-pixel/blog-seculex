@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Mobile Navigation Toggle & Backdrop Setup
+    // ── Mobile Navigation Toggle & Backdrop Setup ──
     const mobileToggle = document.querySelector('.mobile-toggle');
     const navMenu = document.querySelector('nav ul');
     let navBackdrop = document.querySelector('.mobile-nav-backdrop');
@@ -50,17 +50,41 @@ document.addEventListener('DOMContentLoaded', () => {
         navBackdrop.addEventListener('click', () => toggleMobileNav(false));
     }
 
-    // Auto-close mobile nav when clicking normal navigation links
+    // ── Dropdown Toggle for Touch & Mobile Viewports (<= 900px) ──
+    document.querySelectorAll('.has-dropdown').forEach(item => {
+        const trigger = item.querySelector(':scope > a');
+        if (trigger) {
+            trigger.addEventListener('click', (e) => {
+                if (window.innerWidth <= 900) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    item.classList.toggle('open');
+                }
+            });
+        }
+    });
+
+    // Auto-close mobile drawer when selecting destination links or sub-items
     if (navMenu) {
         navMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
-                if (link.parentElement.classList.contains('has-dropdown') && window.innerWidth <= 900) {
-                    return;
+                const isParentDropdown = link.parentElement.classList.contains('has-dropdown');
+                if (window.innerWidth <= 900 && isParentDropdown) {
+                    return; // Parent dropdown click toggles submenu open/closed
                 }
                 toggleMobileNav(false);
             });
         });
     }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        document.querySelectorAll('.has-dropdown.open').forEach(item => {
+            if (!item.contains(e.target)) {
+                item.classList.remove('open');
+            }
+        });
+    });
 
     // Intersection Observer for scroll animations
     const faders = document.querySelectorAll('.fade-in');
@@ -86,27 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     faders.forEach(fader => {
         appearOnScroll.observe(fader);
-    });
-
-    // ── Categories Dropdown: click-toggle for touch/mobile ──
-    document.querySelectorAll('.has-dropdown').forEach(item => {
-        const trigger = item.querySelector('a');
-        trigger.addEventListener('click', (e) => {
-            // Only intercept on touch / narrow screens
-            if (window.innerWidth <= 768) {
-                e.preventDefault();
-                item.classList.toggle('open');
-            }
-        });
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        document.querySelectorAll('.has-dropdown.open').forEach(item => {
-            if (!item.contains(e.target)) {
-                item.classList.remove('open');
-            }
-        });
     });
 
     // ── Navigation Scroll-Spy (Home, About, Contact) ──

@@ -1604,7 +1604,7 @@ footer::before {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   :root {
     --site-header-height: 109px;
   }
@@ -1665,6 +1665,14 @@ footer::before {
     width: 100%;
   }
 
+  .has-dropdown > a .nav-chevron {
+    transition: transform 0.3s ease;
+  }
+
+  .has-dropdown.open > a .nav-chevron {
+    transform: rotate(180deg);
+  }
+
   .nav-dropdown {
     position: static;
     transform: none !important;
@@ -1672,14 +1680,15 @@ footer::before {
     visibility: visible !important;
     pointer-events: auto !important;
     box-shadow: none;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(18, 24, 42, 0.8);
     border-radius: 12px;
     margin-top: 0.4rem;
     padding: 0.4rem;
     min-width: 0;
     max-width: 100%;
     display: none;
+    flex-direction: column;
     gap: 4px;
   }
 
