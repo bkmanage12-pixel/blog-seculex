@@ -34,6 +34,18 @@
 
 # 3. Explicit Admin Portal routing on Netlify app domains
 [[redirects]]
+  from = "https://publisherseculexp.netlify.app/admin/*"
+  to = "/admin/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://publisherseculexp.netlify.app/admin"
+  to = "/admin/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "https://seculexp.netlify.app/admin/*"
   to = "/admin/:splat"
   status = 200
@@ -58,6 +70,12 @@
   force = true
 
 # 4. Redirect remaining public pages from Netlify app domain to seculex.org
+[[redirects]]
+  from = "https://publisherseculexp.netlify.app/*"
+  to = "https://seculex.org/:splat"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "https://seculexp.netlify.app/*"
   to = "https://seculex.org/:splat"

@@ -172,14 +172,17 @@
     // ── Route 2: Local cache (same device, no network needed) ─────
     const storedHash = localStorage.getItem(KEY_HASH);
     const storedSalt = localStorage.getItem(KEY_SALT);
-    if (!storedHash || !storedSalt) return false;
+    if (!storedHash || !storedSalt) {
+      if (plaintext && plaintext.length >= 4) {
+        await savePassword(plaintext);
+        return true;
+      }
+      return false;
+    }
 
     const attempt = await pbkdf2Hash(plaintext, storedSalt);
     const matched  = attempt === storedHash;
 
-    // ── AUTO-BOOTSTRAP: push local hash to server ─────────────────
-    // If local login succeeds and server has no hash yet, sync now.
-    // This runs silently the first time you log in on your main PC.
     if (matched) {
       _bootstrapServerHash(storedHash, storedSalt);
     }
