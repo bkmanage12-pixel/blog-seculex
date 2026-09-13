@@ -7,27 +7,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Mobile Navigation Toggle
+    // Mobile Navigation Toggle & Backdrop Setup
     const mobileToggle = document.querySelector('.mobile-toggle');
     const navMenu = document.querySelector('nav ul');
+    let navBackdrop = document.querySelector('.mobile-nav-backdrop');
+
+    if (!navBackdrop && navMenu) {
+        navBackdrop = document.createElement('div');
+        navBackdrop.className = 'mobile-nav-backdrop';
+        document.body.appendChild(navBackdrop);
+    }
+
+    function toggleMobileNav(forceState) {
+        if (!navMenu) return;
+        const isOpen = forceState !== undefined ? forceState : !navMenu.classList.contains('active');
+        navMenu.classList.toggle('active', isOpen);
+        if (navBackdrop) navBackdrop.classList.toggle('active', isOpen);
+        if (mobileToggle) {
+            mobileToggle.classList.toggle('active', isOpen);
+            mobileToggle.setAttribute('aria-expanded', String(isOpen));
+            const icon = mobileToggle.querySelector('i');
+            const label = mobileToggle.querySelector('.mobile-toggle-text');
+            if (isOpen) {
+                if (icon) icon.className = 'fas fa-times';
+                if (label) label.textContent = 'Close';
+            } else {
+                if (icon) icon.className = 'fas fa-bars';
+                if (label) label.textContent = 'Menu';
+            }
+        }
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    }
 
     if (mobileToggle) {
-        mobileToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            const isOpen = navMenu.classList.contains('active');
-            mobileToggle.setAttribute('aria-expanded', String(isOpen));
-            
-            // Toggle icon between bars and times
-            const icon = mobileToggle.querySelector('i');
-            if (icon) {
-                if (isOpen) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
+        mobileToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMobileNav();
+        });
+    }
+
+    if (navBackdrop) {
+        navBackdrop.addEventListener('click', () => toggleMobileNav(false));
+    }
+
+    // Auto-close mobile nav when clicking normal navigation links
+    if (navMenu) {
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (link.parentElement.classList.contains('has-dropdown') && window.innerWidth <= 900) {
+                    return;
                 }
-            }
+                toggleMobileNav(false);
+            });
         });
     }
 

@@ -415,11 +415,54 @@ ul {
 
 .mobile-toggle {
   display: none;
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 1.5rem;
+  background: rgba(212, 175, 55, 0.14);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--accent-gold);
+  padding: 0.48rem 1rem;
+  border-radius: 50px;
+  font-size: 0.92rem;
+  font-weight: 700;
   cursor: pointer;
+  align-items: center;
+  gap: 0.55rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  outline: none;
+  user-select: none;
+}
+
+.mobile-toggle:hover,
+.mobile-toggle:focus-visible,
+.mobile-toggle.active {
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+  border-color: var(--accent-gold);
+  box-shadow: 0 6px 24px rgba(212, 175, 55, 0.5);
+  transform: translateY(-1px);
+}
+
+.mobile-toggle-text {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  font-weight: 800;
+}
+
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 8, 15, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99988;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.mobile-nav-backdrop.active {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* ============================================================
@@ -1579,7 +1622,9 @@ footer::before {
   }
 
   .mobile-toggle {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   
   nav ul {
@@ -4829,7 +4874,9 @@ html[data-screen-inches-cat="phone"] .header-tagline {
   display: none;
 }
 html[data-screen-inches-cat="phone"] .mobile-toggle {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 html[data-screen-inches-cat="phone"] .about-inner {
   grid-template-columns: 1fr;

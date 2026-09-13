@@ -225,7 +225,7 @@
                 <li><a href="/#contact" id="nav-contact"><i class="far fa-envelope"></i> {{ site.nav_contact | default("Contact") }}</a></li>
                 <li class="nav-publish-item"><a href="/publish-with-us/" {% if '/publish-with-us/' in page.url %}class="btn-publish-cta active"{% else %}class="btn-publish-cta"{% endif %} id="nav-publish"><i class="fas fa-pen-nib"></i> {{ site.nav_publish | default("Publish with us") }}</a></li>
             </ul>
-            <button class="mobile-toggle" type="button" aria-label="{{ site.mobile_menu_label | default('Open navigation') }}" aria-expanded="false"><i class="fas fa-bars"></i></button>
+            <button class="mobile-toggle" type="button" aria-label="{{ site.mobile_menu_label | default('Open navigation') }}" aria-expanded="false"><i class="fas fa-bars"></i> <span class="mobile-toggle-text">Menu</span></button>
         </nav>
     </header>
 
