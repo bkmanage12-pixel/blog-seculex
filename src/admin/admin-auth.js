@@ -396,29 +396,36 @@
             if (data.token) {
               token = data.token;
               sessionStorage.setItem('seculex_custom_pat', token);
+              localStorage.setItem('seculex_custom_pat', token);
             }
           }
         } catch (_) {}
       }
 
-      // Set CMS user token in localStorage so Decap CMS logs in instantly
-      if (token) {
-        const cmsUser = {
-          token: token,
-          email: 'seculexpublications@gmail.com',
-          name: 'SecuLex Admin',
-          login: 'bkmanage12-pixel'
-        };
-        try {
-          localStorage.setItem('decap-cms-user', JSON.stringify(cmsUser));
-          localStorage.setItem('netlify-cms-user', JSON.stringify(cmsUser));
-        } catch (_) {}
+      if (!token) {
+        // Token not configured on server or local session — show token entry view card
+        window.__seculexCmsLoaded = false;
+        document.getElementById('admin-security-overlay')?.classList.remove('hidden');
+        showView('token');
+        return;
+      }
 
-        const currentHash = window.location.hash.slice(1);
-        if (!new URLSearchParams(currentHash).get('access_token')) {
-          window.history.replaceState({}, '', window.location.pathname +
-            '#access_token=' + encodeURIComponent(token) + '&token_type=bearer');
-        }
+      // Set CMS user token in localStorage so Decap CMS logs in instantly
+      const cmsUser = {
+        token: token,
+        email: 'seculexpublications@gmail.com',
+        name: 'SecuLex Admin',
+        login: 'bkmanage12-pixel'
+      };
+      try {
+        localStorage.setItem('decap-cms-user', JSON.stringify(cmsUser));
+        localStorage.setItem('netlify-cms-user', JSON.stringify(cmsUser));
+      } catch (_) {}
+
+      const currentHash = window.location.hash.slice(1);
+      if (!new URLSearchParams(currentHash).get('access_token')) {
+        window.history.replaceState({}, '', window.location.pathname +
+          '#access_token=' + encodeURIComponent(token) + '&token_type=bearer');
       }
 
       // Dynamically load Decap CMS — it auto-initialises on load
@@ -570,27 +577,25 @@
     }
   }
 
-  /* ─── Token & Quick Login Handlers ──────────────────────────── */
+  /* ─── Publishing Key Handler ─────────────────────────────────── */
 
-  async function handleTokenLogin(e) {
+  async function handleTokenFormSubmit(e) {
     e.preventDefault();
-    clearFeedback("login-feedback");
-    const tokenInput = document.getElementById("login-gh-token");
-    const pat = (tokenInput ? tokenInput.value : "").trim();
+    clearFeedback("token-feedback");
+    const input = document.getElementById("pat-input");
+    const pat = (input ? input.value : "").trim();
 
-    if (!pat || pat.length < 10) {
-      feedback("login-feedback", "Please enter a valid GitHub Access Token (PAT).");
+    if (!pat || pat.length < 8) {
+      feedback("token-feedback", "Please enter a valid GitHub Access Token (PAT).");
       return;
     }
 
     sessionStorage.setItem("seculex_custom_pat", pat);
-    audit("login", "Admin logged in via GitHub Personal Access Token.");
-    toast("✅ Authenticated via GitHub PAT", "fa-shield-check");
+    localStorage.setItem("seculex_custom_pat", pat);
+    audit("login", "Admin authorized publishing via PAT key.");
+    toast("✅ Access key authorized! Opening CMS...", "fa-shield-check");
     await unlockPortal();
   }
-
-  async function handleQuickAdminLogin() {
-    clearFeedback("login-feedback");
     audit("login", "Quick Admin Sign In invoked.");
     toast("⚡ Quick Admin Sign In successful", "fa-bolt");
     await unlockPortal();
@@ -918,6 +923,7 @@
 
     // Bind active form and modal events
     document.getElementById("login-form")?.addEventListener("submit", handleLogin);
+    document.getElementById("token-form")?.addEventListener("submit", handleTokenFormSubmit);
     document.getElementById("reset-form")?.addEventListener("submit", handleResetPassword);
     document.getElementById("btn-send-reset-code")?.addEventListener("click", handleSendResetEmail);
     document.getElementById("btn-goto-reset")?.addEventListener("click", () => showView("reset"));
