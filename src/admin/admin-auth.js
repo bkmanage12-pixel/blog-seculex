@@ -31,7 +31,7 @@
 
   const ADMIN_FUNCTION_SECRET = (
     (document.querySelector('meta[name="admin-function-secret"]') || {}).content || ""
-  ).trim() || "seculex_admin_secret_98a7b6c5d4e3f2a1_prod";
+  ).trim() || "seculex_admin_secret_v1";
 
   const PBKDF2_ITER  = 100000;
   const MAX_ATTEMPTS = 5;

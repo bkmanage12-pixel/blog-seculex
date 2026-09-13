@@ -21,7 +21,7 @@ exports.handler = async (event) => {
   }
 
   const incoming = (event.headers['x-admin-secret'] || '').trim();
-  const expected = (process.env.ADMIN_FUNCTION_SECRET || 'seculex_admin_secret_98a7b6c5d4e3f2a1_prod').trim();
+  const expected = (process.env.ADMIN_FUNCTION_SECRET || 'seculex_admin_secret_v1').trim();
 
   // Constant-time comparison to prevent timing attacks
   const crypto = require('crypto');
