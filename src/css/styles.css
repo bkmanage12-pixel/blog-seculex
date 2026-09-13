@@ -1807,7 +1807,8 @@ footer::before {
 .about-section::before {
   background-image: var(--about-bg-image);
   background-size: cover;
-  background-position: center;
+  background-position: center center;
+  background-repeat: no-repeat;
   opacity: 0.75;
   z-index: 0;
   filter: contrast(1.08) brightness(0.9);
