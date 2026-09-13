@@ -1,30 +1,14 @@
 {
   "section_tag": "About SecuLex",
-  "title": "SecuLex",
-  "subtitle": "Connecting Law, Strategy and Security in the Digital Era",
-  "quote": "knowledge becomes more valuable when it is shared with others",
-  "lead_text": "SecuLex was established from a simple but important idea: \"knowledge becomes more valuable when it is shared with others\". It is built around three interconnected core principles, Law, Strategy and Security, with the purpose of creating a space where ideas, research, professional experiences and practical knowledge can be shared with a wider audience.",
-  "background_image": "/assets/images/backgound-photo-netsec.png",
-  "profile_photo": "/assets/images/capture.png",
   "paragraphs": [
     "The platform emerged from the recognition that there are limited accessible platforms and journals for publishing and sharing legal, security and strategic knowledge, particularly for emerging scholars, practitioners and professionals who have valuable ideas and research to contribute. Rather than allowing these ideas to remain unpublished or reach only a limited audience, this platform provides an opportunity to document, publish and continuously share knowledge.",
     "The platform focuses particularly on Cyber Law, International Law, Human Rights Law, Medical Law, Forensic Law, as well as broader issues relating to security, strategy, technology, justice and governance. It seeks to explore how these fields are evolving and how law and institutions can respond to the challenges created by a rapidly changing world.",
     "At its heart, the platform was developed from the idea of sharing ideas with others. There was a need for a platform through which knowledge could be communicated beyond academic institutions and professional circles, reaching students, researchers, practitioners, policymakers and members of the public."
   ],
-  "purpose": {
-    "title": "Our Purpose",
-    "lead_text": "SecuLex seeks to serve as both a knowledge-sharing and public education space. It aims to make complex issues of law, security and strategy more accessible and relevant to society while encouraging informed discussion and continuous learning.",
-    "body_text": "In an increasingly digital society, the relationship between technology and law has become impossible to ignore. Cybercrime, digital evidence, data protection, artificial intelligence, online human rights, digital investigations and other emerging issues require a better understanding of both technological developments and their legal implications. This platform therefore seeks to bridge the gap between the digital world and the law, helping readers understand how legal principles apply in an increasingly connected society."
-  },
   "vision": {
     "title": "Our Vision",
     "body_text": "To become a trusted knowledge-sharing platform connecting Law, Strategy and Security, while promoting public education, professional knowledge and informed debate in the digital era."
   },
-  "mission": {
-    "title": "Our Mission",
-    "body_text": "To publish, share and promote accessible, credible and practical knowledge on law, security, strategy and emerging digital issues, while providing a platform through which writers and readers can learn from one another."
-  },
-  "motto": "Law, Strategy, Security, Knowledge for a changing world.",
   "pillars": [
     {
       "emoji": "🔒",
@@ -58,5 +42,21 @@
       "emoji": "🎓",
       "text": "Justice & Governance"
     }
-  ]
+  ],
+  "background_image": "/assets/images/backgound-photo-netsec.png",
+  "mission": {
+    "title": "Our Mission",
+    "body_text": "To publish, share and promote accessible, credible and practical knowledge on law, security, strategy and emerging digital issues, while providing a platform through which writers and readers can learn from one another."
+  },
+  "motto": "Law, Strategy, Security, Knowledge for a changing world.",
+  "lead_text": "SecuLex was established from a simple but important idea: \"knowledge becomes more valuable when it is shared with others\". It is built around three interconnected core principles, Law, Strategy and Security, with the purpose of creating a space where ideas, research, professional experiences and practical knowledge can be shared with a wider audience.nd",
+  "subtitle": "Connecting Law, Strategy and Security in the Digital Era",
+  "title": "SecuLex",
+  "profile_photo": "/assets/images/capture.png",
+  "quote": "knowledge becomes more valuable when it is shared with others",
+  "purpose": {
+    "title": "Our Purpose",
+    "lead_text": "SecuLex seeks to serve as both a knowledge-sharing and public education space. It aims to make complex issues of law, security and strategy more accessible and relevant to society while encouraging informed discussion and continuous learning.",
+    "body_text": "In an increasingly digital society, the relationship between technology and law has become impossible to ignore. Cybercrime, digital evidence, data protection, artificial intelligence, online human rights, digital investigations and other emerging issues require a better understanding of both technological developments and their legal implications. This platform therefore seeks to bridge the gap between the digital world and the law, helping readers understand how legal principles apply in an increasingly connected society."
+  }
 }
